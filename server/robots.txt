@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /random/*
+Disallow: /api/*
+
+Sitemap: http://www.onlineaquarium.net/sitemap.xml

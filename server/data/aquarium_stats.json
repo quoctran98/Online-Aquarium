@@ -1,0 +1,11 @@
+{
+    "fishbowl": {
+        "width": 500,
+        "height": 500,
+        "temperature": 25,
+        "ph": 7.5,
+        "ammonia": 0.1,
+        "nitrite": 0.1,
+        "nitrate": 0.1
+    }
+}

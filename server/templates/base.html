@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Load SocketIO, jQuery, and PixiJS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="https://pixijs.download/release/pixi.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}"" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+    <!-- socket.js and main.js scripts (for global functions) -->
+    <script src="{{ url_for('static', filename='js/socket.js')}}" type="module"></script>
+    <script src="{{ url_for('static', filename='js/main.js')}}"></script>
+    
+    <!-- Add custom OpenGraph (and Twitter) content -->
+    {% if custom_og %}
+        <meta property="og:title" content="{{ custom_og['title'] }}" />
+        <meta name="twitter:title" content="{{ custom_og['title'] }}" />
+    {% else %}
+        <meta property="og:title" content="EasyGeneDB" />
+        <meta name="twitter:title" content="EasyGeneDB" />
+    {% endif %}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@quoctran98" />
+    <meta property="og:description" content="An easy-to-use gene database!" />
+    <meta name="twitter:description" content="An easy-to-use gene database!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://easygenedb.net" />
+    <meta property="og:image:url" content="{{ url_for('static', filename='img/favicon.png') }}" />
+    <meta name="twitter:image" content="{{ url_for('static', filename='img/favicon.png') }}" />
+
+    <title>OnlineAquarium.net</title>
+</head>
+
+<body>
+    <div class="gets-blurred">
+
+    <!-- PADDING ROW -->
+    <div class="row"><div class="col-md-12"><br></div></div>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="container has-text-centered">
+                <div class="alert {{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    </div>
+
+    <!-- CONTENT INSERTED BY DIFFERENT PAGES -->
+    <div>
+        <div class="container has-text-centered">
+            {% block content %}
+            {% endblock %}
+    </div>
+</body>
+
+</html>
