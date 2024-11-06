@@ -86,6 +86,73 @@ class Fish extends PIXI.Sprite {
 
 }
 
+// Aquariums are (PIXI) Containers for Fish
+class Aquarium extends PIXI.Container {
+    constructor() {
+        super();
+
+        this.x = 0;
+        this.y = 100;
+        this.width = 500;
+        this.height = 500;
+
+        this.ticker = new PIXI.Ticker();
+        this.ticker.start();
+
+        // Bind all methods that we need to call externally
+        this.addFish = this.addFish.bind(this);
+        this.syncFishes = this.syncFishes.bind(this);
+        this.updateFish = this.updateFish.bind(this);
+        this.removeFish = this.removeFish.bind(this);
+    }
+
+    // Add a fish to the aquarium
+    addFish(fish_data) {
+        const fish_type = fish_data.type;
+        // We should use a sprite sheet for the fish textures...
+        let fish = new Fish(PIXI.Assets.get(`assets/fish/${fish_type}.png`), fish_data);
+        this.addChild(fish);
+        this.ticker.add(fish.handleTicker);
+      }
+
+    // Sync the position and state of all Fish in the aquarium with server data
+    syncFishes(fishes) {
+        const current_fish_ids = this.children.map(f => f.label);
+        const server_fish_ids = fishes.map(f => f.id);
+        
+        // Remove fish that are no longer in the server's list
+        for (let fish_id of current_fish_ids) {
+            if (!server_fish_ids.includes(fish_id)) { this.removeFish(fish_id);}
+        }
+
+        // Add new fish / update existing fish
+        for (let fish_data of fishes) {
+            this.updateFish(fish_data);
+        }
+    }
+
+    // Update a single fish when the server broadcasts an update or a sync
+    updateFish(fish_data) {
+        let fish = this.children.find(f => f.label === fish_data.id);
+        if (fish) {
+          fish.serverUpdate(fish_data);
+        } else {
+          this.addFish(fish_data); // If the fish isn't in the list, add it!
+        }
+    }
+
+    // Remove a fish from the aquarium
+    removeFish(fish_id) {
+        let fish = aquarium.children.find(f => f.label === fish_id);
+        if (fish) {
+          this.removeChild(fish);
+        } else {
+          console.log(`Fish ${fish_id} not found in aquarium`);
+        }
+    }
+
+}
+
 // Things are objects on the shelf that can be interacted with
 class Thing extends PIXI.Sprite {
     constructor(texture) {
@@ -115,4 +182,4 @@ class Cursor extends PIXI.Sprite {
     }
 }
 
-export { Fish, Thing, Cursor };
+export { Fish, Aquarium, Thing, Cursor };

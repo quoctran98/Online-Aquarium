@@ -32,12 +32,12 @@ def aquarium_simulation(socketio, command_queue, aquarium = Aquarium("fishbowl")
         for fish in aquarium.fishes:
             changed = fish.update(delta_time)
             if changed:
-                socketio.send("update_fish", fish.summarize)
+                socketio.emit("update_fish", fish.summarize, namespace="/aquarium")
 
         # Broadcast the current state of all fishes in the aquarium (every few seconds to sync)
         if (loop_start - last_sync).total_seconds() > SYNC_FREQUENCY:
             last_sync = loop_start
-            socketio.send("sync_fishes", [fish.summarize for fish in aquarium.fishes])
+            socketio.emit("sync_fishes", [fish.summarize for fish in aquarium.fishes], namespace="/aquarium")
 
         # Calculate the time it took to run the loop
         loop_end = datetime.now(timezone.utc)

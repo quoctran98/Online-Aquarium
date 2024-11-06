@@ -27,16 +27,11 @@ This namespace is used to allow authenticated clients (using Flask login) to int
     - `username` - The username of the client sending the message.
     - `x` - The x-coordinate of the cursor.
     - `y` - The y-coordinate of the cursor.
+    - `event` - The event that triggered the cursor update ("mousemove", "mousedown", or "disconnect").
 
-- `sync_cursors` - Broadcasts the current position of all cursors in the aquarium as an array of JSON objects (one for each cursor) with the following fields:
-    - `username` - The username of the client sending the message.
-    - `x` - The x-coordinate of the cursor.
-    - `y` - The y-coordinate of the cursor.
+- `update_cursor` - Broadcasts the current position of a single cursor in the aquarium as a JSON object with the same fields as the data sent in the `my_cursor` message.
 
-- `update_cursor` - Broadcasts the current position of a single cursor in the aquarium as a JSON object with the following fields:
-    - `username` - The username of the client sending the message.
-    - `x` - The x-coordinate of the cursor.
-    - `y` - The y-coordinate of the cursor.
+- `user_disconnected` - Broadcasts the username of a client that has disconnected from the server. The message just the username of the client that disconnected. For now usernames are just the socket id.
 
 - `feed` - Broadcasts a message to feed the fishes in the aquarium. The message is a JSON object with the following fields:
     - `username` - The username of the client sending the message.

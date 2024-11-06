@@ -29,8 +29,10 @@ def create_app():
     app.register_blueprint(api_blueprint)
 
     # Regiser SocketIO events
+    from .events import main as main_events
     from .events import aquarium as aquarium_events
     from .events import interactions as interactions_events
+    main_events.register_events(socketio)
     aquarium_events.register_events(socketio, command_queue)
     interactions_events.register_events(socketio, command_queue)
 
@@ -38,7 +40,7 @@ def create_app():
     socketio.start_background_task(aquarium_simulation, socketio, command_queue)
 
     # Make sure the app is running with the correct settings
-    print("Routes registered! 🌐")
+    print(f"The current timezone is {pytz.timezone(settings.TIMEZONE).zone} ⏰")
     print(f"The current environment is {settings.ENVIRONMENT} 🌎")
 
     return(app)
