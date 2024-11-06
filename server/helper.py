@@ -14,12 +14,12 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # Load fish and aquarium stats from the JSON file
-fish_stats = {}
-with open("server/data/fish_stats.json") as f:
-    fish_stats = json.load(f)
-aquarium_stats = {}
-with open("server/data/aquarium_stats.json") as f:
-    aquarium_stats = json.load(f)
+fish_types = {}
+with open("server/data/fish_types.json") as f:
+    fish_types = json.load(f)
+aquarium_types = {}
+with open("server/data/aquarium_types.json") as f:
+    aquarium_types = json.load(f)
 
 # Connect to MongoDB users database
 # users_db = client[settings.USERS_DB_NAME]

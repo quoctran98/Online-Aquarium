@@ -3,11 +3,6 @@
     Use it to define functions that are used in multiple pages.
 */
 
-// Initialize some stuff :)
-// $(document).ready(function() {
-
-// });
-
 // Format a number with commas
 function format_big_number(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

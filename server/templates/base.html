@@ -7,7 +7,7 @@
 
     <!-- Load SocketIO, jQuery, and PixiJS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.8.0/socket.io.esm.min.js" type="module"></script>
     <script src="https://pixijs.download/release/pixi.js"></script>
 
     <!-- Custom CSS -->
@@ -16,9 +16,9 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
-    <!-- socket.js and main.js scripts (for global functions) -->
-    <script src="{{ url_for('static', filename='js/socket.js')}}" type="module"></script>
-    <script src="{{ url_for('static', filename='js/main.js')}}"></script>
+    <!-- socket.js and functions.js scripts (for global functions) -->
+    <script src="{{ url_for('static', filename='js/sockets.js')}}" type="module"></script>
+    <script src="{{ url_for('static', filename='js/functions.js')}}" type="module"></script>
     
     <!-- Add custom OpenGraph (and Twitter) content -->
     {% if custom_og %}

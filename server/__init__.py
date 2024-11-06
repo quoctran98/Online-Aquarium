@@ -14,26 +14,28 @@ def create_app():
     app.config["SECRET_KEY"] = settings.FLASK_SECRET_KEY
     socketio = SocketIO(app)
 
-    # Start the aquarium simulation
+    # Define the command queue for the simulation (but don't start it yet)
     command_queue = queue.Queue()
-    socketio.start_background_task(aquarium_simulation, socketio, command_queue)
 
     # Add funtions from helper.py to the Jinja environment
     # I want to do this in a more elegant way, but this works for now
     app.jinja_env.globals.update(format_number=format_number)
     app.jinja_env.globals.update(serialize_json=json.dumps)
 
-    # Blueprint for main routes from routes/main.py
+    # Register HTTP routes
     from .routes.main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
-    # Blueprint for API routes from routes/api.py
     from .routes.api import api as api_blueprint
+    app.register_blueprint(main_blueprint)
     app.register_blueprint(api_blueprint)
 
-    # Register events from events/aquarium.py
-    from .events import aquarium
-    aquarium.register_events(socketio, command_queue)
+    # Regiser SocketIO events
+    from .events import aquarium as aquarium_events
+    from .events import interactions as interactions_events
+    aquarium_events.register_events(socketio, command_queue)
+    interactions_events.register_events(socketio, command_queue)
+
+    # Start the aquarium simulation
+    socketio.start_background_task(aquarium_simulation, socketio, command_queue)
 
     # Make sure the app is running with the correct settings
     print("Routes registered! 🌐")

@@ -1,23 +1,26 @@
-from flask_socketio import SocketIO, emit
+from flask_socketio import emit
 from server.helper import settings
 from server.models import Fish, Aquarium
 from datetime import datetime, timezone
 import time
 
+SIMULATION_TICK = settings.SIMULATION_TICK # seconds per tick
+SYNC_FREQUENCY = 1 # seconds per sync
+
 # This is the main game/simulation loop
 # Either pass an existing aquarium or create a new one
 def aquarium_simulation(socketio, command_queue, aquarium = Aquarium("fishbowl")):
-    last_update = datetime.now(timezone.utc)
+    last_loop = datetime.now(timezone.utc)
+    last_sync = datetime.now(timezone.utc)
     while True:
 
         # Do timing things
         loop_start = datetime.now(timezone.utc)
-        delta_time = loop_start - last_update
+        delta_time = loop_start - last_loop
       
         # Check if there are any commands in the queue
         if not command_queue.empty():
             command = command_queue.get()
-            print(command)
             match command:
                 case "add_fish":
                     fish = Fish(type="goldfish", aquarium=aquarium)
@@ -25,15 +28,19 @@ def aquarium_simulation(socketio, command_queue, aquarium = Aquarium("fishbowl")
                 case _:
                     Warning(f"Unknown command {command}")
 
-        # Update all fishes in the aquarium
+        # Update all fishes in the aquarium (and broadcast the changes)
         for fish in aquarium.fishes:
-            fish.update(delta_time)
+            changed = fish.update(delta_time)
+            if changed:
+                socketio.send("update_fish", fish.summarize)
 
-        # Broadcast the current state of all fishes in the aquarium
-        socketio.emit("updateFishes", [fish.serialize for fish in aquarium.fishes])
+        # Broadcast the current state of all fishes in the aquarium (every few seconds to sync)
+        if (loop_start - last_sync).total_seconds() > SYNC_FREQUENCY:
+            last_sync = loop_start
+            socketio.send("sync_fishes", [fish.summarize for fish in aquarium.fishes])
 
         # Calculate the time it took to run the loop
         loop_end = datetime.now(timezone.utc)
-        last_update = loop_end
+        last_loop = loop_end
         # Wait for the next tick
-        time.sleep(max(0, settings.SIMULATION_TICK - (loop_end - loop_start).total_seconds()))
+        time.sleep(max(0, SIMULATION_TICK - (loop_end - loop_start).total_seconds()))
