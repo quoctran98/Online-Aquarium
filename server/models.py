@@ -1,5 +1,71 @@
-from server.helper import settings, fish_types, aquarium_types
-import random, math, uuid, datetime
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from server.helper import settings, mongo_users_collection, fish_types, aquarium_types
+import random, math, uuid, datetime, os, pickle, time
+
+class User(UserMixin):
+    def __init__(self, username, password, user_id=None, _id=None):
+        # We might need to implement user_id this way for Flask-Login? Yeah!
+        self.user_id = uuid.uuid4().hex if user_id is None else str(user_id)
+        self.mongo_id = None if _id is None else str(_id) # MongoDB _id
+        self.username = username
+        self.hashed_password = password
+
+    # Methods required by Flask-Login
+    def is_authenticated(self):
+        return(True)
+    def is_active(self):
+        return(True)
+    def is_anonymous(self):
+        return(False)
+    def get_id(self):
+        return(self.user_id)
+
+    def check_password(self, input_password):
+        return(check_password_hash(self.hashed_password, input_password))
+
+    @classmethod
+    def get_by_username(cls, username):
+        data = mongo_users_collection.find_one({"username": username})
+        if data:
+            return(cls(**data))
+        return(None)
+    
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        data = mongo_users_collection.find_one({"user_id": user_id})
+        if data:
+            return(cls(**data))
+        return(None)
+    
+    @classmethod
+    def signup(cls, username, unhashed_password):
+        user = cls.get_by_username(username)
+        if user: # User already exists
+            return(False)
+        else: # Create a new user
+            hashed_password = generate_password_hash(unhashed_password)
+            mongo_users_collection.insert_one({
+                "username": username, 
+                "password": hashed_password,
+                "user_id": uuid.uuid4().hex})
+            return(True)
+        
+    @classmethod
+    def guest_user(cls):
+        # Return a User object for a guest user
+        guest_name = "guest_" + uuid.uuid4().hex[:8]
+        return(cls(
+            username=guest_name,
+            password=None, # Hopefully this doesn't break anything
+        ))
+    
+    @property
+    def serialize_public(self):
+        return({
+            "username": self.username,
+            "user_id": self.user_id
+        })
 
 class Fish():
     def __init__(self, type, aquarium):
@@ -103,3 +169,7 @@ class Aquarium():
 
         self.fishes = []
 
+    def save(self, save_dir):
+        fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{self.type}.pkl")
+        with open(fname, "wb") as f:
+            pickle.dump(self, f)

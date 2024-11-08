@@ -5,10 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bootstrap Icons, CSS, and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css')}}"" />
+    <script src="{{ url_for('static', filename='js/bootstrap.js')}}" type="module"></script>
+
     <!-- Load SocketIO, jQuery, and PixiJS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/4.8.0/socket.io.esm.min.js" type="module"></script>
     <script src="https://pixijs.download/release/pixi.js"></script>
+
+    <!-- Custom scripts! -->
+    <script src="{{ url_for('static', filename='js/sockets.js')}}" type="module"></script>
+    <script src="{{ url_for('static', filename='js/functions.js')}}" type="module"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}"" />
@@ -16,37 +25,26 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
-    <!-- socket.js and functions.js scripts (for global functions) -->
-    <script src="{{ url_for('static', filename='js/sockets.js')}}" type="module"></script>
-    <script src="{{ url_for('static', filename='js/functions.js')}}" type="module"></script>
     
     <!-- Add custom OpenGraph (and Twitter) content -->
-    {% if custom_og %}
-        <meta property="og:title" content="{{ custom_og['title'] }}" />
-        <meta name="twitter:title" content="{{ custom_og['title'] }}" />
-    {% else %}
-        <meta property="og:title" content="EasyGeneDB" />
-        <meta name="twitter:title" content="EasyGeneDB" />
-    {% endif %}
+    <meta property="og:title" content="Aquarium Online" />
+    <meta name="twitter:title" content="Aquarium Online" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@quoctran98" />
-    <meta property="og:description" content="An easy-to-use gene database!" />
-    <meta name="twitter:description" content="An easy-to-use gene database!" />
+    <meta property="og:description" content="A collaborative aquarium simulation game." />
+    <meta name="twitter:description" content="A collaborative aquarium simulation game." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://easygenedb.net" />
+    <meta property="og:url" content="https://AquariumOnline.net" />
     <meta property="og:image:url" content="{{ url_for('static', filename='img/favicon.png') }}" />
     <meta name="twitter:image" content="{{ url_for('static', filename='img/favicon.png') }}" />
 
-    <title>OnlineAquarium.net</title>
+    <title>AquariumOnline.net</title>
 </head>
 
 <body>
-    <div class="gets-blurred">
-
-    <!-- PADDING ROW -->
-    <div class="row"><div class="col-md-12"><br></div></div>
-
+    
     <!-- FLASH MESSAGES -->
+    <div class="gets-blurred" id="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -58,15 +56,23 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+    </div>
 
+    <!-- HIDDEN DIV OF USER INFO -->
+    <div id="user-info" style="display: none;">
+        {% if current_user.is_authenticated %}
+            {{ dict_to_html(current_user.serialize_public) }}
+        {% else %}
+            {{ dict_to_html(User.guest_user().serialize_public) }}
+        {% endif %}
     </div>
 
     <!-- CONTENT INSERTED BY DIFFERENT PAGES -->
     <div>
-        <div class="container has-text-centered">
-            {% block content %}
-            {% endblock %}
+        {% block content %}
+        {% endblock %}
     </div>
+    
 </body>
 
 </html>

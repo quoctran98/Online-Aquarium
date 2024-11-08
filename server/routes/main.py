@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify, Blueprint, render_template, send_from
 from flask_socketio import SocketIO, emit
 
 from server.helper import settings
-from server.models import Fish
 
 import random
 

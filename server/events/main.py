@@ -1,5 +1,5 @@
 from flask import request
-from server.helper import settings
+from server.helper import settings, authenticated_only
 
 def register_events(socketio, command_queue):
     @socketio.on("connect", namespace="/")

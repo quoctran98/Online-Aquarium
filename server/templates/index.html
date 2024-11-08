@@ -5,8 +5,78 @@
 <script src="{{ url_for('static', filename='js/models.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/aquarium.js')}}" type="module"></script>
 
-<div class="gets-blurred">
+<div id="full-screen-container" class="gets-blurred"> 
 
+    <!-- For PixiJS canvas -->
+    <div id="aquarium-container"></div>
+
+    <!-- Sidebar for user management and chat -->
+    <div id="sidebar">
+        <div>
+            <p> {{ current_user.is_authenticated }} </p>
+            {% if current_user.is_authenticated %}
+                <p>Logged in as: {{ current_user.username }}</p>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <form id="login-form" class="form-inline" action="/login" method="post">
+                    <input type="text" id="username" name="username" placeholder="Username">
+                    <input type="password" id="password" name="password" placeholder="Password">
+
+                    <button type="submit" >Login</button>
+                    <a href="#" id="switcheroo-link">Click here to sign up</a>
+                </form>
+                <script type="text/javascript">
+                    $('#switcheroo-link').click(function() {
+                        if ($("#login-form").attr("action") == "/login") {
+                            $("#login-form").attr("action", "/signup");
+                            $("#login-form").append('<input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password">');
+                            $("#login-form button").text("Sign Up");
+                            $("#switcheroo-link").text("Click here to login");
+                        } else {
+                            $("#login-form").attr("action", "/login");
+                            $("#confirm-password").remove();
+                            $("#login-form button").text("Login");
+                            $("#switcheroo-link").text("Click here to sign up");
+                        }
+                    });
+                </script>
+
+            {% endif %}
+            
+        </div>
+
+        <hr>
+
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab(event, 'tab1')">Tab 1</button>
+                <button class="tab-button" onclick="showTab(event, 'tab2')">Tab 2</button>
+                <button class="tab-button" onclick="showTab(event, 'tab3')">Tab 3</button>
+            </div>
+        
+            <div class="tab-content active" id="tab1">
+                <p>This is content for Tab 1.</p>
+            </div>
+            <div class="tab-content" id="tab2">
+                <p>This is content for Tab 2.</p>
+            </div>
+            <div class="tab-content" id="tab3">
+                <p>This is content for Tab 3.</p>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function showTab(event, tabId) {
+                // Remove active class from all tab buttons and contents
+                document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                // Add active class to the selected tab button and content
+                event.currentTarget.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            }
+        </script>
+    </div>
 </div>
 
 {% endblock %}

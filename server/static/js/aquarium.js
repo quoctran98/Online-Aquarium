@@ -1,12 +1,17 @@
 import { socket, aquariumSocket, interactionsSocket } from "./sockets.js";
-import { Fish, Aquarium, Thing, Cursor } from "./models.js";
+import { Fish, Aquarium, Thing, CursorContainer } from "./models.js";
 
-// const maxHeight = window.innerHeight * 0.9;
-// const maxWidth = window.innerWidth * 0.9;
+// From https://coderevue.net/posts/scale-to-fit-screen-pixijs/
 
 const app = new PIXI.Application();
-await app.init({ width: 1200, height: 800, backgroundColor: 0xFFFFFF });
-document.body.appendChild(app.canvas);
+await app.init({ 
+  resizeTo: $("#aquarium-container").get(0),
+  autoDensity: true,
+  backgroundColor: 0xffffff
+});
+app.stage.interactive = true;
+$("#aquarium-container").get(0).appendChild(app.canvas);
+console.log(app.screen.width, app.screen.height);
 
 // Preload the goldfish image (we'll do this for all the fish later or use a spritesheet)
 await PIXI.Assets.load("assets/fish/goldfish.png");
@@ -15,7 +20,7 @@ await PIXI.Assets.load("assets/cursor.png");
 
 // Render the shelf (just a brown rectangle) on load
 let shelf = new PIXI.Graphics()
-  .rect(0, 0, 500, 100)
+  .rect(0, 0, app.screen.width, 100)
   .fill(0x8B4513);
 app.stage.addChild(shelf);
 
@@ -55,6 +60,7 @@ app.stage.addChild(water);
 let aquarium = new Aquarium();
 app.stage.addChild(aquarium);
 
+
 // send a message to the server when the user clicks
 // just for testing purposes
 $(document).click(function() {
@@ -65,52 +71,16 @@ $(document).click(function() {
 aquariumSocket.on("sync_fishes", aquarium.syncFishes);
 aquariumSocket.on("update_fish", aquarium.updateFish);
 
-// Broadcast the client's cursor position to all other clients
-document.addEventListener("mousemove", (event) => {
-  interactionsSocket.emit("my_cursor", { 
-    username: socket.id,
-    x: event.clientX,
-    y: event.clientY,
-    event: "mousemove"
-  });
-});
-
 // Render all other clients' cursors (in a separate container)
-let cursors = new PIXI.Container();
-app.stage.addChild(cursors);
-
-// Function to add a single cursor to the aquarium when a new one is sent by the server
-function addCursor(cursor_data) {
-  // Don't add if it's the current user's cursor
-  if (cursor_data.username === socket.id) return;
-  let cursor = new Cursor(PIXI.Assets.get("assets/cursor.png"), cursor_data);
-  cursors.addChild(cursor);
-}
-
-// Function to update a single cursor when the server broadcasts an update or a sync
-function updateCursor(cursor_data) {
-  // Don't update if it's the current user's cursor
-  if (cursor_data.username === socket.id) return;
-  let cursor = cursors.children.find(c => c.label === cursor_data.username);
-  if (!cursor) { // If the cursor isn't in the list, add it!
-    addCursor(cursor_data); 
-  }
-  cursor.serverUpdate(cursor_data);
-}
-
-// // Function to remove a cursor from the aquarium
-function removeCursor(cursor_id) {
-  console.log(`This session's socket ID: ${socket.id}`);
-  console.log(`Cursor ID to remove: ${cursor_id}`);
-  console.log(`Cursors: ${cursors.children.map(c => c.label)}`);
-  let cursor = cursors.children.find(c => c.label === cursor_id);
-  if (cursor) {
-    cursors.removeChild(cursor);
-  } else {
-    console.log(`Cursor ${cursor_id} not found in cursors`);
-  }
-}
+let cursorContainer = new CursorContainer(socket.id);
+app.stage.addChild(cursorContainer);
 
 // Register event listeners for the interactions socket
-interactionsSocket.on("update_cursor", updateCursor);
-interactionsSocket.on("user_disconnected", (username) => { removeCursor(username); });
+interactionsSocket.on("update_cursor", cursorContainer.updateCursor);
+interactionsSocket.on("user_disconnected", (username) => { cursorContainer.removeCursor(username); });
+
+// Broadcast the client's cursor position to all other clients
+app.stage.on("mousemove", (event) => {
+  let position = event.data.global;
+  interactionsSocket.emit("my_cursor", { username: socket.id, x: position.x, y: position.y, event: "mousemove" });
+});

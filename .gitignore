@@ -1,3 +1,6 @@
+# Aquarium Online-Specific Directories
+/server/saves/
+
 # MacOS system files
 .DS_Store
 
