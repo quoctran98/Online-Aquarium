@@ -1,5 +1,5 @@
 from server.helper import settings, authenticated_only
-from server.models import Fish
+from server.game_models import Fish
 
 def register_events(socketio, command_queue):
     @socketio.on("connect", namespace="/aquarium")

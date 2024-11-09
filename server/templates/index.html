@@ -13,9 +13,8 @@
     <!-- Sidebar for user management and chat -->
     <div id="sidebar">
         <div>
-            <p> {{ current_user.is_authenticated }} </p>
+            <p>Welcome, {{ current_user.username }}! You have ${{ current_user.money }}.</p>
             {% if current_user.is_authenticated %}
-                <p>Logged in as: {{ current_user.username }}</p>
                 <a href="/logout">Logout</a>
             {% else %}
                 <form id="login-form" class="form-inline" action="/login" method="post">

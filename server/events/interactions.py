@@ -5,12 +5,15 @@ def register_events(socketio, command_queue):
 
     @socketio.on("connect", namespace="/interactions")
     def connect():
-        pass
+        username = request.args.get("username")
+        # Broadcast the connect to all users (for cursor purposes only for now)
+        socketio.emit("user_connected", username, namespace="/interactions")
 
     @socketio.on("disconnect", namespace="/interactions")
     def disconnect():
+        username = request.args.get("username")
         # Broadcast the disconnect to all users (for cursor purposes only for now)
-        socketio.emit("user_disconnected", request.sid, namespace="/interactions")
+        socketio.emit("user_disconnected", username, namespace="/interactions")
     
     # So all users can see items moving around
     @socketio.on("pick_up_item", namespace="/interactions")

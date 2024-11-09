@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     FLASK_SECRET_KEY:str
     ENVIRONMENT:str
 
+    SESSION_FILE_DIR:str
+
     MONGODB_CONNECTION_STRING:str
     USERS_DATABASE:str
 

@@ -238,4 +238,11 @@ class Food extends PIXI.Sprite {
     }
 }
 
+// Coin probably should extend a class for things in the aquarium...
+class Coin extends PIXI.Sprite {
+    constructor(texture) {
+        super(texture);
+    }
+}
+
 export { Fish, Aquarium, Thing, Cursor, CursorContainer };

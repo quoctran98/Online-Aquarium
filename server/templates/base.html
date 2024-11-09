@@ -16,8 +16,8 @@
     <script src="https://pixijs.download/release/pixi.js"></script>
 
     <!-- Custom scripts! -->
+    <script src="{{ url_for('static', filename='js/utils.js')}}" type="module"></script>
     <script src="{{ url_for('static', filename='js/sockets.js')}}" type="module"></script>
-    <script src="{{ url_for('static', filename='js/functions.js')}}" type="module"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}"" />
@@ -58,13 +58,9 @@
     {% endwith %}
     </div>
 
-    <!-- HIDDEN DIV OF USER INFO -->
+    <!-- HIDDEN DIV OF USER (OR GUEST) INFO -->
     <div id="user-info" style="display: none;">
-        {% if current_user.is_authenticated %}
-            {{ dict_to_html(current_user.serialize_public) }}
-        {% else %}
-            {{ dict_to_html(User.guest_user().serialize_public) }}
-        {% endif %}
+        {{ dict_to_html(current_user.serialize_public) }}
     </div>
 
     <!-- CONTENT INSERTED BY DIFFERENT PAGES -->

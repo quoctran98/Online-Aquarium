@@ -1,6 +1,6 @@
 from flask_socketio import emit
 from server.helper import settings
-from server.models import Fish, Aquarium
+from server.game_models import Fish, Aquarium
 from datetime import datetime, timezone
 import time
 

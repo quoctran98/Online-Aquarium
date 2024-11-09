@@ -1,22 +1,30 @@
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_login import LoginManager
+from flask_session import Session
 from datetime import datetime, timezone
 import pytz, json, queue, pickle, os
 
 from server.simulate import aquarium_simulation
 from server.helper import settings, format_number, dict_to_html
-from server.models import User
+from server.user_models import User, GuestUser
 
 def create_app():
 
-    # Set up Flask app and socketio
+    # Set up Flask app
     app = Flask(__name__)
     app.config["SECRET_KEY"] = settings.FLASK_SECRET_KEY
-    socketio = SocketIO(app)
+
+    # Set up Flask-Session
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
+
+    # Set up Flask-SocketIO
+    socketio = SocketIO(app, manage_session=False)
 
     # Set up Flask-Login
     login_manager = LoginManager()
+    login_manager.anonymous_user = GuestUser
     login_manager.login_view = "main.index"
     login_manager.init_app(app)
     @login_manager.user_loader
@@ -43,9 +51,11 @@ def create_app():
     from .events import main as main_events
     from .events import aquarium as aquarium_events
     from .events import interactions as interactions_events
+    from .events import chat as chat_events
     main_events.register_events(socketio, command_queue)
     aquarium_events.register_events(socketio, command_queue)
     interactions_events.register_events(socketio, command_queue)
+    chat_events.register_events(socketio, command_queue)
 
     # Start the aquarium simulation
     # saved_aquarium_fname = os.path.join(settings.AQUARIUM_SAVE_DIR, "20241106_200326_fishbowl.pkl")

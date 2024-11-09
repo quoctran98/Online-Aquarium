@@ -44,32 +44,15 @@ function unblur_background() {
     }
 }
 
-// Parse strings representations to arrays and arrays of arrays
-// ChatGPT wrote this...
-function parse_string_arrays(input_string) {
-        // Handle the special cases of empty arrays
-        if (input_string === '') {
-            return([[]]) // Returning only [] makes it undefined for some reason??
-        } else if (input_string === '[]') {
-            return([[]]);
-        }
-
-        // Check if the input is a single tuple or an array of tuples
-        const isArray = input_string.startsWith('[');
-    
-        // Step 1: Remove the outer brackets if it's an array
-        const cleanedString = isArray ? input_string.replace(/[\[\]]/g, '') : input_string;
-    
-        // Step 2: Split the string by the closing parenthesis followed by a comma if it's an array
-        const tuplesArray = isArray 
-            ? cleanedString.split(/\),\s*\(/).map(tuple => tuple.trim())
-            : [cleanedString]; // If it's a single tuple, wrap it in an array
-    
-        // Step 3: Convert each tuple string into an array of numbers
-        return tuplesArray.map(tuple => {
-            // Remove parentheses and single quotes
-            const cleanedTuple = tuple.replace(/[()']/g, '');
-            // Split by comma and convert to numbers
-            return cleanedTuple.split(',').map(Number);
-        });
+// Parse a group of <p> tags in a <div> tag into a dictionary (JS object I guess?)
+function parse_p_tags(div_id) {
+    let p_tags = $(`#${div_id} p`);
+    let parsed = {};
+    for (let i = 0; i < p_tags.length; i++) {
+        let p = p_tags[i];
+        parsed[p.id] = p.innerText;
+    }
+    return(parsed);
 }
+
+export { format_big_number, set_many_attributes, blur_background, unblur_background, parse_p_tags };
