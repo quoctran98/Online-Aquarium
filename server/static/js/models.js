@@ -1,96 +1,8 @@
-// Fish are fish in the aquarium
-class Fish extends PIXI.Sprite {
-    constructor(texture, fish_input) {
-        super(texture);
-
-        this.label = fish_input.id; // Shared by server and PIXI
-        this.fish_name = fish_input.name; // name is a default property of the Sprite class (deprecated)
-
-        // Fish simulation properties from the server
-        this.type = fish_input.type;
-        this.state = fish_input.state;
-
-        // Bind handleTicker and serverUpdate methods to this object so we can call it externally
-        this.handleTicker = this.handleTicker.bind(this);
-        this.serverUpdate = this.serverUpdate.bind(this);
-
-        // Server position and destination used for movement interpolation
-        this._server_x = fish_input.x;
-        this._server_y = fish_input.y;
-        this._destination_x = fish_input.destination_x;
-        this._destination_y = fish_input.destination_y;
-        this._speed = fish_input.speed;
-        this._server_update_time = fish_input.update_time;
-        this._local_update_time = this.update_time; // last time we updated the fish locally
-
-        // Now we can set properties for the PIXI Sprite object
-        this.x = this.server_x;
-        this.y = this.server_y;
-        // Scale the sprite to the desired length (fish_input.length is length in pixels)
-        this.scale.x = fish_input.length / this.texture.width;
-        this.scale.y = fish_input.length / this.texture.height;
-    }
-
-    handleTicker(ticker) {
-        this.interpolatePosition(ticker.deltaTime);
-        this.animate();
-    }
-
-    animate() {
-        // For now we'll just make the fish face the direction it's moving
-        if (this._destination_x > this.x) {
-            this.scale.x = Math.abs(this.scale.x);
-        } else {
-            this.scale.x = -Math.abs(this.scale.x);
-        }
-    }
-
-    interpolatePosition(deltaTime) {
-        // Using the last known destination and postion,
-        // we can use the speed and time since the last server update to interpolate the fish's position
-        // deltaTime is the time since the last frame in milliseconds (from the ticker) -- not really needed
-        const time_since_update = (Date.now() - this._server_update_time) / 1000; // in seconds
-        const distance_covered = this._speed * time_since_update; // in pixels
-        const total_distance = Math.sqrt((this._destination_x - this._server_x) ** 2 + (this._destination_y - this._server_y) ** 2);
-        const progress = distance_covered / total_distance;
-        if (progress >= 1) {
-            // We have reached the destination
-            this.x = this._destination_x;
-            this.y = this._destination_y;
-        } else {
-            // Interpolate the fish's position
-            this.x = this._server_x + progress * (this._destination_x - this._server_x);
-            this.y = this._server_y + progress * (this._destination_y - this._server_y);
-        }
-    }
-    
-    serverUpdate(fish_input) {
-        // Make sure that this fish_input JSON object is for this fish
-        if (fish_input.id !== this.label) {
-            console.log(`Fish.update() called with wrong fish id: ${fish_input.id}`);
-            return;
-        }
-
-        // Update the fish's data with new fish_input
-        // Maybe we should do it so that only changed fields are sent and we just unpack them here
-        this.state = fish_input.state;
-        this.x = fish_input.x;
-        this.y = fish_input.y;
-        this._server_x = fish_input.x;
-        this._server_y = fish_input.y;
-        this._speed = fish_input.speed;
-        this._destination_x = fish_input.destination_x;
-        this._destination_y = fish_input.destination_y;
-        this._server_update_time = fish_input.update_time;
-    }
-
-}
-
-// Aquariums are (PIXI) Containers for Fish
+// Aquariums are (PIXI) Containers for Things (Fish, Food, Coins, etc.)
 class Aquarium extends PIXI.Container {
     constructor() {
         super();
-
+        
         this.x = 0;
         this.y = 100;
         this.width = 500;
@@ -100,63 +12,168 @@ class Aquarium extends PIXI.Container {
         this.ticker.start();
 
         // Bind all methods that we need to call externally
-        this.addFish = this.addFish.bind(this);
-        this.syncFishes = this.syncFishes.bind(this);
-        this.updateFish = this.updateFish.bind(this);
-        this.removeFish = this.removeFish.bind(this);
+        this.addThing = this.addThing.bind(this);
+        this.removeThing = this.removeThing.bind(this);
+        this.syncEverything = this.syncEverything.bind(this);
+        this.updateThing = this.updateThing.bind(this);
     }
 
-    // Add a fish to the aquarium
-    addFish(fish_data) {
-        const fish_type = fish_data.type;
-        // We should use a sprite sheet for the fish textures...
-        let fish = new Fish(PIXI.Assets.get(`assets/fish/${fish_type}.png`), fish_data);
-        this.addChild(fish);
-        this.ticker.add(fish.handleTicker);
-      }
-
-    // Sync the position and state of all Fish in the aquarium with server data
-    syncFishes(fishes) {
-        const current_fish_ids = this.children.map(f => f.label);
-        const server_fish_ids = fishes.map(f => f.id);
-        
-        // Remove fish that are no longer in the server's list
-        for (let fish_id of current_fish_ids) {
-            if (!server_fish_ids.includes(fish_id)) { this.removeFish(fish_id);}
-        }
-
-        // Add new fish / update existing fish
-        for (let fish_data of fishes) {
-            this.updateFish(fish_data);
-        }
+    insideAquarium(x, y) {
+        return (x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height);
     }
 
-    // Update a single fish when the server broadcasts an update or a sync
-    updateFish(fish_data) {
-        let fish = this.children.find(f => f.label === fish_data.id);
-        if (fish) {
-          fish.serverUpdate(fish_data);
+    addThing(thingInput) {
+        console.log(thingInput);
+        // Loop through class_hierarchy backwards to find the most specific class that has a constructor
+        let thingClass = Thing;
+        for (let class_name of thingInput.class_hierarchy.reverse()) {
+            try {
+                thingClass = eval(class_name);
+                break;
+            } catch (e) {
+                // Do nothing
+            }
+        }
+        const thingTexture = PIXI.Assets.get(thingInput.texture_file);
+        let thing = new thingClass(thingTexture, thingInput);
+        this.addChild(thing);
+        this.ticker.add(thing.handleTicker);
+    }
+
+    removeThing(thingLabel) {
+        let thing = this.children.find(t => t.label === thingLabel);
+        if (thing) {
+            this.removeChild(thing);
         } else {
-          this.addFish(fish_data); // If the fish isn't in the list, add it!
+            console.log(`Thing ${thingLabel} not found in aquarium`);
         }
     }
 
-    // Remove a fish from the aquarium
-    removeFish(fish_id) {
-        let fish = aquarium.children.find(f => f.label === fish_id);
-        if (fish) {
-          this.removeChild(fish);
+    syncEverything(listOfThings) {
+        const currentThingLabels = this.children.map(t => t.label);
+        const serverThingLabels = listOfThings.map(t => t.label);
+        // Remove things that are no longer in the server's list
+        for (let thingLabel of currentThingLabels) {
+            if (!serverThingLabels.includes(thingLabel)) { this.removeThing(thingLabel);}
+        }
+        // Add new things / update existing things
+        for (let thingData of listOfThings) {
+            this.updateThing(thingData);
+        }
+    }
+
+    updateThing(thingData) {
+        let thing = this.children.find(t => t.label === thingData.label);
+        if (thing) {
+            thing.serverUpdate(thingData);
         } else {
-          console.log(`Fish ${fish_id} not found in aquarium`);
+            this.addThing(thingData);
+        }
+    }
+}
+
+// Things are objects that can be added to the aquarium (Fish, Food, Coins, etc.)
+// They all have common methods, so that the server can update them, etc. And a ticker
+// thingInput is a JSON object with properties that are common to all things
+class Thing extends PIXI.Sprite {
+    constructor(texture, thingInput) {
+        // Create a sprite with the given texture
+        super(texture);
+        // Unpack everything from the thingInput JSON object as properties
+        this.label = thingInput.label; // Or else serverUpdate will fail
+        this.serverUpdate(thingInput);
+
+        // Bind external methods :)
+        this.handleTicker = this.handleTicker.bind(this);
+        this.serverUpdate = this.serverUpdate.bind(this);
+
+        // Set the anchor to the center of the sprite and scale it (maintain aspect ratio)
+        this.anchor.set(0.5);
+        // Setting height and width in serverUpdate() later will scale the sprite
+    }
+
+    handleTicker(ticker) {
+        // This is a placeholder for now
+        // It should be overridden by subclasses for things that move
+        this.interpolatePosition(ticker.deltaTime);
+    }
+
+    serverUpdate(thingInput) {
+        // Make sure that this thingInput JSON object is for this Thing
+        if (thingInput.label !== this.label) {
+            console.log(`Thing.update() called with wrong thing label: ${thingInput.label} for ${this.label}`);
+            return;
+        }
+        // Unpack everything from the thingInput JSON object as properties
+        for (let key in thingInput) {
+            this[key] = thingInput[key];
+        }
+        // Also server_x, server_y, should just be the x, y from the server
+        // This is the only exception, I think?
+        this.server_x = thingInput.x;
+        this.server_y = thingInput.y;
+    }
+
+    interpolatePosition(deltaTime) {
+        // Using the last known destination and postion, interpolate the thing's position
+        const time_since_update = (Date.now() - this.update_time) / 1000; // in seconds
+        const distance_covered = this.speed * time_since_update; // in pixels
+        const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
+        const progress = distance_covered / total_distance;
+        if (progress >= 1) {
+            // We have reached the destination
+            this.x = this.destination_x;
+            this.y = this.destination_y;
+        } else {
+            // Interpolate the fish's position
+            this.x = this.server_x + progress * (this.destination_x - this.server_x);
+            this.y = this.server_y + progress * (this.destination_y - this.server_y);
+        }
+    }
+}
+
+
+class Fish extends Thing {
+    constructor(texture, fishInput) {
+        super(texture, fishInput);
+    }
+
+    handleTicker(ticker) {
+        this.interpolatePosition(ticker.deltaTime);
+        this.animate();
+    }
+
+    animate() {
+        // For now we'll just make the fish face the direction it's moving
+        if (this.destination_x > this.x) {
+            this.scale.x = Math.abs(this.scale.x);
+        } else {
+            this.scale.x = -Math.abs(this.scale.x);
         }
     }
 
 }
 
-// Things are objects on the shelf that can be interacted with
-class Thing extends PIXI.Sprite {
-    constructor(texture) {
-        super(texture);
+// Food is individual food items that fish can eat
+class Food extends Thing {
+    constructor(texture, foodInput) {
+        super(texture, foodInput);
+    }
+
+    handleTicker(ticker) {
+        this.interpolatePosition(ticker.deltaTime);
+    }
+}
+
+
+// Coins are collectible items that spawn from fish
+class Coin extends Thing {
+    constructor(texture, coinInput) {
+        super(texture, coinInput);
+    }
+
+    handleTicker(ticker) {
+        this.interpolatePosition(ticker.deltaTime);
     }
 }
 
@@ -231,18 +248,4 @@ class CursorContainer extends PIXI.Container {
       }
 }
 
-// Food is individual food items that fish can eat
-class Food extends PIXI.Sprite {
-    constructor(texture) {
-        super(texture);
-    }
-}
-
-// Coin probably should extend a class for things in the aquarium...
-class Coin extends PIXI.Sprite {
-    constructor(texture) {
-        super(texture);
-    }
-}
-
-export { Fish, Aquarium, Thing, Cursor, CursorContainer };
+export { Fish, Aquarium, Thing, Cursor, CursorContainer, Food, Coin };

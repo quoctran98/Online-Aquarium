@@ -7,7 +7,7 @@ import pytz, json, queue, pickle, os
 
 from server.simulate import aquarium_simulation
 from server.helper import settings, format_number, dict_to_html
-from server.user_models import User, GuestUser
+from server.models.user import User, GuestUser
 
 def create_app():
 

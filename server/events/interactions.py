@@ -1,4 +1,5 @@
 from flask import request
+from flask_login import current_user
 from server.helper import settings, authenticated_only
 
 def register_events(socketio, command_queue):
@@ -23,7 +24,13 @@ def register_events(socketio, command_queue):
     @socketio.on("add_fish", namespace="/interactions")
     def add_fish(data):
         print(f"User added fish {data}")
-        command_queue.put("add_fish")
+        command_queue.put(("add_fish", data))
+
+    @socketio.on("add_food", namespace="/interactions")
+    def add_food(data):
+        username = current_user.username
+        print(f"{username} added food at {data}")
+        command_queue.put(("add_food", data))
 
     @socketio.on("my_cursor", namespace="/interactions")
     def my_cursor(data):
