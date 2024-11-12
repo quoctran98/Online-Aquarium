@@ -2,6 +2,8 @@
 
 In the backend, we have Python classes in order to simulate the Aquarium and its objects for the game. On each loop, every single item in the Aquarium is updated. Changes and updates are sent to the frontend, which has analogous classes to every backend class. The frontend classes are written in JavaScript and will use PixiJS to render the game. **Every class in the backend has a corresponding class in the frontend. Properties (that aren't private) will be the same in both classes.** This is not necessarily the case for methods or private classes, which are mainly used for simulation in the backend or rendering in the frontend. Propeties that are not shared between the backend and frontend classes are marked as such.
 
+Some classes exist only in the backend (this will be specified). In this case, the frontend will implement the most specific class that it can. For example, for `Guppy` extends `Fish` extends `Thing`, the frontend will create a `Fish` object from the backend data. This is sufficient because the the frontend does not need to calculate the specific behavior of a `Guppy` object and properties like `texture_file` wil be sent to the frontend.
+
 ## `Aquarium` class
 
 This is the main class that stores all items within the Aquarium. In the frontend, it extends the `PIXI.Container` class. 
@@ -32,7 +34,7 @@ The *frontend* also has methods: `addThing`, `removeThing`, `updateThing`, and `
 
 ## `Thing` class
 
-This is the base class for all objects in the Aquarium. This class is abstract and should not be instantiated directly. Later objects will inherit from this class. In the frontend, it extends the `PIXI.Sprite` class.
+This is the base class for all objects in the Aquarium. This class is abstract and should not be instantiated directly. Later objects will inherit from this class. In the frontend, it extends the `PIXI.AnimatedSprite` class.
 
 ### Properties
 
@@ -56,15 +58,25 @@ This is the base class for all objects in the Aquarium. This class is abstract a
 
 - `destination_y` (float): The y-coordinate of the object's destination (for objects that move).
 
+- `lifetime` (float): The total number of seconds that the object will exist. This is used to remove the object after a certain amount of time. If this is `None`, the object will not be removed.
+
 - `time_created` (float): The time that the object was created in milliseconds since epoch.
 
-- `texture` (str): The file path to the texture of the object (e.g. `assets/fish/godlfish.png`). This is used in the frontend to create the `PIXI.Sprite` object and render it.
+- `spritesheet_json` (str): The file path to the JSON file that describes the spritesheet of the object (e.g. `assets/things.json`). This is used in the frontend to create the `PIXI.AnimatedSprite` object and render it.
+
+- `default_texture` (str): The name of the default sprite in the spritesheet (e.g. `fish.png`) if this object has no animations. This is used in the frontend to create the `PIXI.AnimatedSprite` object with only one frame.
+
+- `default_animation` (str): The name of the default animation in the spritesheet (e.g. `idle`) if this object has animations. This is used in the frontend to create the `PIXI.AnimatedSprite` object with multiple frames.
+
+- `updated_this_loop` (bool) (*backend only*): A flag that indicates whether the object has been "updated" in the current loop. This is used to determine whether the object should be broadcasted to the frontend.
 
 - `properties_to_broadcast` (list) (*backend only*): A list of names of properties that should be sent to the frontend when the Aquarium state is synced. Make sure nothing non-serializable or sensitive is included here. Child classes should extend this list with their own properties.
 
 - `summarize` (method) (*backend only*): Returns a dictionary of properties in `properties_to_broadcast`. Will also include `update_time` (ms since epoch that this method was called).
 
 ### Methods
+
+- `click` (*backend only*): Called when the object is clicked in the frontend. This is coupled with the `click` event (check `docs/socketio.md` for more information).
 
 - `update` (delta_time: float) (*backend only*): Updates the object's state. This method should be called on every loop of the Aquarium. The `delta_time` parameter is the time since the last loop in milliseconds. This should return a boolean indicating whether the object has changed and should be broadcasted to the frontend.
 
@@ -86,9 +98,9 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 
 - `state` (str): The state of the fish. This can be `idle`, `feeding`, `fleeing`, or `chasing`.
 
-- `hunger` (float) (*backend only*): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = -hunger_decay_rate * speed`
+- `hunger` (float): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = +hunger_rate * speed`
 
-- `hunger_decay_rate` (float) (*backend only*): The rate at which the fish's hunger decreases in hunger units per second.
+- `hunger_rate` (float) (*backend only*): The rate at which the fish's hunger increases. This is a float between 0 and 1.
 
 - `max_speed` (float) (*backend only*): The maximum speed of the fish in pixels per second.
 
@@ -98,13 +110,25 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 
 ### Methods
 
-- `idle` (*backend only*): The fish just swims around randomly.
-
-- `feed` (food: Food or Fish) (*backend only*): The fish swims towards and eats the food.
+- `update` (delta_time: float) (*backend only*): Changed from `Thing.update()`. Generally (unless changed by a subclass), this method will call houskeeping methods like `_calculate_hunger`, `_choose_state` then execute the state-specific methods (e.g. `_idle`, `_feed`, `_flee`). The `delta_time` parameter is the time since the last loop in milliseconds.
 
 - `_calculate_hunger` (delta_time: float) (*backend only*): Updates the hunger level of the fish. The `delta_time` parameter is the time since the last loop in milliseconds.
 
-- `_choose_state` (*backend only*): Changes the state of the fish. Will differ by subclass.
+- `_idle` (delta_time: float) (*backend only*): Called by `update` when the fish is in the `idle` state. Chooses a random destination and moves towards it. If the destination is reached, the fish will choose a new destination.
+
+- `_feed` (delta_time: float) (*backend only*): Called by `update` when the fish is in the `feeding` state. Moves towards the `food` (set by `_choose_state`) and eats it.
+
+- `_flee` (delta_time: float) (*backend only*): Called by `update` when the fish is in the `fleeing` state. Moves away from the `predator` (set by `_choose_state`).
+
+- `_choose_state` (*backend only*): Changes the state of the fish. This method should also set references like `food` and `predator`. Will differ by subclass. Use this to porgram fish-specific behavior.
+
+## `Food` class
+
+Food is an object that can appear in the Aquarium. This class extends the `Thing` class in the backend and does not exist in the frontend. Specific types of food (e.g. `Pellet`, `Algae`) will extend this class.
+
+### Properties
+
+- `nutrition` (float): The amount of hunger that the food will satisfy.
 
 ## `Coin` class
 

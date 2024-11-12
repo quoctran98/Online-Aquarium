@@ -46,7 +46,7 @@ function unblur_background() {
 
 // Parse a group of <p> tags in a <div> tag into a dictionary (JS object I guess?)
 function parse_p_tags(div_id) {
-    let p_tags = $(`#${div_id} p`);
+    let p_tags = $(`#${div_id}`).children("p");
     let parsed = {};
     for (let i = 0; i < p_tags.length; i++) {
         let p = p_tags[i];

@@ -7,7 +7,7 @@ import pytz, json, queue, pickle, os
 
 from server.simulate import aquarium_simulation
 from server.helper import settings, format_number, dict_to_html
-from server.models.user import User, GuestUser
+from server.models.user import User, GuestUser, UserManager
 
 def create_app():
 
@@ -31,8 +31,9 @@ def create_app():
     def load_user(user_id):
         return(User.get_by_user_id(user_id))
                
-    # Define the command queue for the simulation (but don't start it yet)
+    # Define the command queue and user manager for the simulation
     command_queue = queue.Queue()
+    user_manager = UserManager()
 
     # Add funtions from helper.py to the Jinja environment
     # I want to do this in a more elegant way, but this works for now
@@ -60,7 +61,7 @@ def create_app():
     # Start the aquarium simulation
     # saved_aquarium_fname = os.path.join(settings.AQUARIUM_SAVE_DIR, "20241106_200326_fishbowl.pkl")
     # aquarium = pickle.load(open(saved_aquarium_fname, "rb"))
-    socketio.start_background_task(aquarium_simulation, socketio, command_queue)
+    socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager)
 
     # Make sure the app is running with the correct settings
     print(settings)

@@ -1,3 +1,8 @@
+import { interactionsSocket } from "../sockets.js";
+import { parse_p_tags } from "../utils.js";
+
+const userInfo = parse_p_tags("user-info");
+
 // Aquariums are (PIXI) Containers for Things (Fish, Food, Coins, etc.)
 class Aquarium extends PIXI.Container {
     constructor() {
@@ -5,8 +10,8 @@ class Aquarium extends PIXI.Container {
         
         this.x = 0;
         this.y = 100;
-        this.width = 500;
-        this.height = 500;
+        this.width = 960;
+        this.height = 540;
 
         this.ticker = new PIXI.Ticker();
         this.ticker.start();
@@ -18,15 +23,15 @@ class Aquarium extends PIXI.Container {
         this.updateThing = this.updateThing.bind(this);
     }
 
-    insideAquarium(x, y) {
-        return (x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height);
+    insideAquarium(object) {
+        return object.x >= this.x && object.x <= this.x + this.width && object.y >= this.y && object.y <= this.y + this.height;
     }
 
     addThing(thingInput) {
-        console.log(thingInput);
         // Loop through class_hierarchy backwards to find the most specific class that has a constructor
         let thingClass = Thing;
-        for (let class_name of thingInput.class_hierarchy.reverse()) {
+        const reversedClassHierarchy = thingInput.class_hierarchy.reverse();
+        for (let class_name of reversedClassHierarchy) {
             try {
                 thingClass = eval(class_name);
                 break;
@@ -34,8 +39,7 @@ class Aquarium extends PIXI.Container {
                 // Do nothing
             }
         }
-        const thingTexture = PIXI.Assets.get(thingInput.texture_file);
-        let thing = new thingClass(thingTexture, thingInput);
+        let thing = new thingClass(thingInput);
         this.addChild(thing);
         this.ticker.add(thing.handleTicker);
     }
@@ -73,12 +77,33 @@ class Aquarium extends PIXI.Container {
 }
 
 // Things are objects that can be added to the aquarium (Fish, Food, Coins, etc.)
-// They all have common methods, so that the server can update them, etc. And a ticker
-// thingInput is a JSON object with properties that are common to all things
-class Thing extends PIXI.Sprite {
-    constructor(texture, thingInput) {
-        // Create a sprite with the given texture
-        super(texture);
+// Check /docs/classes.md for more information
+class Thing extends PIXI.AnimatedSprite {
+    constructor(thingInput) {
+
+        // Create an AnimatedSprite with a single texture or an animation
+        const hasTexture = thingInput.default_texture !== null;
+        const hasAnimation = thingInput.default_animation !== null;
+        if (!hasTexture && !hasAnimation) {
+            console.log("Thing created without texture or animation");
+            return;
+        } else if (hasAnimation) {
+            // Create a sprite with the given animation
+            const animations = PIXI.Assets.get(thingInput.spritesheet_json).data.animations;
+            const animation = animations[thingInput.default_animation];
+            super(animation.map(frame => PIXI.Texture.from(frame)));
+            // Save the list of animations for later, then play the default animation
+            this.animations_list = animations;
+            this.play();
+        } else {
+            // Create a sprite with the given texture
+            super([PIXI.Assets.get(thingInput.default_texture)]);
+        }
+
+        // Wait until we've instantiated the sprite to save properties
+        self.hasTexture = hasTexture;
+        self.hasAnimation = hasAnimation;
+
         // Unpack everything from the thingInput JSON object as properties
         this.label = thingInput.label; // Or else serverUpdate will fail
         this.serverUpdate(thingInput);
@@ -87,9 +112,10 @@ class Thing extends PIXI.Sprite {
         this.handleTicker = this.handleTicker.bind(this);
         this.serverUpdate = this.serverUpdate.bind(this);
 
-        // Set the anchor to the center of the sprite and scale it (maintain aspect ratio)
+        // Set the anchor to the center of the sprite
+        // Scaling is handled by setting height and width (properties of PIXI.Sprite)
         this.anchor.set(0.5);
-        // Setting height and width in serverUpdate() later will scale the sprite
+
     }
 
     handleTicker(ticker) {
@@ -132,7 +158,6 @@ class Thing extends PIXI.Sprite {
     }
 }
 
-
 class Fish extends Thing {
     constructor(texture, fishInput) {
         super(texture, fishInput);
@@ -140,112 +165,88 @@ class Fish extends Thing {
 
     handleTicker(ticker) {
         this.interpolatePosition(ticker.deltaTime);
-        this.animate();
+        this.handleAnimation();
     }
 
-    animate() {
-        // For now we'll just make the fish face the direction it's moving
-        if (this.destination_x > this.x) {
-            this.scale.x = Math.abs(this.scale.x);
+    handleAnimation() {
+
+        // Tint the fish redder if it's hungry
+        if (this.hunger > 50) {
+            this.tint = 0xff0000;
         } else {
-            this.scale.x = -Math.abs(this.scale.x);
+            this.tint = 0xffffff;
         }
-    }
 
+        // Choose the fish's animation based on it's state (same string)
+        const animation = this.animations_list[this.state];
+        if ((this.animation !== animation) && (animation !== undefined)) {
+            this.textures = animation.map(frame => PIXI.Texture.from(frame));
+            this.animation = animation;
+        }
+
+        // Scale the animation speed based on the fish's speed
+        this.animationSpeed = 0.1 + 0.1 * this.speed / 100;
+    
+        // Flip the fish based on its direction
+        if (this.destination_x > this.server_x) {
+            this.scale.x = -Math.abs(this.scale.x);
+        } else {
+            this.scale.x = Math.abs(this.scale.x);
+        }
+
+        // Slightly tilt the fish up/down (no more than 10˚)
+        const angle = Math.atan2(this.destination_y - this.server_y, this.destination_x - this.server_x);
+        const squareComponentOfAngle = 1 - (Math.cos(angle) ** 2);
+        const tilt = squareComponentOfAngle * Math.PI / 9;
+        const upOrDown = Math.sin(angle) > 0 ? 1 : -1;
+        const leftOrRight = Math.cos(angle) > 0 ? 1 : -1;
+        this.rotation = upOrDown * tilt * leftOrRight;
+
+        // Play the animation
+        this.play();
+
+    }
 }
 
-// Food is individual food items that fish can eat
+class Coin extends Thing {
+    constructor(texture, coinInput) {
+        super(texture, coinInput);
+
+        // Higlight the coin when the mouse is over it
+        this.interactive = true;
+        this.buttonMode = true;
+        this.on("pointerover", () => {
+            this.tint = 0x00ff00;
+        });
+        this.on("pointerout", () => {
+            this.tint = 0xffffff;
+        });
+
+        // Send a "click" event to the server when the coin is clicked
+        this.on("pointerdown", () => {
+            interactionsSocket.emit("click", { 
+                username: userInfo.username,
+                label: this.label,
+                timestamp: Date.now()
+            });
+        });
+    }
+
+    handleTicker(ticker) {
+        this.interpolatePosition(ticker.deltaTime);
+    }
+}
+
+
+// Not really different from Thing, but it's good to explicitly define it
 class Food extends Thing {
     constructor(texture, foodInput) {
         super(texture, foodInput);
     }
-
+    
     handleTicker(ticker) {
         this.interpolatePosition(ticker.deltaTime);
     }
 }
 
-
-// Coins are collectible items that spawn from fish
-class Coin extends Thing {
-    constructor(texture, coinInput) {
-        super(texture, coinInput);
-    }
-
-    handleTicker(ticker) {
-        this.interpolatePosition(ticker.deltaTime);
-    }
-}
-
-// Cursors are other players' cursors (will also show them picking up items)
-class Cursor extends PIXI.Sprite {
-    constructor(texture, cursor_input) {
-        super(texture);
-        this.label = cursor_input.username;
-        this.username = cursor_input.username; // Just in case I forgot to change something
-        this.scale.x = 30 / this.texture.width;
-        this.scale.y = 30 / this.texture.height;
-        this.anchor.set(0.5);
-    }
-
-    serverUpdate(cursor_input) {
-        // Make sure that this cursor_input JSON object is for this cursor
-        if (cursor_input.username !== this.label) {
-            console.log(`Cursor.update() called with wrong cursor username: ${cursor_input.username}`);
-            return;
-        } else {
-            this.x = cursor_input.x;
-            this.y = cursor_input.y;
-        }
-    }
-}
-
-// CursorContainer is a container for all other players' cursors (this is very similar to the Aquarium class)
-class CursorContainer extends PIXI.Container {
-    constructor(username) {
-        super();
-
-        // The username is the socket ID for now :)
-        // Mayber user data should be some global object that we can access from anywhere
-        this.username = username;
-
-        // Bind all methods that we (might) need to call externally
-        this.addCursor = this.addCursor.bind(this);
-        this.updateCursor = this.updateCursor.bind(this);
-        this.removeCursor = this.removeCursor.bind(this);
-
-    }
-
-    addCursor(cursor_data) {
-        // Don't add if it's the current user's cursor
-        if (cursor_data.username === this.username) { return; }
-        let cursor = new Cursor(PIXI.Assets.get("assets/cursor.png"), cursor_data);
-        this.addChild(cursor);
-        return(cursor);
-      }
-
-    updateCursor(cursor_data) {
-        // Don't update if it's the current user's cursor
-        if (cursor_data.username === this.username) { return; }
-        let cursor = this.children.find(c => c.label === cursor_data.username);
-        if (!cursor) { // If the cursor isn't in the list, add it!
-            cursor = this.addCursor(cursor_data); 
-        }
-        cursor.serverUpdate(cursor_data);
-    }
-
-    removeCursor(username) {
-        // This is broken right now
-        console.log(`This session's socket ID: ${this.username}`);
-        console.log(`Cursor ID to remove: ${username}`);
-        console.log(`Cursors: ${this.children.map(c => c.label)}`);
-        let cursor = this.children.find(c => c.label === username);
-        if (cursor) {
-            this.removeChild(cursor);
-        } else {
-          console.log(`Cursor ${username} not found in cursors`);
-        }
-      }
-}
-
-export { Fish, Aquarium, Thing, Cursor, CursorContainer, Food, Coin };
+export { Aquarium };

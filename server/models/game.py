@@ -2,7 +2,7 @@ from server.helper import settings, aquarium_types
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
-    def __init__(self, width=800, height=600):
+    def __init__(self, width=960, height=540):
         self.width = width
         self.height = height
         self.objects = {}
@@ -36,11 +36,15 @@ class Thing():
         self.speed = 0
         self.destination_x = 0
         self.destination_y = 0
+        self.lifetime = None # Seconds, None for infinite
         self.time_created = datetime.datetime.now().timestamp() * 1000
-        self.texture_file = "assets/placeholders/nothing.png"
+        self.spritesheet_json = None
+        self.default_texture = None
+        self.default_animation = None
+        self.updated_this_loop = False
         self.properties_to_broadcast = [
             "label", "class_hierarchy", "x", "y", "speed", "destination_x", "destination_y",
-            "width", "height", "time_created", "texture_file"
+            "width", "height", "time_created", "spritesheet_json", "default_texture", "default_animation"
         ]
 
     def update(self, delta_time):
@@ -51,6 +55,12 @@ class Thing():
     def remove(self):
         self.aquarium.objects.pop(self.label)
 
+    def click(self):
+        # Placeholder for child classes to override
+        # Will be called by in the command queue when a user clicks on the object
+        # This will occur BEFORE the update loop (and the update loop will call update() again)
+        pass
+
     def _move_toward_destination(self, delta_time):
         # Could be optimized by only calculating the direction once (but that's another property to keep track of)
         direction = math.atan2(self.destination_y - self.y, self.destination_x - self.x)
@@ -60,6 +70,12 @@ class Thing():
         new_y = max(0, min(new_y, self.aquarium.height))
         self.x = new_x
         self.y = new_y
+
+    def _calculate_lifetime(self):
+        if self.lifetime is None:
+            return
+        if (datetime.datetime.now().timestamp() * 1000 - self.time_created) > self.lifetime * 1000:
+            self.remove()
 
     def _is_colliding(self, other):
         # Check if the bounding boxes of two objects are overlapping
@@ -100,8 +116,10 @@ class Fish(Thing):
         
         # Redefine properties from Thing
         super().__init__(aquarium)
-        self.class_hierarchy = ["Thing", "Fish"]
-        self.texture_file = "assets/placeholders/fish.png"
+        self.class_hierarchy.append("Fish")
+        self.spritesheet_json = "assets/things.json"
+        self.default_texture = "fish.png"
+        self.default_animation = None
         self.width = 20
         self.height = 20
         self.properties_to_broadcast.extend([
@@ -112,7 +130,7 @@ class Fish(Thing):
         self.fish_name = "unnamed_fish"
         self.state = "idle" # idle, feeding, fleeing,
         self.hunger = 0.0 # 0 to 1
-        self.hunger_decay_rate = 0.01 # Per second
+        self.hunger_rate = 0.01 # Per second
         self.max_speed = 0 # Pixels per second
 
         # References for when the fish is in a certain state
@@ -120,53 +138,53 @@ class Fish(Thing):
         self.predator = None # Fish object
 
     def _calculate_hunger(self, delta_time):
-        self.hunger -= self.hunger_decay_rate * delta_time.total_seconds()
+        self.hunger += self.hunger_rate * delta_time.total_seconds()
         self.hunger = max(0, min(self.hunger, 1))
 
     def _choose_state(self):
         # Placeholder for child classes to override with fish-specific behavior
         self.state = "idle"
     
-    def __idle(self, delta_time) -> bool:
+    def __idle(self, delta_time):
         # Default idle behavior is to move around randomly
         has_new_destination = False
         if math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
             # If the fish is within 10 pixels of its destination, choose a new one
-            self.destination_x = random.uniform(0, self.aquarium.width)
-            self.destination_y = random.uniform(0, self.aquarium.height)
+            self.destination_x = random.uniform(0 + self.width, self.aquarium.width - self.width)
+            self.destination_y = random.uniform(0 + self.height, self.aquarium.height - self.height)
             self.speed = random.uniform(self.max_speed/4, self.max_speed/2)
             has_new_destination = True
+            self.updated_this_loop = True
         # Move the fish towards its destination
         self._move_toward_destination(delta_time)
-        return(has_new_destination)
 
-    def __feeding(self, delta_time) -> bool:
+    def __feeding(self, delta_time):
+        # Always set updated_this_loop to True for smoother frontend updates
+        self.updated_this_loop = True
         # If the food is gone, return to idle state
-        if self.food is None or self.food not in self.aquarium.objects:
+        if (self.food is None) or (self.food not in self.aquarium.objects.values()):
             self.state = "idle"
             self.food = None
-            return(True)
-        # If the fish has reached the food, eat it
+            self.updated_this_loop = True
         if self._is_colliding(self.food): 
             self.food.remove()
-            self.hunger = min(0, max(1, self.hunger + self.food.nutrition))
+            self.hunger = max(0, min(1, self.hunger - self.food.nutrition))
             self.state = "idle"
             self.food = None
-            return(True)
         # Otherwise, move towards the food
         else:
             self.destination_x = self.food.x
             self.destination_y = self.food.y
             self.speed = self.max_speed
             self._move_toward_destination(delta_time)
-            return(False) # No state change, still feeding
 
-    def __fleeing(self, delta_time) -> bool:
+    def __fleeing(self, delta_time):
+        # Always set updated_this_loop to True for smoother frontend updates
+        self.updated_this_loop = True
         # If the predator is gone, return to idle state
-        if self.predator is None or self.predator not in self.aquarium.objects:
+        if (self.predator is None) or (self.predator not in self.aquarium.objects.values()):
             self.state = "idle"
             self.predator = None
-            return(True)
         # Otherwise, move away from the predator
         else:
             angle_away = math.atan2(self.y - self.predator.y, self.x - self.predator.x)
@@ -176,10 +194,10 @@ class Fish(Thing):
             self.destination_y = max(0, min(self.destination_y, self.aquarium.height))
             self.speed = self.max_speed
             self._move_toward_destination(delta_time)
-            return(False) # No state change, still fleeing
 
     def update(self, delta_time) -> bool:
         # Housekeeping stuff)
+        self.updated_this_loop = False
         self._calculate_hunger(delta_time)
         self._choose_state()
         # State-specific behavior
@@ -198,8 +216,10 @@ class Food(Thing):
 
         # Redefine properties from Thing
         super().__init__(aquarium)
-        self.class_hierarchy = ["Thing", "Food"]
-        self.texture_file = "assets/pellet.png"
+        self.class_hierarchy.append("Food")
+        self.spritesheet_json = "assets/things.json"
+        self.default_texture = "pellet.png"
+        self.default_animation = None
         self.width = 10
         self.height = 10
         self.properties_to_broadcast.extend([
@@ -207,26 +227,34 @@ class Food(Thing):
         ])
 
         # Set the food-specific properties
-        self.nutrition = 0.1
+        self.nutrition = 0.1 # 0 to 1
+        self.lifetime = 60 # Seconds
 
         # Make the food fall straight down
         self.x = x
         self.y = y
         self.destination_x = self.x
-        self.destination_y = aquarium.height
-        self.speed = 50 # Pixels per second
+        self.destination_y = aquarium.height - self.height
+        self.speed = 20 # Pixels per second
+
+    def update(self, delta_time):
+        self.updated_this_loop = False
+        self._move_toward_destination(delta_time)
+        self._calculate_lifetime()
 
 class Coin(Thing):
     def __init__(self, aquarium, x=None, y=None):
 
         # Redefine properties from Thing
         super().__init__(aquarium)
-        self.class_hierarchy = ["Thing", "Coin"]
-        self.texture_file = "assets/coin.png"
+        self.class_hierarchy.append("Coin")
+        self.spritesheet_json = "assets/things.json"
+        self.default_texture = "coin.png"
+        self.default_animation = None
         self.width = 20
         self.height = 20
         self.properties_to_broadcast.extend([
-            "value", "lifetime"
+            "value"
         ])
 
         # Set the coin-specific properties
@@ -237,15 +265,15 @@ class Coin(Thing):
         self.x = x
         self.y = y
         self.destination_x = x
-        self.destination_y = aquarium.height
+        self.destination_y = aquarium.height - self.height
         self.speed = 100 # Pixels per second
 
     def update(self, delta_time):
-        # Move the coin towards its destination
+        self.updated_this_loop = False
         self._move_toward_destination(delta_time)
-        self.lifetime -= delta_time.total_seconds()
-        if self.lifetime < 0:
-            self.remove()
-            return(True)
-        else:
-            return(False)
+        self._calculate_lifetime()
+
+    def click(self, username):
+        print(f"{username} picked up coin worth {self.value}")
+        self.remove()
+        

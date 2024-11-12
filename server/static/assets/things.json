@@ -1,0 +1,36 @@
+{"frames": {
+
+"coin.png":
+{
+	"frame": {"x":0,"y":0,"w":85,"h":84},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":84},
+	"sourceSize": {"w":85,"h":84}
+},
+"fish.png":
+{
+	"frame": {"x":0,"y":84,"w":106,"h":55},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":106,"h":55},
+	"sourceSize": {"w":106,"h":55}
+},
+"pellet.png":
+{
+	"frame": {"x":0,"y":139,"w":72,"h":72},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":72,"h":72},
+	"sourceSize": {"w":72,"h":72}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "things.png",
+	"format": "RGBA8888",
+	"size": {"w":106,"h":211},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:11a2aeea053ce1c51222de62f0b44597:bd22e2ebc21e9a042a0dc94afdab62fa:a7ffc03d719097afff7952cb633fb6e1$"
+}
+}

@@ -2,8 +2,11 @@
 
 {% block content %}
 
-<script src="{{ url_for('static', filename='js/models.js')}}" type="module"></script>
-<script src="{{ url_for('static', filename='js/aquarium.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/models/gameModels.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/models/interactionModels.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/apps/aquariumApp.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/apps/cursorApp.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/chat.js')}}" type="module"></script>
 
 <div id="full-screen-container" class="gets-blurred"> 
 
@@ -12,8 +15,8 @@
 
     <!-- Sidebar for user management and chat -->
     <div id="sidebar">
-        <div>
-            <p>Welcome, {{ current_user.username }}! You have ${{ current_user.money }}.</p>
+        <div id="sidebar-header">
+            <p>Welcome, {{ current_user.username }}! You have <span class="user-money">${{ current_user.money }}</span>.</p>
             {% if current_user.is_authenticated %}
                 <a href="/logout">Logout</a>
             {% else %}
@@ -47,15 +50,21 @@
         <hr>
 
         
-        <div class="tab-container">
+        <div class="tab-container" id="sidebar-tabs">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab(event, 'tab1')">Tab 1</button>
                 <button class="tab-button" onclick="showTab(event, 'tab2')">Tab 2</button>
                 <button class="tab-button" onclick="showTab(event, 'tab3')">Tab 3</button>
             </div>
         
-            <div class="tab-content active" id="tab1">
-                <p>This is content for Tab 1.</p>
+            <div class="tab-content active" id="chat-tab">
+                <div id="chat-container">
+                    <div id="chat-messages"></div>
+                    <form id="chat-form">
+                        <input type="text" name="message" id="message" placeholder="Type a message..." style="flex:1">
+                        <button type="submit" class="btn btn-primary"><i class="bi-send-fill"></i></button>
+                    </form>
+                </div>
             </div>
             <div class="tab-content" id="tab2">
                 <p>This is content for Tab 2.</p>

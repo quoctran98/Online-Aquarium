@@ -28,12 +28,18 @@ Clients will connect on page load.
 
 - `user_disconnected` - Broadcasts the username of a client that has disconnected from the server. The message just the username of the client that disconnected. For now usernames are just the socket id.
 
-- `feed` - Broadcasts a message to feed the fishes in the aquarium. The message is a JSON object with the following fields:
+- `click` - The client will send a message to the server when they click on an item in the aquarium. The message is a JSON object with the following fields. The whole JSON object is put into the command queue for the main aquarium simulation loop to process.
+    - `username` - The username of the client sending the message.
+    - `label` - The label of the item clicked on.
+    - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
+
+- `feed` - Broadcasts a message to feed the fishes in the aquarium. The message is a JSON object with the following fields. The whole JSON object is put into the command queue for the main aquarium simulation loop to process.
     - `username` - The username of the client sending the message.
     - `food` - The type of food to feed the fishes (either "pellet" or "flake").
     - `x` - The x-coordinate of the food drop.
     - `y` - The y-coordinate of the food drop.
 
+- `update_user` - Broadcasts the current state of a single user in the aquarium as a JSON object from the `summarize_public` method of the `User` class.
 
 ### `interactions-auth` Namespace
 

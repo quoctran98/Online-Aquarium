@@ -1,7 +1,8 @@
-import { socket, aquariumSocket, interactionsSocket } from "./sockets.js";
-import { Aquarium, Thing, Fish, Coin, CursorContainer } from "./models.js";
+import { socket, aquariumSocket, interactionsSocket } from "../sockets.js";
+import { Aquarium } from "../models/gameModels.js";
+import { parse_p_tags } from "../utils.js";
 
-// From https://coderevue.net/posts/scale-to-fit-screen-pixijs/
+const userInfo = parse_p_tags("user-info");
 
 const app = new PIXI.Application();
 await app.init({ 
@@ -11,17 +12,12 @@ await app.init({
 });
 app.stage.interactive = true;
 $("#aquarium-container").get(0).appendChild(app.canvas);
-console.log(app.screen.width, app.screen.height);
 
 // Preload the goldfish image (we'll do this for all the fish later or use a spritesheet)
-await PIXI.Assets.load("assets/placeholders/nothing.png");
-await PIXI.Assets.load("assets/placeholders/fish.png");
-await PIXI.Assets.load("assets/fish/goldfish.png");
-await PIXI.Assets.load("assets/fish/guppy.png");
+await PIXI.Assets.load("assets/background.png");
+await PIXI.Assets.load("assets/things.json");
+await PIXI.Assets.load("assets/fish/clownfish.json");
 await PIXI.Assets.load("assets/shelf/fish_flakes.png");
-await PIXI.Assets.load("assets/cursor.png");
-await PIXI.Assets.load("assets/coin.png");
-await PIXI.Assets.load("assets/pellet.png");
 
 // Render the shelf (just a brown rectangle) on load
 let shelf = new PIXI.Graphics()
@@ -55,42 +51,27 @@ function onDragEnd() {
 }
 app.stage.addChild(flakes);
 
-// Draw the aquarium (do this BEFORE adding the aquarium container)
-let water = new PIXI.Graphics()
-  .rect(0, 100, 800, 600)
-  .fill(0x00FFFF)
-app.stage.addChild(water);
+// Draw the aquarium (load the background and make sure it's 960x540)
+let background = new PIXI.Sprite(PIXI.Assets.get("assets/background.png"));
+background.scale.x = 960 / background.texture.width;
+background.scale.y = 540 / background.texture.height;
+background.x = 0;
+background.y = 100;
+app.stage.addChild(background);
 
 // Make an aquarium container :)
 let aquarium = new Aquarium();
 app.stage.addChild(aquarium);
 
-// send a message to the server when the user clicks
-// just for testing purposes
-$(document).click(function(e) {
-  const relativeX = e.pageX - $("#aquarium-container").offset().left;
-  const relativeY = e.pageY - $("#aquarium-container").offset().top;
-  console.log(`Clicked at (${relativeX}, ${relativeY})`);
-  interactionsSocket.emit("add_food", { x: relativeX, y: relativeY });
+// Add food to the aquarium where the user clicks
+app.stage.on("click", (event) => {
+  let aquariumPosition = aquarium.toLocal(event.data.global);
+  interactionsSocket.emit("feed", { x: aquariumPosition.x, y: aquariumPosition.y });
 });
 
 // Register event listeners for the aquarium socket
 aquariumSocket.on("sync_everything", aquarium.syncEverything);
 aquariumSocket.on("update_thing", aquarium.updateThing);
-
-// Render all other clients' cursors (in a separate container)
-let cursorContainer = new CursorContainer(socket.id);
-app.stage.addChild(cursorContainer);
-
-// Register event listeners for the interactions socket
-interactionsSocket.on("update_cursor", cursorContainer.updateCursor);
-interactionsSocket.on("user_disconnected", (username) => { cursorContainer.removeCursor(username); });
-
-// Broadcast the client's cursor position to all other clients
-app.stage.on("mousemove", (event) => {
-  let position = event.data.global;
-  interactionsSocket.emit("my_cursor", { username: socket.id, x: position.x, y: position.y, event: "mousemove" });
-});
 
 // Broadcast all the children of Aquarium when the space bar is pressed (for debugging)
 $(document).keypress(function(event) {
@@ -98,6 +79,18 @@ $(document).keypress(function(event) {
     console.log("Children of Aquarium:");
     for (let child of aquarium.children) {
       console.log(child);
+    }
+  }
+});
+
+// Update user info on the "update_user" event
+interactionsSocket.on("update_user", (newUserInfo) => {
+  if (newUserInfo.username == userInfo.username) {
+    $(".user-money").text(`$${newUserInfo.money}`);
+    // Update <p> tags in "user-info" (ids are the same as the keys in the user object)
+    const hiddenUserInfo = $("#user-info");
+    for (let key in newUserInfo) {
+      hiddenUserInfo.find(`#${key}`).text(newUserInfo[key]);
     }
   }
 });

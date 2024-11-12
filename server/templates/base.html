@@ -60,7 +60,7 @@
 
     <!-- HIDDEN DIV OF USER (OR GUEST) INFO -->
     <div id="user-info" style="display: none;">
-        {{ dict_to_html(current_user.serialize_public) }}
+        {{ dict_to_html(current_user.summarize_public) | safe }}
     </div>
 
     <!-- CONTENT INSERTED BY DIFFERENT PAGES -->

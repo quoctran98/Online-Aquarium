@@ -21,16 +21,16 @@ def register_events(socketio, command_queue):
     def pick_up_item(data):
         print(f"User picked up item {data}")
 
-    @socketio.on("add_fish", namespace="/interactions")
-    def add_fish(data):
-        print(f"User added fish {data}")
-        command_queue.put(("add_fish", data))
+    @socketio.on("click", namespace="/interactions")
+    def click(data):
+        username = current_user.username
+        command_queue.put(("click", data))
 
-    @socketio.on("add_food", namespace="/interactions")
-    def add_food(data):
+    @socketio.on("feed", namespace="/interactions")
+    def feed(data):
         username = current_user.username
         print(f"{username} added food at {data}")
-        command_queue.put(("add_food", data))
+        command_queue.put(("feed", data))
 
     @socketio.on("my_cursor", namespace="/interactions")
     def my_cursor(data):

@@ -55,15 +55,15 @@ class User(UserMixin):
             return(True)
         
     def save(self):
-        mongo_users_collection.update_one({"user_id": self.user_id}, {"$set": self.serialize_private})
+        mongo_users_collection.update_one({"user_id": self.user_id}, {"$set": self.summarize_private})
 
     @property
-    def serialize_private(self):
+    def summarize_private(self):
         # Return all properties of the user (for saving to MongoDB)
         return({key: value for key, value in self.__dict__.items() if key not in ["_id"]})
     
     @property
-    def serialize_public(self):
+    def summarize_public(self):
         return({
             "username": self.username,
             "user_id": self.user_id,
@@ -91,9 +91,21 @@ class GuestUser(AnonymousUserMixin):
         return(self.user_id) # Hopefully won't cause any issues...
 
     @property
-    def serialize_public(self):
+    def summarize_public(self):
         return({
             "username": self.username,
             "user_id": self.user_id,
             "money": self.money
         })
+    
+# This is a weird abstract class to manage users from within the simulation
+# I don't think I really need it, but it's more clean?
+class UserManager():
+    def __init__(self):
+        pass
+
+    def get_by_username(self, username):
+        user = User.get_by_username(username)
+        if user:
+            return(user)
+        return(GuestUser())
