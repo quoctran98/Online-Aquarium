@@ -32,6 +32,10 @@ This is the main class that stores all items within the Aquarium. In the fronten
 
 The *frontend* also has methods: `addThing`, `removeThing`, `updateThing`, and `syncEverything`. These methods are used to add, remove, update, and sync `Thing` objects in the Aquarium, when data from socketio is received. They use the data sent from the `summarize` method of `Thing` objects.
 
+## `Tool` class
+
+Tools are items that exist on a shelf above the Aquarium. These objects are static. They only exist in the frontend and extend the `PIXI.Sprite` class.
+
 ## `Thing` class
 
 This is the base class for all objects in the Aquarium. This class is abstract and should not be instantiated directly. Later objects will inherit from this class. In the frontend, it extends the `PIXI.AnimatedSprite` class.

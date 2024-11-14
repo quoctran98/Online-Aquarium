@@ -1,7 +1,7 @@
 from flask_socketio import emit
 from server.helper import settings
 from server.models.game import Fish, Aquarium, Coin, Food
-from server.models.fish import Clownfish
+from server.models.fish import Clownfish, Guppy
 from server.models.user import User
 from datetime import datetime, timezone
 import time, random
@@ -13,7 +13,7 @@ BACKUP_FREQUENCY = 300 # seconds per backup
 
 # This is the main game/simulation loop
 # Either pass an existing aquarium or create a new one
-def aquarium_simulation(socketio, command_queue, user_manager, aquarium = Aquarium()):
+def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
     
     last_loop = datetime.now(timezone.utc)
     last_sync = datetime.now(timezone.utc)
@@ -24,6 +24,9 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium = Aquari
     aquarium.objects[clownfish.label] = clownfish
     clownfish2 = Clownfish(aquarium)
     aquarium.objects[clownfish2.label] = clownfish2
+    for _ in range(10):
+        guppy = Guppy(aquarium)
+        aquarium.objects[guppy.label] = guppy
 
     while True:
 

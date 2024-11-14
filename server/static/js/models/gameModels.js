@@ -5,13 +5,14 @@ const userInfo = parse_p_tags("user-info");
 
 // Aquariums are (PIXI) Containers for Things (Fish, Food, Coins, etc.)
 class Aquarium extends PIXI.Container {
-    constructor() {
+    constructor({ x, y, width, height }) {
         super();
+        this.sortableChildren = true;
         
-        this.x = 0;
-        this.y = 100;
-        this.width = 960;
-        this.height = 540;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
 
         this.ticker = new PIXI.Ticker();
         this.ticker.start();
@@ -40,7 +41,8 @@ class Aquarium extends PIXI.Container {
             }
         }
         let thing = new thingClass(thingInput);
-        this.addChild(thing);
+        const isFish = thing.class_hierarchy.includes("Fish");
+        this.addChildAt(thing, isFish ? this.children.length : 0);
         this.ticker.add(thing.handleTicker);
     }
 

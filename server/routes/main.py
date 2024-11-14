@@ -7,6 +7,10 @@ import random
 
 main = Blueprint("main", __name__)
 
+@main.route("/robots.txt")
+def robots():
+    return(render_template("robots.txt"))
+
 @main.route("/")
 def index():
     return(render_template("index.html"))
@@ -15,7 +19,3 @@ def index():
 @main.route("/assets/<path:path>")
 def assets(path):
     return(send_from_directory("static/assets", path))
-
-@main.route("/robots.txt")
-def robots():
-    return(render_template("robots.txt"))

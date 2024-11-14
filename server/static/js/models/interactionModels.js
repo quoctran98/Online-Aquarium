@@ -1,3 +1,48 @@
+import { changeCursor, resetCursor } from "../utils.js";
+
+// Tools are things that are on the shelf. Selecting them will change how the cursor interacts with the aquarium.
+class Tool extends PIXI.Sprite {
+    constructor(textureURL, thisUser) {
+        super(PIXI.Assets.get(textureURL));
+        this.textureURL = textureURL;
+        this.eventMode = "static"
+
+        // Highlight the tool when the cursor is over it
+        this.on("pointerover", () => {
+            this.tint = 0xaaaaaa;
+        });
+        this.on("pointerout", () => {
+            this.tint = 0xffffff;
+        });
+
+        // Select the tool when it's clicked
+        this.on("pointerdown", () => {
+
+            // If the tool is already selected, deselect it
+            if (thisUser.tool_selected == this) {
+                // Deselect the tool
+                thisUser.tool_selected = null;
+                resetCursor();
+                return;
+            }
+
+            // Select the tool
+            thisUser.tool_selected = this;
+            // Change the cursor to the tool's image (maintain aspect ratio)
+            let cursorWidth;
+            let cursorHeight;
+            if (this.width > this.height) {
+                cursorWidth = 32;
+                cursorHeight = 32 * (this.height / this.width);
+            } else {
+                cursorHeight = 32;
+                cursorWidth = 32 * (this.width / this.height);
+            }
+            changeCursor("/static/"+this.textureURL, cursorWidth, cursorHeight);
+        });
+    }
+}
+
 // Cursors are other players' cursors (will also show them picking up items)
 class Cursor extends PIXI.Sprite {
     constructor(texture, cursor_input) {
@@ -62,4 +107,4 @@ class CursorContainer extends PIXI.Container {
       }
 }
 
-export { CursorContainer };
+export { Tool, CursorContainer };

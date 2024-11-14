@@ -8,6 +8,7 @@ import pytz, json, queue, pickle, os
 from server.simulate import aquarium_simulation
 from server.helper import settings, format_number, dict_to_html
 from server.models.user import User, GuestUser, UserManager
+from server.models.game import Aquarium, Store, StoreItem
 
 def create_app():
 
@@ -31,16 +32,27 @@ def create_app():
     def load_user(user_id):
         return(User.get_by_user_id(user_id))
                
-    # Define the command queue and user manager for the simulation
-    command_queue = queue.Queue()
-    user_manager = UserManager()
-
     # Add funtions from helper.py to the Jinja environment
     # I want to do this in a more elegant way, but this works for now
     app.jinja_env.globals.update(format_number=format_number)
     app.jinja_env.globals.update(serialize_json=json.dumps)
     app.jinja_env.globals.update(User=User) # For initializing guest users
     app.jinja_env.globals.update(dict_to_html=dict_to_html)
+
+    # Define the command queue, user manager, and chat manager for the site
+    command_queue = queue.Queue()
+    user_manager = UserManager()
+    chat_manager = None # Placeholder for now
+
+    # Start the aquarium simulation
+    # saved_aquarium_fname = os.path.join(settings.AQUARIUM_SAVE_DIR, "20241106_200326_fishbowl.pkl")
+    # aquarium = pickle.load(open(saved_aquarium_fname, "rb"))
+    aquarium = Aquarium()
+    socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager, aquarium)
+
+    # Set up the store
+    store = Store()
+    store.add_item("thermometer")
 
     # Register HTTP routes
     from .routes.main import main as main_blueprint
@@ -50,19 +62,18 @@ def create_app():
 
     # Regiser SocketIO events
     from .events import main as main_events
+    from .events import users as users_events
     from .events import aquarium as aquarium_events
     from .events import interactions as interactions_events
     from .events import chat as chat_events
-    main_events.register_events(socketio, command_queue)
+    from .events import store as store_events   
+    main_events.register_events(socketio)
+    users_events.register_events(socketio, user_manager)
+    chat_events.register_events(socketio, chat_manager)
     aquarium_events.register_events(socketio, command_queue)
     interactions_events.register_events(socketio, command_queue)
-    chat_events.register_events(socketio, command_queue)
-
-    # Start the aquarium simulation
-    # saved_aquarium_fname = os.path.join(settings.AQUARIUM_SAVE_DIR, "20241106_200326_fishbowl.pkl")
-    # aquarium = pickle.load(open(saved_aquarium_fname, "rb"))
-    socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager)
-
+    store_events.register_events(socketio, command_queue, store)
+                                   
     # Make sure the app is running with the correct settings
     print(settings)
 

@@ -37,3 +37,13 @@ chatSocket.on("new_message", function(data) {
     const message = new Message(data);
     $("#chat-messages").append(message.render());
 });
+
+// Load a list of messages from the server
+// $(document).ready(function() {
+//     $.get("/messages", function(data) {
+//         data.forEach(function(message) {
+//             const messageObj = new Message(message);
+//             $("#chat-messages").append(messageObj.render());
+//         });
+//     });
+// });

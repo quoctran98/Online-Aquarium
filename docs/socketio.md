@@ -62,3 +62,32 @@ Clients will connect on page load.
     - `username` - The username of the client sending the message.
     - `message` - The message sent by the client.
     - `timestamp` - The time the message was sent (in milliseconds since epoch).
+
+### `store` Namespace
+
+**For clients to interact with the store**. The main use is for clients to add contributions to items in the store.
+
+Clients will connect on page load.
+
+- `contribute` - Clients will send a message to the server when they contribute funds to an item in the store. The message is a JSON object with the following fields:
+    - `item_label` - The label of the item in the store.
+    - `username` - The username of the client adding the contribution.
+    - `amount` - The amount of the contribution.
+
+- `update_item` - Broadcasts the current state of a single item in the store as a JSON object from the `summarize` method of the `StoreItem` class.
+
+- `summarize_store` - Broadcasts the current state of all items in the store as an **array** of JSON objects (one for each item from the `summarize` method of the `StoreItem` class).
+
+- `get_store` - Clients will send a message to the server to get the current state of all items in the store. The server will respond with a `summarize_store` message.
+
+### `users` Namespace
+
+**For dynamic data about users to be exchanged between clients and the server**. This namespace is for clients to get information about other users in the aquarium. And for users to change their own information.
+
+Clients will connect on page load.
+
+- `user_connected` - Broadcasts the `summarize_public` method of the `User` class for a user that has connected to the namespace (as a proxy for the website).  
+
+- `user_disconnected` - Broadcasts the `summarize_public` method of the `User` class for a user that has disconnected from the namespace (as a proxy for the website).
+
+- `update_user` - Broadcasts the `summarize_public` method of the `User` class for a user if something about them has changed.

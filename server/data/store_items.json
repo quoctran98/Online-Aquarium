@@ -1,0 +1,8 @@
+{
+    "thermometer": {
+        "item_name": "Thermometer",
+        "description": "Keep track of the termperature of your aquarium!",
+        "price": 9.99,
+        "image_file": "/assets/store/thermometer.png"
+    }
+}

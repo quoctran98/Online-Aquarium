@@ -3,6 +3,10 @@ html, body {
   margin: 0;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
+/* 
+div {
+  cursor: url(/static/assets/coin.png), auto;
+} */
 
 #full-screen-container {
   display: flex;

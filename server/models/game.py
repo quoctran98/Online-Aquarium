@@ -1,4 +1,4 @@
-from server.helper import settings, aquarium_types
+from server.helper import settings, aquarium_types, store_items
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
@@ -19,10 +19,64 @@ class Aquarium():
             return_dict[prop] = getattr(self, prop)
         return(return_dict)
 
-    def save(self, save_dir):
+    def save(self, save_dir=settings.AQUARIUM_SAVE_DIR):
         fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl")
         with open(fname, "wb") as f:
             pickle.dump(self, f)
+
+class Store():
+    def __init__(self):
+        self.items = {} # {label: StoreItem}
+
+    def add_item(self, item_type):
+        new_item = StoreItem(self, item_type)
+        self.items[new_item.label] = new_item
+        return(new_item)
+    
+    def add_contribution(self, item_label, username, amount):
+        self.items[item_label].contribute(username, amount)
+
+    def save(self, save_dir=settings.STORE_SAVE_DIR):
+        fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_store.pkl")
+        with open(fname, "wb") as f:
+            pickle.dump(self, f)
+
+class StoreItem():
+    def __init__(self, store, item_type):
+        self.store = store
+        self.label = str(uuid.uuid4())
+        self.item_type = item_type
+
+        # Unpack the item_type from the store_items dictionary
+        # item_name, description, price, image_file
+        for key, value in store_items[item_type].items():
+            setattr(self, key, value)
+
+        # Keep track of how much money is has been raised for this item
+        self.money_raised = 0.0
+        self.contributors = [] # with dicts of username, amount, and timestamp
+
+    def contribute(self, username, amount):
+        self.money_raised += amount
+        self.contributors.append({
+            "username": username,
+            "amount": amount,
+            "timestamp": datetime.datetime.now().timestamp()
+        })
+
+    @property
+    def summarize(self):
+        return_dict = {
+            "label": self.label,
+            "item_type": self.item_type,
+            "item_name": self.item_name,
+            "description": self.description,
+            "price": self.price,
+            "image_file": self.image_file,
+            "money_raised": self.money_raised,
+            # "contributors": self.contributors
+        }
+        return(return_dict)
 
 class Thing():
     def __init__(self, aquarium):
@@ -258,7 +312,7 @@ class Coin(Thing):
         ])
 
         # Set the coin-specific properties
-        self.value = 1
+        self.value = 0.01
         self.lifetime = 60 # Seconds
 
         # Make the coin fall straight down

@@ -18,17 +18,21 @@ class Settings(BaseSettings):
     APP_WIDTH:int
     APP_HEIGHT:int
     AQUARIUM_SAVE_DIR:str
+    STORE_SAVE_DIR:str
     class Config:
         env_file = ".env"
 settings = Settings()
 
-# Load fish and aquarium stats from the JSON file
+# Load store items from JSON files
 fish_types = {}
 with open("server/data/fish_types.json") as f:
     fish_types = json.load(f)
 aquarium_types = {}
 with open("server/data/aquarium_types.json") as f:
     aquarium_types = json.load(f)
+store_items = {}
+with open("server/data/store_items.json") as f:
+    store_items = json.load(f)
 
 # Connect to MongoDB (and export the connection client and users collection)
 mongo_client = MongoClient(settings.MONGODB_CONNECTION_STRING)
@@ -50,6 +54,10 @@ def username_is_valid(username):
 # Turn a dictionary to a list of HTML <p> tags for hidden data
 def dict_to_html(data):
     return("\n".join([f"<p id='{key}'>{value}</p>" for key, value in data.items()]))
+
+# Sanitize messages of HTML tags
+def sanitize_message(message):
+    return(message.replace("<", "&lt;").replace(">", "&gt;"))
 
 # To use a @authenticated_only decorator on a SocketIO event
 def authenticated_only(f):

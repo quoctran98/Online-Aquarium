@@ -1,8 +1,7 @@
-import { socket, aquariumSocket, interactionsSocket } from "../sockets.js";
+import { socket, aquariumSocket, interactionsSocket, usersSocket } from "../sockets.js";
 import { Aquarium } from "../models/gameModels.js";
-import { parse_p_tags } from "../utils.js";
-
-const userInfo = parse_p_tags("user-info");
+import { Tool } from "../models/interactionModels.js";
+import { thisUser } from "../user.js";
 
 const app = new PIXI.Application();
 await app.init({ 
@@ -17,56 +16,55 @@ $("#aquarium-container").get(0).appendChild(app.canvas);
 await PIXI.Assets.load("assets/background.png");
 await PIXI.Assets.load("assets/things.json");
 await PIXI.Assets.load("assets/fish/clownfish.json");
+await PIXI.Assets.load("assets/fish/guppy.json");
+await PIXI.Assets.load("assets/shelf/shelf.png");
 await PIXI.Assets.load("assets/shelf/fish_flakes.png");
+await PIXI.Assets.load("assets/shelf/brush.png");
 
-// Render the shelf (just a brown rectangle) on load
-let shelf = new PIXI.Graphics()
-  .rect(0, 0, app.screen.width, 100)
-  .fill(0x8B4513);
+// Render the shelf 
+let shelf = new PIXI.Sprite(PIXI.Assets.get("assets/shelf/shelf.png"));
+shelf.scale.x = 0.5;
+shelf.scale.y = 0.5;
+shelf.x = 0;
+shelf.y = 150;
 app.stage.addChild(shelf);
 
 // Add the fish flakes to the shelf
-let flakes = new PIXI.Sprite(PIXI.Assets.get("assets/shelf/fish_flakes.png"));
-flakes.scale.x = 100 / flakes.texture.width;
-flakes.scale.y = 100 / flakes.texture.height;
-flakes.x = 0;
-flakes.y =  shelf.height - flakes.height;
-flakes.interactive = true;
-flakes.buttonMode = true;
-flakes.on("pointerdown", () => {
-  interactionsSocket.emit("pick_up_item", { type: "fish_flakes" });
-  flakes.on("pointermove", onDragMove);
-  flakes.on("pointerup", onDragEnd);
-  flakes.on("pointerupoutside", onDragEnd);
-});
-function onDragMove(event) {
-  const newPosition = event.data.global;
-  flakes.x = newPosition.x - flakes.width / 2;
-  flakes.y = newPosition.y - flakes.height / 2;
-}
-function onDragEnd() {
-  flakes.off("pointermove", onDragMove);
-  flakes.off("pointerup", onDragEnd);
-  flakes.off("pointerupoutside", onDragEnd);
-}
-app.stage.addChild(flakes);
+let fishFlakes = new Tool("assets/shelf/fish_flakes.png", thisUser);
+fishFlakes.scale.x = 0.35;
+fishFlakes.scale.y = 0.35;
+fishFlakes.x = 100;
+fishFlakes.y = 90;
+fishFlakes.anchor.set(0.5);
+app.stage.addChild(fishFlakes);
+
+// Add the brush to the shelf
+let brush = new Tool("assets/shelf/brush.png", thisUser);
+brush.scale.x = 0.4;
+brush.scale.y = 0.4;
+brush.x = 400
+brush.y = 120;
+brush.anchor.set(0.5);
+app.stage.addChild(brush);
 
 // Draw the aquarium (load the background and make sure it's 960x540)
 let background = new PIXI.Sprite(PIXI.Assets.get("assets/background.png"));
 background.scale.x = 960 / background.texture.width;
 background.scale.y = 540 / background.texture.height;
 background.x = 0;
-background.y = 100;
+background.y = 200;
 app.stage.addChild(background);
 
 // Make an aquarium container :)
-let aquarium = new Aquarium();
+let aquarium = new Aquarium({x: 0, y: 200, width: 960, height: 540});
 app.stage.addChild(aquarium);
 
 // Add food to the aquarium where the user clicks
 app.stage.on("click", (event) => {
   let aquariumPosition = aquarium.toLocal(event.data.global);
   interactionsSocket.emit("feed", { x: aquariumPosition.x, y: aquariumPosition.y });
+  // take away 0.01 money for now (just client-side)
+  thisUser.updateMoney(thisUser.money - 0.01);
 });
 
 // Register event listeners for the aquarium socket
@@ -85,12 +83,7 @@ $(document).keypress(function(event) {
 
 // Update user info on the "update_user" event
 interactionsSocket.on("update_user", (newUserInfo) => {
-  if (newUserInfo.username == userInfo.username) {
-    $(".user-money").text(`$${newUserInfo.money}`);
-    // Update <p> tags in "user-info" (ids are the same as the keys in the user object)
-    const hiddenUserInfo = $("#user-info");
-    for (let key in newUserInfo) {
-      hiddenUserInfo.find(`#${key}`).text(newUserInfo[key]);
-    }
-  }
+  const newMoney = newUserInfo.money;
+  thisUser.updateMoney(newMoney);
+  // It's okay to not update the hidden <p> tags because that's just used for initializing thisUser
 });

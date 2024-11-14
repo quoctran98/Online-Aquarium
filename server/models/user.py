@@ -54,6 +54,12 @@ class User(UserMixin):
                 "user_id": uuid.uuid4().hex})
             return(True)
         
+    def process_contribution(self, amount):
+        if amount > self.money:
+            return(False)
+        self.money -= amount
+        return(True)
+        
     def save(self):
         mongo_users_collection.update_one({"user_id": self.user_id}, {"$set": self.summarize_private})
 
@@ -66,7 +72,6 @@ class User(UserMixin):
     def summarize_public(self):
         return({
             "username": self.username,
-            "user_id": self.user_id,
             "money": self.money
         })
     
@@ -89,12 +94,20 @@ class GuestUser(AnonymousUserMixin):
     @property
     def get_id(self):
         return(self.user_id) # Hopefully won't cause any issues...
+    
+    def process_contribution(self, amount):
+        if amount > self.money:
+            return(False)
+        self.money -= amount
+        return(True)
+    
+    def save(self):
+        pass
 
     @property
     def summarize_public(self):
         return({
             "username": self.username,
-            "user_id": self.user_id,
             "money": self.money
         })
     
