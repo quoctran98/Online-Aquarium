@@ -15,6 +15,39 @@ div {
   border: 1px solid red
 }
 
+#chat-messages-container {
+  max-height: 70%;
+  overflow-y: scroll;
+}
+
+.chat-message {
+  position: relative;
+  padding: 0.5rem;
+  background-image: url(/static/img/store-background.png);
+  background-size: 100% 100%;
+}
+
+.chat-message .message {
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  color: black;
+}
+
+.chat-message .timestamp {
+  position: absolute;
+  color: darkblue;
+  font-size: 80%;
+  top: 0.5rem;
+  right: 1.2rem;
+}
+
+.store-item {
+  padding: 2rem;
+  background-image: url(/static/img/store-background.png);
+  background-size: 100% 100%;
+}
+
 #aquarium-container {
   flex: 0 0 70%;
   border: 1px solid blue;
@@ -71,9 +104,4 @@ div {
 
 .tab-content.active {
   display: block;
-}
-
-#chat-messages {
-  max-height: 70%;
-  overflow-y: scroll;
 }

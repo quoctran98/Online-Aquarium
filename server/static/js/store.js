@@ -1,5 +1,5 @@
 import { socket, storeSocket } from './sockets.js';
-import { thisUser } from './user.js';
+import { thisUser } from './models/userModels.js';
 
 let firstStoreLoad = false;
 
@@ -15,12 +15,12 @@ class StoreItem {
     render() {
         return `
             <div class="store-item" id="${this.label}">
-                <img src="${this.image_file}" style="max-width: 80%; max-height: 100px;">
                 <h3>${this.item_name}</h3>
-                <p>${this.description}</p>
+                <img src="${this.image_file}" style="max-width: 80%; max-height: 100px;">
                 <p>${this.price}</p>
                 <p>${this.money_raised}</p>
-                <button class="contribute-button" id="contribute:${this.label}">Contribute</button>
+                <input type="number" id="contribute-amount_${this.label}" value="0.01" step="0.01" min="0.01" max="${thisUser.money}">
+                <button class="contribute-button" id="contribute_${this.label}">Contribute</button>
             </div>
         `;
     }
@@ -28,12 +28,12 @@ class StoreItem {
 
 // Attach an event listener to all .contribute-button elements
 $(document).on("click", ".contribute-button", function(event) {
-    const contributionAmount = 0.01; // This is a placeholder for now
-    const label = event.target.id.split(":")[1];
+    const label = event.target.id.split("_")[1];
+    const contributionAmount = parseFloat($(`#contribute-amount_${label}`).val());
     storeSocket.emit("contribute", 
         { label: label, username: thisUser.username, amount: contributionAmount }
     );
-    thisUser.updateMoney(thisUser.money - contributionAmount);
+    thisUser.updateUserInfo({ money: thisUser.money - contributionAmount });
 });
 
 // This really should be an HTTP request, not a socket request

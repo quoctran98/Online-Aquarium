@@ -51,7 +51,7 @@ class Guppy(Fish):
         closest_predator, predator_distance = self._find_closest(class_hierarchy=["Thing", "Fish"])
         predator_width = closest_predator.width if closest_predator is not None else 0
         # If the fish is being chased, it will prioritize fleeing
-        if (predator_distance < 500) and (predator_width > 1.5*self.width):
+        if (predator_distance < 300) and (predator_width > self.width):
             self.state = "fleeing"
             self.predator = closest_predator
         # If the fish is hungry and there is food nearby, it will prioritize feeding

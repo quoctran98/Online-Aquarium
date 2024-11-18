@@ -24,19 +24,22 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # Load store items from JSON files
-fish_types = {}
-with open("server/data/fish_types.json") as f:
-    fish_types = json.load(f)
 aquarium_types = {}
 with open("server/data/aquarium_types.json") as f:
     aquarium_types = json.load(f)
 store_items = {}
 with open("server/data/store_items.json") as f:
     store_items = json.load(f)
+tool_types = {}
+with open("server/data/tools.json") as f:
+    tool_types = json.load(f)
 
 # Connect to MongoDB (and export the connection client and users collection)
 mongo_client = MongoClient(settings.MONGODB_CONNECTION_STRING)
 mongo_users_collection = mongo_client[settings.USERS_DATABASE].users
+mongo_guests_collection = mongo_client[settings.USERS_DATABASE].guests 
+# Clear the guests collection (once on startup, I guess?)
+mongo_guests_collection.delete_many({})
 
 ###########################
 # Helper functions below! #

@@ -1,8 +1,0 @@
-{
-    "goldfish": {
-        "length": 20,
-        "max_speed": 40,
-        "ph_range": [6.0, 8.0],
-        "temp_range": [20, 25]
-    }
-}

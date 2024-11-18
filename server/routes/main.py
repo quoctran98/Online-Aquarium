@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify, Blueprint, render_template, send_from_directory
-from flask_socketio import SocketIO, emit
+from flask import request, session, Blueprint, render_template, send_from_directory
+from flask_login import current_user
+from flask_socketio import emit
 
+from server.models.user import User, GuestUser
 from server.helper import settings
 
-import random
+import random, uuid
 
 main = Blueprint("main", __name__)
 
@@ -19,3 +21,8 @@ def index():
 @main.route("/assets/<path:path>")
 def assets(path):
     return(send_from_directory("static/assets", path))
+
+# Right now it's just for tools.json
+@main.route("/data/<path:path>")
+def data(path):
+    return(send_from_directory("data", path))

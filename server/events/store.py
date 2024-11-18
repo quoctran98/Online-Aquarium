@@ -24,12 +24,9 @@ def register_events(socketio, command_queue, store):
         username = current_user.username
         if current_user.username != data["username"]:
             return
-        contributionAllowed = current_user.process_contribution(data["amount"])
-        if not contributionAllowed:
-            return
-        store.add_contribution(data["label"], data["username"], data["amount"])
-        # socketio.emit("update_user", current_user.summarize_public, namespace="/users")
-        # socketio.emit("update_item", store.items[data["label"]].summarize, namespace="/store") # THIS DOESN'T WORK?
-        socketio.emit("summarize_store", [item.summarize for item in store.items.values()], namespace="/store") 
-        current_user.save()
-        store.save(settings.STORE_SAVE_DIR)
+        contributionAllowed = current_user.process_money(data["amount"])
+        if contributionAllowed:
+            store.add_contribution(data["label"], data["username"], data["amount"])
+            # socketio.emit("update_item", store.items[data["label"]].summarize, namespace="/store") # THIS DOESN'T WORK?
+            socketio.emit("summarize_store", [item.summarize for item in store.items.values()], namespace="/store") 
+            store.save(settings.STORE_SAVE_DIR)

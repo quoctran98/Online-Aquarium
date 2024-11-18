@@ -8,6 +8,7 @@ class Aquarium extends PIXI.Container {
     constructor({ x, y, width, height }) {
         super();
         this.sortableChildren = true;
+        this.interactive = true;
         
         this.x = x;
         this.y = y;
@@ -17,6 +18,7 @@ class Aquarium extends PIXI.Container {
         this.ticker = new PIXI.Ticker();
         this.ticker.start();
 
+
         // Bind all methods that we need to call externally
         this.addThing = this.addThing.bind(this);
         this.removeThing = this.removeThing.bind(this);
@@ -24,8 +26,14 @@ class Aquarium extends PIXI.Container {
         this.updateThing = this.updateThing.bind(this);
     }
 
-    insideAquarium(object) {
+    insideAquariumObject(object) {
+        // (x, y) are relative to the aquarium itself, so it's easy :)
         return object.x >= this.x && object.x <= this.x + this.width && object.y >= this.y && object.y <= this.y + this.height;
+    }
+
+    insideAquariumCoordinates(x, y) {
+        // (x, y) are relative to the aquarium itself, so it's easy :)
+        return x >= 0 && x <= this.width && y >= 0 && y <= this.height;
     }
 
     addThing(thingInput) {
@@ -110,6 +118,9 @@ class Thing extends PIXI.AnimatedSprite {
         this.label = thingInput.label; // Or else serverUpdate will fail
         this.serverUpdate(thingInput);
 
+        // KEEP TRACK OF LAST SERVER UPDATE IN TERMS OF LOCAL TIME
+        this.local_update_time = Date.now();
+
         // Bind external methods :)
         this.handleTicker = this.handleTicker.bind(this);
         this.serverUpdate = this.serverUpdate.bind(this);
@@ -140,11 +151,28 @@ class Thing extends PIXI.AnimatedSprite {
         // This is the only exception, I think?
         this.server_x = thingInput.x;
         this.server_y = thingInput.y;
+        // Also keep track of the last time the server updated this thing
+        this.local_update_time = Date.now(); // IMPORTANT BECAUSE CLOCKS AREN'T SYNCHRONIZED
     }
 
     interpolatePosition(deltaTime) {
-        // Using the last known destination and postion, interpolate the thing's position
-        const time_since_update = (Date.now() - this.update_time) / 1000; // in seconds
+        // // Using the last known destination and postion, interpolate the thing's position
+        // // THIS IS BAD IF CLIENT AND SERVER TIME AREN'T SYNCHRONIZED!!!
+        // const time_since_update = (Date.now() - this.update_time) / 1000; // in seconds
+        // const distance_covered = this.speed * time_since_update; // in pixels
+        // const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
+        // const progress = distance_covered / total_distance;
+        // if (progress >= 1) {
+        //     // We have reached the destination
+        //     this.x = this.destination_x;
+        //     this.y = this.destination_y;
+        // } else {
+        //     // Interpolate the fish's position
+        //     this.x = this.server_x + progress * (this.destination_x - this.server_x);
+        //     this.y = this.server_y + progress * (this.destination_y - this.server_y);
+        // }
+
+        const time_since_update = (Date.now() - this.local_update_time) / 1000; // in seconds
         const distance_covered = this.speed * time_since_update; // in pixels
         const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
         const progress = distance_covered / total_distance;
@@ -157,6 +185,7 @@ class Thing extends PIXI.AnimatedSprite {
             this.x = this.server_x + progress * (this.destination_x - this.server_x);
             this.y = this.server_y + progress * (this.destination_y - this.server_y);
         }
+
     }
 }
 
@@ -224,11 +253,13 @@ class Coin extends Thing {
             this.tint = 0xffffff;
         });
 
-        // Send a "click" event to the server when the coin is clicked
+        // Send a "pickup" event to the server when the coin is clicked
         this.on("pointerdown", () => {
-            interactionsSocket.emit("click", { 
+            interactionsSocket.emit("pickup", { 
+                thing_label: this.label,
                 username: userInfo.username,
-                label: this.label,
+                x: this.x,
+                y: this.y,
                 timestamp: Date.now()
             });
         });

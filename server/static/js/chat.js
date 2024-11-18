@@ -11,10 +11,10 @@ class Message {
     }
     render() {
         return `
-            <div class="message">
+            <div class="chat-message">
                 <span class="username">${this.username}</span>
                 <span class="timestamp">${new Date(this.timestamp).toLocaleTimeString()}</span>
-                <p class="message">${this.message}</p>
+                <p>${this.message}</p>
             </div>
         `;
     }
@@ -35,7 +35,7 @@ $("#chat-form").submit(function(e) {
 // Add an event listener for the "new_message" event
 chatSocket.on("new_message", function(data) {
     const message = new Message(data);
-    $("#chat-messages").append(message.render());
+    $("#chat-messages-container").append(message.render());
 });
 
 // Load a list of messages from the server

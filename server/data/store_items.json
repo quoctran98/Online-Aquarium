@@ -4,5 +4,14 @@
         "description": "Keep track of the termperature of your aquarium!",
         "price": 9.99,
         "image_file": "/assets/store/thermometer.png"
+    },
+
+    "guppy": {
+        "item_name": "Guppy",
+        "description": "A small, colorful fish that is perfect for beginners!",
+        "price": 2.99,
+        "image_file": "/assets/store/guppy.png",
+        "object_name":  "Guppy",
+        "object_kwargs": {}
     }
 }

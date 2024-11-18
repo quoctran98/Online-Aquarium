@@ -1,11 +1,25 @@
 import { changeCursor, resetCursor } from "../utils.js";
+import { socket, interactionsSocket } from "../sockets.js";
 
 // Tools are things that are on the shelf. Selecting them will change how the cursor interacts with the aquarium.
 class Tool extends PIXI.Sprite {
-    constructor(textureURL, thisUser) {
-        super(PIXI.Assets.get(textureURL));
-        this.textureURL = textureURL;
+    constructor(toolJSON, thisUser) {
+        super(PIXI.Assets.get(toolJSON.textureURL));
+
+        // Required properties
+        this.textureURL = toolJSON.textureURL; // Just to keep :)
+        this.toolType = toolJSON.toolType;
+        this.cost = toolJSON.cost;
         this.eventMode = "static"
+
+        // Set scale, position, and anchor
+        this.scale.x = toolJSON.scale.x;
+        this.scale.y = toolJSON.scale.y;
+        this.x = toolJSON.x;
+        this.y = toolJSON.y;
+        this.anchor.set(0.5);
+
+        // thisUser is the frontend global object that represents the user
 
         // Highlight the tool when the cursor is over it
         this.on("pointerover", () => {
@@ -17,17 +31,21 @@ class Tool extends PIXI.Sprite {
 
         // Select the tool when it's clicked
         this.on("pointerdown", () => {
+            this.selectTool(thisUser);
+         });
+    }
 
-            // If the tool is already selected, deselect it
-            if (thisUser.tool_selected == this) {
-                // Deselect the tool
-                thisUser.tool_selected = null;
-                resetCursor();
-                return;
-            }
+    selectTool(user) { // User object
 
-            // Select the tool
-            thisUser.tool_selected = this;
+
+        // If the tool is already selected, deselect it
+        if (user.toolSelected == this) {
+            user.toolSelected = null;
+            resetCursor();
+
+        // Otherwise select the tool
+        } else {
+            user.toolSelected = this;
             // Change the cursor to the tool's image (maintain aspect ratio)
             let cursorWidth;
             let cursorHeight;
@@ -39,7 +57,16 @@ class Tool extends PIXI.Sprite {
                 cursorWidth = 32 * (this.width / this.height);
             }
             changeCursor("/static/"+this.textureURL, cursorWidth, cursorHeight);
+        }
+
+        // Broadcast the tool selection to the server
+        interactionsSocket.emit("select", { 
+            tool: user.toolSelected ? user.toolSelected.toolType : null,
+            username: user.username,
+            timestamp: Date.now()
         });
+
+
     }
 }
 
@@ -48,29 +75,19 @@ class Cursor extends PIXI.Sprite {
     constructor(texture, cursor_input) {
         super(texture);
         this.label = cursor_input.username;
-        this.username = cursor_input.username; // Just in case I forgot to change something
+        this.username = cursor_input.username;
         this.scale.x = 30 / this.texture.width;
         this.scale.y = 30 / this.texture.height;
         this.anchor.set(0.5);
-    }
-
-    serverUpdate(cursor_input) {
-        // Make sure that this cursor_input JSON object is for this cursor
-        if (cursor_input.username !== this.label) {
-            console.log(`Cursor.update() called with wrong cursor username: ${cursor_input.username}`);
-            return;
-        } else {
-            this.x = cursor_input.x;
-            this.y = cursor_input.y;
-        }
     }
 }
 
 // CursorContainer is a container for all other players' cursors (this is very similar to the Aquarium class)
 class CursorContainer extends PIXI.Container {
-    constructor(username) {
+    constructor() {
         super();
-        this.username = username; // So we know which cursors NOT to render (for now)
+        
+        this.interactive = true;
 
         // Bind all methods that we (might) need to call externally
         this.addCursor = this.addCursor.bind(this);
@@ -80,21 +97,18 @@ class CursorContainer extends PIXI.Container {
     }
 
     addCursor(cursor_data) {
-        // Don't add if it's the current user's cursor
-        if (cursor_data.username === this.username) { return; }
         let cursor = new Cursor(PIXI.Assets.get("assets/cursor.png"), cursor_data);
         this.addChild(cursor);
         return(cursor);
       }
 
     updateCursor(cursor_data) {
-        // Don't update if it's the current user's cursor
-        if (cursor_data.username === this.username) { return; }
         let cursor = this.children.find(c => c.label === cursor_data.username);
         if (!cursor) { // If the cursor isn't in the list, add it!
             cursor = this.addCursor(cursor_data); 
         }
-        cursor.serverUpdate(cursor_data);
+        cursor.x = cursor_data.x;
+        cursor.y = cursor_data.y;
     }
 
     removeCursor(username) {

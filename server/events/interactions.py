@@ -1,38 +1,49 @@
-from flask import request
+from flask import copy_current_request_context
 from flask_login import current_user
-from server.helper import settings, authenticated_only
+from server.helper import settings, tool_types, authenticated_only
 
 def register_events(socketio, command_queue):
 
     @socketio.on("connect", namespace="/interactions")
     def connect():
-        username = request.args.get("username")
-        # Broadcast the connect to all users (for cursor purposes only for now)
-        socketio.emit("user_connected", username, namespace="/interactions")
+        pass
 
     @socketio.on("disconnect", namespace="/interactions")
     def disconnect():
-        username = request.args.get("username")
-        # Broadcast the disconnect to all users (for cursor purposes only for now)
-        socketio.emit("user_disconnected", username, namespace="/interactions")
-    
-    # So all users can see items moving around
-    @socketio.on("pick_up_item", namespace="/interactions")
-    def pick_up_item(data):
-        print(f"User picked up item {data}")
+        pass
 
-    @socketio.on("click", namespace="/interactions")
-    def click(data):
-        username = current_user.username
-        command_queue.put(("click", data))
+    @socketio.on("tap", namespace="/interactions")
+    def tap(data):
+        if (current_user.username != data["username"]):
+            return
+        command_queue.put(("tap", data))
 
-    @socketio.on("feed", namespace="/interactions")
-    def feed(data):
-        username = current_user.username
-        print(f"{username} added food at {data}")
-        command_queue.put(("feed", data))
+    @socketio.on("pickup", namespace="/interactions")
+    def pickup(data):
+        if (current_user.username != data["username"]):
+            return
+        command_queue.put(("pickup", data))
 
-    @socketio.on("my_cursor", namespace="/interactions")
-    def my_cursor(data):
-        # Broadcast all cursor movements to all users
-        socketio.emit("update_cursor", data, namespace="/interactions")
+    @socketio.on("use", namespace="/interactions")
+    def use(data):
+        if (current_user.username != data["username"]):
+            return
+        tool = tool_types[data["tool"]]
+        # Process the transaction and return True if the user can afford the tool
+        useAllowed = current_user.process_money(tool["cost"]) 
+        if useAllowed: 
+            socketio.emit("update_user", current_user.summarize_public, namespace="/interactions")
+            # Add the command to the queue
+            command_queue.put(("use", data))
+
+    @socketio.on("select", namespace="/interactions")
+    def select(data):
+        if (current_user.username != data["username"]):
+            return
+        socketio.emit("select", data, namespace="/interactions")
+
+    @socketio.on("cursor", namespace="/interactions")
+    def cursor(data):
+        if (current_user.username != data["username"]):
+            return
+        socketio.emit("cursor", data, namespace="/interactions")

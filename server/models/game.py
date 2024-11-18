@@ -6,9 +6,27 @@ class Aquarium():
         self.width = width
         self.height = height
         self.objects = {}
+
+        # Children objects can make use of taps
+        self.taps = [] # List of dicts with x, y, username, and timestamp
+        self.tap_lifetime = 1000 # milliseconds
+        
+        # We don't usually need to broadcast the Aquarium 
         self.properties_to_broadcast = [
             "width", "height"
         ]
+    
+    def tap(self, x, y, username):
+        self.taps.append({
+            "x": x,
+            "y": y,
+            "username": username,
+            "timestamp": datetime.datetime.now().timestamp() * 1000
+        })
+
+    def update(self, delta_time):
+        # All we need to do is is slowly remove the oldest taps
+        self.taps = [tap for tap in self.taps if (datetime.datetime.now().timestamp() * 1000 - tap["timestamp"]) < self.tap_lifetime]
 
     def summarize(self):
         return_dict = {
@@ -28,11 +46,11 @@ class Store():
     def __init__(self):
         self.items = {} # {label: StoreItem}
 
-    def add_item(self, item_type):
-        new_item = StoreItem(self, item_type)
+    def add_item(self, item_type, item_dict):
+        new_item = StoreItem(self, item_type, item_dict)
         self.items[new_item.label] = new_item
         return(new_item)
-    
+
     def add_contribution(self, item_label, username, amount):
         self.items[item_label].contribute(username, amount)
 
@@ -42,14 +60,15 @@ class Store():
             pickle.dump(self, f)
 
 class StoreItem():
-    def __init__(self, store, item_type):
+    def __init__(self, store, item_type, item_dict):
         self.store = store
         self.label = str(uuid.uuid4())
         self.item_type = item_type
 
         # Unpack the item_type from the store_items dictionary
         # item_name, description, price, image_file
-        for key, value in store_items[item_type].items():
+        print(item_dict)
+        for key, value in item_dict.items():
             setattr(self, key, value)
 
         # Keep track of how much money is has been raised for this item
@@ -199,15 +218,21 @@ class Fish(Thing):
         # Placeholder for child classes to override with fish-specific behavior
         self.state = "idle"
     
-    def __idle(self, delta_time):
+    def __idle(self, delta_time) -> bool:
         # Default idle behavior is to move around randomly
         has_new_destination = False
-        if math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
+        if (len(self.aquarium.taps) > 0) and (random.random() < 0.01): 
+            # 1% chance per tick of going toward a random tap (doesn't account for switching taps)
+            tap = random.choice(self.aquarium.taps)
+            self.destination_x = tap["x"]
+            self.destination_y = tap["y"]
+            self.speed = random.uniform(self.max_speed/4, self.max_speed/2)
+            self.updated_this_loop = True
+        elif math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
             # If the fish is within 10 pixels of its destination, choose a new one
             self.destination_x = random.uniform(0 + self.width, self.aquarium.width - self.width)
             self.destination_y = random.uniform(0 + self.height, self.aquarium.height - self.height)
             self.speed = random.uniform(self.max_speed/4, self.max_speed/2)
-            has_new_destination = True
             self.updated_this_loop = True
         # Move the fish towards its destination
         self._move_toward_destination(delta_time)
@@ -256,14 +281,14 @@ class Fish(Thing):
         self._choose_state()
         # State-specific behavior
         if self.state == "idle":
-            return(self.__idle(delta_time))
+            self.__idle(delta_time)
         elif self.state == "feeding":
-            return(self.__feeding(delta_time))
+            self.__feeding(delta_time)
         elif self.state == "fleeing":
-            return(self.__fleeing(delta_time))
+            self.__fleeing(delta_time)
         else:
             Warning(f"Unknown fish state {self.state}")
-            return(False)
+        return(self.updated_this_loop)
         
 class Food(Thing):
     def __init__(self, aquarium, x=None, y=None):
@@ -327,7 +352,8 @@ class Coin(Thing):
         self._move_toward_destination(delta_time)
         self._calculate_lifetime()
 
-    def click(self, username):
-        print(f"{username} picked up coin worth {self.value}")
+    def click(self, user):
+        user.money = round(user.money + self.value, 2)
+        user.save()
         self.remove()
         

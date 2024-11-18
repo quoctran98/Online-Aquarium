@@ -42,27 +42,43 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
         while not command_queue.empty():
             command, data = command_queue.get()
             match command:
-                case "add_fish":
-                    fish_class = globals()[data["fish_class"]]
-                    fish = fish_class(aquarium)
-                    aquarium.fishes.append(fish)
-                case "click":
-                    if data["label"] in aquarium.objects:
-                        item_clicked = aquarium.objects[data["label"]]
-                        user_clicked = user_manager.get_by_username(data["username"])
-                        user_clicked.money += item_clicked.value
-                        user_clicked.save()
-                        item_clicked.click(username=data["username"])
-                        socketio.emit("update_user", user_clicked.summarize_public, namespace="/interactions")
-                        broadcast_sync = True # Can't update only a single item that doesn't exist anymore...
-                case "feed":
-                    food = Food(aquarium, x=data["x"], y=data["y"])
-                    aquarium.objects[food.label] = food
-                    broadcast_updates.append(food.summarize)
+                
+                case "add":
+                    # Add a new item to the aquarium (when something is purchased)
+                    object_name = data["object_name"]
+                    object_kwargs = data["object_kwargs"]
+                    new_object = eval(f"{object_name}(aquarium, **object_kwargs)")
+                    aquarium.objects[new_object.label] = new_object
+
+                case "tap": 
+                    #  Users are ensured to exist before data is sent to the queue! No need to check here :)
+                    user = User.get_by_username(data["username"])
+                    aquarium.tap(data["x"], data["y"], user)
+
+                case "pickup":
+                    # How do we deal with multiple users interacting with the same object?
+                    if (data["thing_label"] in aquarium.objects):
+                        user = user_manager.get_by_username(data["username"])
+                        aquarium.objects[data["thing_label"]].click(user)
+                        # Method should be "pickup" instead of "click" but whatever
+                        socketio.emit("update_user", user.summarize_public, namespace="/interactions")
+                        broadcast_sync = True # Can't broadcast an update for an item that no longer exists
+
+                case "use":
+                    match data["tool"]:
+                        case "fish_flakes":
+                            flakes = Food(aquarium, data["x"], data["y"])
+                            aquarium.objects[flakes.label] = flakes
+                            broadcast_updates.append(flakes.summarize)
+
                 case "sync":
                     broadcast_sync = True
+                    
                 case _:
                     Warning(f"Unknown command {command}")
+
+        # Update the actual aquarium itself!
+        aquarium.update(delta_time)
 
         # Update all Things in the aquarium
         things_to_iterate = list(aquarium.objects.values()) # Prevent the dict from changing size during iteration

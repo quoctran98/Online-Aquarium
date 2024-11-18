@@ -1,7 +1,7 @@
 from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from server.helper import settings, mongo_users_collection
-import uuid
+from server.helper import settings, mongo_users_collection, mongo_guests_collection
+import uuid, datetime
 
 class User(UserMixin):
     def __init__(self, username, hashed_password, user_id=None, _id=None, **kwargs):
@@ -54,10 +54,15 @@ class User(UserMixin):
                 "user_id": uuid.uuid4().hex})
             return(True)
         
-    def process_contribution(self, amount):
+    def process_money(self, amount):
+        try:
+            amount = float(amount)
+        except ValueError:
+            return(False)
         if amount > self.money:
             return(False)
-        self.money -= amount
+        self.money = round(self.money - amount, 2)
+        self.save()
         return(True)
         
     def save(self):
@@ -76,10 +81,13 @@ class User(UserMixin):
         })
     
 class GuestUser(AnonymousUserMixin):
-    def __init__(self):
-        self.user_id = uuid.uuid4().hex
-        self.username = "Guest-" + str(self.user_id[:8])
-        self.money = 0
+    def __init__(self, username=None, user_id=None, _id=None, **kwargs):
+        self.user_id = uuid.uuid4().hex if user_id is None else user_id
+        self.mongo_id = None if _id is None else str(_id)
+        self.username = "Guest-" + str(self.user_id[:8]) if username is None else username
+
+        # Other user attributes (For game stuff that we might want to save)
+        self.money = kwargs.get("money", 0)
     
     # Make these properties to override the default values
     @property
@@ -91,18 +99,42 @@ class GuestUser(AnonymousUserMixin):
     @property
     def is_anonymous(self):
         return(True) # Guest users are anonymous!
-    @property
-    def get_id(self):
-        return(self.user_id) # Hopefully won't cause any issues...
+    # @property
+    # def get_id(self):
+    #     return(self.user_id) # Hopefully won't cause any issues...
+    # This broke it in @login_manager.request_loader... (https://stackoverflow.com/questions/43602084/flask-login-raises-typeerror-int-object-is-not-callable)
     
-    def process_contribution(self, amount):
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        data = mongo_guests_collection.find_one({"user_id": user_id})
+        if data:
+            return(cls(**data))
+        return(None)
+    
+    @classmethod
+    def new_guest(cls):
+        new_guest = cls()
+        mongo_guests_collection.insert_one(new_guest.summarize_private)
+        return(new_guest)
+    
+    def process_money(self, amount):
+        try:
+            amount = float(amount)
+        except ValueError:
+            return(False)
         if amount > self.money:
             return(False)
-        self.money -= amount
+        self.money = round(self.money - amount, 2)
+        self.save()
         return(True)
     
     def save(self):
-        pass
+        mongo_guests_collection.update_one({"user_id": self.user_id}, {"$set": self.summarize_private})
+
+    @property
+    def summarize_private(self):
+        # Return all properties of the user (for saving to MongoDB)
+        return({key: value for key, value in self.__dict__.items() if key not in ["_id"]})
 
     @property
     def summarize_public(self):
@@ -115,10 +147,32 @@ class GuestUser(AnonymousUserMixin):
 # I don't think I really need it, but it's more clean?
 class UserManager():
     def __init__(self):
-        pass
+        self.online_users = {} # Keys are username, values are User or GuestUser objects
+        self.guest_users = {} # Keys are username, values are GuestUser objects
+        # Maybe we should use a database to store guest users?
+
+    # These properties only matter for users that are currently online -- no need to save them
+    def attach_temp_properties(self, user):
+        user.tool_selected = None
+        user.cursor_position = None # (x, y) tuple
 
     def get_by_username(self, username):
         user = User.get_by_username(username)
         if user:
             return(user)
-        return(GuestUser())
+        elif username in self.guest_users:
+            return(self.guest_users[username])
+        return(None)
+    
+    def user_connected(self, user):
+        if not user.is_authenticated:
+            self.guest_users[user.username] = user
+        user.last_seen = datetime.datetime.now().timestamp() # ms since epoch
+        self.online_users[user.username] = user
+
+    def user_disconnected(self, user):
+        user.last_seen = datetime.datetime.now().timestamp()
+        if user.is_authenticated:
+            user.save()
+        if (user.username in self.online_users):
+            del self.online_users[user.username]

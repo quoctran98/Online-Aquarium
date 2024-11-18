@@ -16,37 +16,39 @@ Clients will connect on page load.
 
 Clients will connect on page load.
 
-- `my_cursor` - Clients send their cursor position to the server. The message is a JSON object with the following fields:
+- `tap` - The client will send a message to the server when they click on the aquarium **without using a tool**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `tap`) for the main aquarium simulation loop to process.
+    - `username` - The username of the client sending the message.
+    - `x` - The x-coordinate of the tap.
+    - `y` - The y-coordinate of the tap.
+    - `timestamp` - The time the tap was made (in milliseconds since epoch).
+
+- `pickup` - The client will send a message to the server when they click on an item the aquarium **to pick up a coin (or other thing)**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `pickup`) for the main aquarium simulation loop to process.
+    - `thing_label` - The label of the thing being picked up.
+    - `username` - The username of the client sending the message.
+    - `x` - The x-coordinate of the coin pickup.
+    - `y` - The y-coordinate of the coin pickup.
+    - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
+
+- `use` - The client will send a message to the server when they click on the aquarium **using a tool**. This shouldn't be used for no tool, but the event can handle it. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `use`) for the main aquarium simulation loop to process.
+    - `tool` - The tool the client is using (this determines the action to take, null or None if no tool).
+    - `username` - The username of the client sending the message.
+    - `x` - The x-coordinate of the tool use.
+    - `y` - The y-coordinate of the tool use.
+    - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
+
+- `select` - The client will send a message to the server when they **select a tool from the shelf**. This is mainly used so other clients can render a cursor. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace.*
+    - `tool` - The tool_type (string) the client is selecting. (null or None if no tool).
+    - `username` - The username of the client sending the message.
+    - `timestamp` - The time the tool was selected (in milliseconds since epoch).
+
+- `cursor` - Clients send their cursor position to the server. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace.*
+    - `event` - The event that triggered the cursor update ("mousemove", "mousedown", or "disconnect").
     - `username` - The username of the client sending the message.
     - `x` - The x-coordinate of the cursor.
     - `y` - The y-coordinate of the cursor.
-    - `event` - The event that triggered the cursor update ("mousemove", "mousedown", or "disconnect").
-
-- `update_cursor` - Broadcasts the current position of a single cursor in the aquarium as a JSON object with the same fields as the data sent in the `my_cursor` message.
-
-- `user_connected` - Broadcasts the username of a client that has connected to the server. The message just the username of the client that connected. For now usernames are just the socket id.
-
-- `user_disconnected` - Broadcasts the username of a client that has disconnected from the server. The message just the username of the client that disconnected. For now usernames are just the socket id.
-
-- `click` - The client will send a message to the server when they click on an item in the aquarium. The message is a JSON object with the following fields. The whole JSON object is put into the command queue for the main aquarium simulation loop to process.
-    - `username` - The username of the client sending the message.
-    - `label` - The label of the item clicked on.
-    - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
-
-- `feed` - Broadcasts a message to feed the fishes in the aquarium. The message is a JSON object with the following fields. The whole JSON object is put into the command queue for the main aquarium simulation loop to process.
-    - `username` - The username of the client sending the message.
-    - `food` - The type of food to feed the fishes (either "pellet" or "flake").
-    - `x` - The x-coordinate of the food drop.
-    - `y` - The y-coordinate of the food drop.
+    - `timestamp` - The time the cursor was updated (in milliseconds since epoch).
 
 - `update_user` - Broadcasts the current state of a single user in the aquarium as a JSON object from the `summarize_public` method of the `User` class.
-
-### `interactions-auth` Namespace
-
-**For authenticated clients to interact with the aquarium**. This namespace is for the same purposes and has the same behavior as the `/interactions` namespace, but is only accessible to authenticated clients for actions that require authentication (like bidding on new fishes, betting, etc.).
-
-Clients will only connect if they are authenticated. Messages will be ignored if the client is not authenticated.
-
 
 ### `chat` Namespace
 

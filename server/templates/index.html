@@ -2,12 +2,12 @@
 
 {% block content %}
 
+<script src="{{ url_for('static', filename='js/models/userModels.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/models/gameModels.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/models/interactionModels.js')}}" type="module"></script>
-<script src="{{ url_for('static', filename='js/apps/aquariumApp.js')}}" type="module"></script>
-<script src="{{ url_for('static', filename='js/apps/cursorApp.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/chat.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/store.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/apps/aquariumApp.js')}}" type="module"></script>
 
 <div id="full-screen-container" class="gets-blurred"> 
 
@@ -17,7 +17,7 @@
     <!-- Sidebar for user management and chat -->
     <div id="sidebar">
         <div id="sidebar-header">
-            <p>Welcome, {{ current_user.username }}! You have <span class="user-money">${{ current_user.money }}</span>.</p>
+            <p>Welcome, {{ current_user.username }}! You have $<span class="user-money">{{ current_user.money }}</span>.</p>
             {% if current_user.is_authenticated %}
                 <a href="/logout">Logout</a>
             {% else %}
@@ -60,7 +60,7 @@
         
             <div class="tab-content active" id="chat-tab">
                 <div id="chat-container">
-                    <div id="chat-messages"></div>
+                    <div id="chat-messages-container"></div>
                     <form id="chat-form">
                         <input type="text" name="message" id="message" placeholder="Type a message..." style="flex:1">
                         <button type="submit" class="btn btn-primary"><i class="bi-send-fill"></i></button>

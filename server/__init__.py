@@ -1,12 +1,12 @@
-from flask import Flask
+from flask import Flask, session
 from flask_socketio import SocketIO
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user
 from flask_session import Session
 from datetime import datetime, timezone
 import pytz, json, queue, pickle, os
 
 from server.simulate import aquarium_simulation
-from server.helper import settings, format_number, dict_to_html
+from server.helper import settings, store_items, format_number, dict_to_html
 from server.models.user import User, GuestUser, UserManager
 from server.models.game import Aquarium, Store, StoreItem
 
@@ -28,9 +28,25 @@ def create_app():
     login_manager.anonymous_user = GuestUser
     login_manager.login_view = "main.index"
     login_manager.init_app(app)
+    # For logging in users normally
     @login_manager.user_loader
     def load_user(user_id):
         return(User.get_by_user_id(user_id))
+    
+    # For logging in guest users
+    @login_manager.request_loader
+    def load_guest_user(request):
+        guest_id = session.get("guest_id")
+        print("😀")
+        print(guest_id)
+        # Either retrieve a guest user or create a new one
+        if guest_id:
+            guest_user = GuestUser.get_by_user_id(guest_id)
+        if not guest_id or not guest_user: # In case the guest_user was deleted
+            guest_user = GuestUser.new_guest()
+            session["guest_id"] = guest_user.user_id # Save guest_id for next time
+        print(guest_user.user_id)
+        login_user(guest_user, remember=False) # Log in the guest user (to use as current_user)
                
     # Add funtions from helper.py to the Jinja environment
     # I want to do this in a more elegant way, but this works for now
@@ -39,9 +55,9 @@ def create_app():
     app.jinja_env.globals.update(User=User) # For initializing guest users
     app.jinja_env.globals.update(dict_to_html=dict_to_html)
 
-    # Define the command queue, user manager, and chat manager for the site
+    # Define the command queue for the simulation and other managers
     command_queue = queue.Queue()
-    user_manager = UserManager()
+    user_manager = UserManager() # Handles abstractly accessing users (and for now cursors)
     chat_manager = None # Placeholder for now
 
     # Start the aquarium simulation
@@ -52,7 +68,8 @@ def create_app():
 
     # Set up the store
     store = Store()
-    store.add_item("thermometer")
+    for item_type in store_items.keys():
+        store.add_item("item_type", store_items[item_type])
 
     # Register HTTP routes
     from .routes.main import main as main_blueprint
@@ -75,6 +92,6 @@ def create_app():
     store_events.register_events(socketio, command_queue, store)
                                    
     # Make sure the app is running with the correct settings
-    print(settings)
+    # print(settings)
 
     return(app)
