@@ -24,6 +24,12 @@ def register_events(socketio, command_queue):
             return
         command_queue.put(("pickup", data))
 
+    @socketio.on("click", namespace="/interactions")
+    def click(data):
+        if (current_user.username != data["username"]):
+            return
+        command_queue.put(("click", data))
+
     @socketio.on("use", namespace="/interactions")
     def use(data):
         if (current_user.username != data["username"]):

@@ -13,13 +13,13 @@ class StoreItem {
         this.money_raised = money_raised;
     }
     render() {
+        const maxContribution = Math.min(this.price - this.money_raised, thisUser.money);
         return `
             <div class="store-item" id="${this.label}">
                 <h3>${this.item_name}</h3>
-                <img src="${this.image_file}" style="max-width: 80%; max-height: 100px;">
-                <p>${this.price}</p>
-                <p>${this.money_raised}</p>
-                <input type="number" id="contribute-amount_${this.label}" value="0.01" step="0.01" min="0.01" max="${thisUser.money}">
+                <img src="${this.image_file}">
+                <p>${this.money_raised} of ${this.price} raised!</p>
+                <input type="number" id="contribute-amount_${this.label}" value="0.01" step="0.01" min="0.01" max="${maxContribution}">
                 <button class="contribute-button" id="contribute_${this.label}">Contribute</button>
             </div>
         `;

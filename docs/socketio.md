@@ -29,6 +29,8 @@ Clients will connect on page load.
     - `y` - The y-coordinate of the coin pickup.
     - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
 
+- `click` - This is a more general version of the `pickup` event for an item in the aquarium. There's no functional difference but it's nice to specify!
+
 - `use` - The client will send a message to the server when they click on the aquarium **using a tool**. This shouldn't be used for no tool, but the event can handle it. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `use`) for the main aquarium simulation loop to process.
     - `tool` - The tool the client is using (this determines the action to take, null or None if no tool).
     - `username` - The username of the client sending the message.

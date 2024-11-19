@@ -1,7 +1,7 @@
 from server.models.game import Fish
 
 class Clownfish(Fish):
-    def __init__(self, aquarium):
+    def __init__(self, aquarium, **kwargs):
             
         # Redefine properties from Fish
         super().__init__(aquarium)
@@ -14,6 +14,10 @@ class Clownfish(Fish):
         self.max_speed = 100
         self.fish_name = "nemo"
         # No new properties to broadcast
+
+        # Set properties from kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def _choose_state(self):
         closest_food, food_distance = self._find_closest(class_hierarchy=["Thing", "Food"])
@@ -32,7 +36,7 @@ class Clownfish(Fish):
             self.state = "idle"
 
 class Guppy(Fish):
-    def __init__(self, aquarium):
+    def __init__(self, aquarium, **kwargs):
             
         # Redefine properties from Fish
         super().__init__(aquarium)
@@ -45,6 +49,10 @@ class Guppy(Fish):
         self.max_speed = 80
         self.fish_name = "fish"
         # No new properties to broadcast
+
+        # Set properties from kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def _choose_state(self):
         closest_food, food_distance = self._find_closest(class_hierarchy=["Thing", "Food"])

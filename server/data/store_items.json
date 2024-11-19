@@ -1,17 +1,19 @@
 {
-    "thermometer": {
-        "item_name": "Thermometer",
-        "description": "Keep track of the termperature of your aquarium!",
-        "price": 9.99,
-        "image_file": "/assets/store/thermometer.png"
+    "treasure_chest_0": {
+        "item_name": "Treasure Chest",
+        "price": 0.01,
+        "image_file": "/assets/store/treasure_chest.png",
+        "object_name":  "TreasureChest",
+        "object_kwargs": {"x": 700, "y": 450},
+        "object_properties": {}
     },
 
-    "guppy": {
+    "guppy_0": {
         "item_name": "Guppy",
-        "description": "A small, colorful fish that is perfect for beginners!",
-        "price": 2.99,
+        "price": 0.99,
         "image_file": "/assets/store/guppy.png",
         "object_name":  "Guppy",
-        "object_kwargs": {}
+        "object_kwargs": {},
+        "object_properties": {}
     }
 }

@@ -1,7 +1,8 @@
 from flask_socketio import emit
 from server.helper import settings
-from server.models.game import Fish, Aquarium, Coin, Food
+from server.models.game import Fish, Aquarium
 from server.models.fish import Clownfish, Guppy
+from server.models.things import Coin, Food, TreasureChest
 from server.models.user import User
 from datetime import datetime, timezone
 import time, random
@@ -19,14 +20,9 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
     last_sync = datetime.now(timezone.utc)
     last_backup = datetime.now(timezone.utc)
 
-    # Give it two free fish for debugging
+    # Give it a free fish :)
     clownfish = Clownfish(aquarium)
     aquarium.objects[clownfish.label] = clownfish
-    clownfish2 = Clownfish(aquarium)
-    aquarium.objects[clownfish2.label] = clownfish2
-    for _ in range(10):
-        guppy = Guppy(aquarium)
-        aquarium.objects[guppy.label] = guppy
 
     while True:
 
@@ -36,7 +32,9 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
 
         # Set a flag to indicate whether we should broadcast a sync (or update individual items)
         broadcast_sync = False
-        broadcast_updates = []
+        # broadcast_updates = [] -> moved to a propertie of the aquarium
+        # Reset aquarium.broadcast_updates
+        aquarium.broadcast_updates = []
       
         # Check if there are any commands in the queue
         while not command_queue.empty():
@@ -47,20 +45,22 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
                     # Add a new item to the aquarium (when something is purchased)
                     object_name = data["object_name"]
                     object_kwargs = data["object_kwargs"]
+                    object_properties = data["object_properties"]
                     new_object = eval(f"{object_name}(aquarium, **object_kwargs)")
-                    aquarium.objects[new_object.label] = new_object
+                    for key, value in object_properties.items():
+                        setattr(new_object, key, value)
+                    aquarium.add_object(new_object) # This will also add it to aquarium.broadcast_updates
 
                 case "tap": 
                     #  Users are ensured to exist before data is sent to the queue! No need to check here :)
                     user = User.get_by_username(data["username"])
                     aquarium.tap(data["x"], data["y"], user)
 
-                case "pickup":
+                case "pickup" | "click": # No functional difference between the two
                     # How do we deal with multiple users interacting with the same object?
                     if (data["thing_label"] in aquarium.objects):
                         user = user_manager.get_by_username(data["username"])
                         aquarium.objects[data["thing_label"]].click(user)
-                        # Method should be "pickup" instead of "click" but whatever
                         socketio.emit("update_user", user.summarize_public, namespace="/interactions")
                         broadcast_sync = True # Can't broadcast an update for an item that no longer exists
 
@@ -69,11 +69,11 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
                         case "fish_flakes":
                             flakes = Food(aquarium, data["x"], data["y"])
                             aquarium.objects[flakes.label] = flakes
-                            broadcast_updates.append(flakes.summarize)
+                            aquarium.broadcast_updates.append(flakes.summarize)
 
                 case "sync":
                     broadcast_sync = True
-                    
+
                 case _:
                     Warning(f"Unknown command {command}")
 
@@ -86,15 +86,14 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
             thing.update(delta_time)
             changed = thing.updated_this_loop
             if changed:
-                broadcast_updates.append(thing.summarize)
+                aquarium.broadcast_updates.append(thing.summarize)
 
         # Randomly spawn a coin every few seconds
         if (random.random() < 0.001):
             # choose a fish to spawn from
             fish = random.choice([fish for fish in aquarium.objects.values() if isinstance(fish, Fish)])
             coin = Coin(aquarium, fish.x, fish.y)
-            aquarium.objects[coin.label] = coin
-            broadcast_updates.append(coin.summarize)
+            aquarium.add_object(coin)
             
         # Every few seconds (SYNC_FREQUENCY), sync the current state of the aquarium to with all clients
         # Or if a broadcast_sync flag is set
@@ -105,7 +104,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
         # Broadcast individual updates for Things that require it
         # No need to do it if we're already syncing everything
         else:
-            for summarized_update in broadcast_updates:
+            for summarized_update in aquarium.broadcast_updates:
                 socketio.emit("update_thing", summarized_update, namespace="/aquarium")
 
         # Every few minutes (BACKUP_FREQUENCY), save the current state of the aquarium

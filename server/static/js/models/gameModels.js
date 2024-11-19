@@ -49,8 +49,10 @@ class Aquarium extends PIXI.Container {
             }
         }
         let thing = new thingClass(thingInput);
+        // MAKE SURE FISH AND BUBBLES ARE IN FRONT (ON TOP, Z STACK, KEYWORDS FOR LATER)
         const isFish = thing.class_hierarchy.includes("Fish");
-        this.addChildAt(thing, isFish ? this.children.length : 0);
+        const isBubble = thing.class_hierarchy.includes("Bubble");
+        this.addChildAt(thing, isFish || isBubble ? this.children.length : 0);
         this.ticker.add(thing.handleTicker);
     }
 
@@ -156,22 +158,6 @@ class Thing extends PIXI.AnimatedSprite {
     }
 
     interpolatePosition(deltaTime) {
-        // // Using the last known destination and postion, interpolate the thing's position
-        // // THIS IS BAD IF CLIENT AND SERVER TIME AREN'T SYNCHRONIZED!!!
-        // const time_since_update = (Date.now() - this.update_time) / 1000; // in seconds
-        // const distance_covered = this.speed * time_since_update; // in pixels
-        // const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
-        // const progress = distance_covered / total_distance;
-        // if (progress >= 1) {
-        //     // We have reached the destination
-        //     this.x = this.destination_x;
-        //     this.y = this.destination_y;
-        // } else {
-        //     // Interpolate the fish's position
-        //     this.x = this.server_x + progress * (this.destination_x - this.server_x);
-        //     this.y = this.server_y + progress * (this.destination_y - this.server_y);
-        // }
-
         const time_since_update = (Date.now() - this.local_update_time) / 1000; // in seconds
         const distance_covered = this.speed * time_since_update; // in pixels
         const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
@@ -276,9 +262,74 @@ class Food extends Thing {
     constructor(texture, foodInput) {
         super(texture, foodInput);
     }
-    
     handleTicker(ticker) {
         this.interpolatePosition(ticker.deltaTime);
+    }
+}
+
+// Good to set transparency and to put it in the front later 
+class Bubble extends Thing {
+    constructor(texture, bubbleInput) {
+        super(texture, bubbleInput);
+        this.alpha = 0.5 + 0.2 * Math.random(); // Between 0.5 and 0.7
+    }
+    handleTicker(ticker) {
+        this.interpolatePosition(ticker.deltaTime);
+    }
+}
+
+class TreasureChest extends Thing {
+    constructor(texture, treasureChestInput) {
+        super(texture, treasureChestInput);
+    }
+
+    changeClickability(clickable) {
+        this.interactive = clickable;
+        this.buttonMode = clickable;
+        if (clickable) {
+            this.on("pointerover", () => {
+                this.tint = 0x00ff00;
+            });
+            this.on("pointerout", () => {
+                this.tint = 0xffffff;
+            });
+            this.on("pointerdown", () => {
+                interactionsSocket.emit("click", {
+                    thing_label: this.label,
+                    username: userInfo.username,
+                    x: this.x,
+                    y: this.y,
+                    timestamp: Date.now()
+                });
+            });
+        } else {
+            this.tint = 0xffffff; // Reset the tint
+            this.off("pointerover");
+            this.off("pointerout");
+            this.off("pointerdown");
+        }
+    }
+
+    handleTicker(ticker) {
+        // Nothing changes for the treasure chest. Only on updates.
+    }
+
+    // Extend the serverUpdate method to change clickability based on the state
+    serverUpdate(treasureChestInput) {
+        super.serverUpdate(treasureChestInput);
+        // Switch textures and set clickability based on the state
+        if (this.state === "closed") {
+            this.texture = PIXI.Assets.get(this.closed_texture);
+            this.changeClickability(false);
+        } 
+        if (this.state === "empty") {
+            this.texture = PIXI.Assets.get(this.empty_texture);
+            this.changeClickability(false);
+        }
+        if (this.state === "full") {
+            this.texture = PIXI.Assets.get(this.full_texture);
+            this.changeClickability(true);
+        }
     }
 }
 

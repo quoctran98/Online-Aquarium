@@ -18,6 +18,7 @@ $("#aquarium-container").get(0).appendChild(app.canvas);
 
 // Preload the goldfish image (we'll do this for all the fish later or use a spritesheet)
 await PIXI.Assets.load("assets/background.png");
+await PIXI.Assets.load("assets/glass.png");
 await PIXI.Assets.load("assets/things.json");
 await PIXI.Assets.load("assets/fish/clownfish.json");
 await PIXI.Assets.load("assets/fish/guppy.json");
@@ -58,12 +59,21 @@ background.scale.x = 960 / background.texture.width;
 background.scale.y = 540 / background.texture.height;
 background.x = 0;
 background.y = 200;
-background.interactive = true;
+background.interactive = true; // Can't click through the background
 app.stage.addChild(background);
 
 // Make an aquarium container :)
 let aquarium = new Aquarium({x: 0, y: 200, width: 960, height: 540});
 app.stage.addChild(aquarium);
+
+// // Add the glass sprite on top of the aquarium
+// let glass = new PIXI.Sprite(PIXI.Assets.get("assets/glass.png"));
+// glass.scale.x = 960 / glass.texture.width;
+// glass.scale.y = 540 / glass.texture.height;
+// glass.x = 0;
+// glass.y = 200;
+// glass.interactive = true;
+// app.stage.addChild(glass);
 
 // Register event listeners for the aquarium socket
 aquariumSocket.on("sync_everything", aquarium.syncEverything);
@@ -75,7 +85,8 @@ aquariumSocket.on("update_thing", aquarium.updateThing);
 
 // Handle the user clicking on the aquarium! (for some reason this doesn't work with the aquarium container)
 let lastClick = 0;
-background.on("pointerdown", (event) => {
+background.on("click", (event) => {
+  console.log("Click!");
   // Prevent spam clicking (should also implement this on the server)
   if (Date.now() - lastClick < 500) { return; } // 500ms
   lastClick = Date.now();

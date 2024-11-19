@@ -1,36 +1,66 @@
 {"frames": {
 
+"bubble.png":
+{
+	"frame": {"x":0,"y":0,"w":159,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":159,"h":160},
+	"sourceSize": {"w":159,"h":160},
+	"anchor": {"x":0.5,"y":0.5}
+},
 "coin.png":
 {
-	"frame": {"x":0,"y":0,"w":85,"h":84},
+	"frame": {"x":159,"y":0,"w":85,"h":84},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":84},
-	"sourceSize": {"w":85,"h":84}
-},
-"fish.png":
-{
-	"frame": {"x":0,"y":84,"w":106,"h":55},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":106,"h":55},
-	"sourceSize": {"w":106,"h":55}
+	"sourceSize": {"w":85,"h":84},
+	"anchor": {"x":0.5,"y":0.5}
 },
 "pellet.png":
 {
-	"frame": {"x":0,"y":139,"w":72,"h":72},
+	"frame": {"x":244,"y":0,"w":72,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":72,"h":72},
-	"sourceSize": {"w":72,"h":72}
+	"sourceSize": {"w":72,"h":72},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"treasure_chest_closed.png":
+{
+	"frame": {"x":316,"y":0,"w":697,"h":512},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
+	"sourceSize": {"w":697,"h":512},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"treasure_chest_empty.png":
+{
+	"frame": {"x":0,"y":512,"w":697,"h":512},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
+	"sourceSize": {"w":697,"h":512},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"treasure_chest_full.png":
+{
+	"frame": {"x":0,"y":1024,"w":697,"h":512},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
+	"sourceSize": {"w":697,"h":512},
+	"anchor": {"x":0.5,"y":0.5}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.1",
 	"image": "things.png",
 	"format": "RGBA8888",
-	"size": {"w":106,"h":211},
+	"size": {"w":1013,"h":1536},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:11a2aeea053ce1c51222de62f0b44597:bd22e2ebc21e9a042a0dc94afdab62fa:a7ffc03d719097afff7952cb633fb6e1$"
+	"smartupdate": "$TexturePacker:SmartUpdate:14553ddeb69635f2ad6aee6569ebf8b6:b42f9cf164cbad1dbd972d39b45519fa:a7ffc03d719097afff7952cb633fb6e1$"
 }
 }

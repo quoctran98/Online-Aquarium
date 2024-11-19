@@ -7,6 +7,9 @@ class Aquarium():
         self.height = height
         self.objects = {}
 
+        # Keep track of updated objects for broadcasting
+        self.broadcast_updates = [] # Moved from the simluate.py loop :)
+
         # Children objects can make use of taps
         self.taps = [] # List of dicts with x, y, username, and timestamp
         self.tap_lifetime = 1000 # milliseconds
@@ -23,6 +26,11 @@ class Aquarium():
             "username": username,
             "timestamp": datetime.datetime.now().timestamp() * 1000
         })
+
+    def add_object(self, object):
+        self.objects[object.label] = object
+        self.broadcast_updates.append(object.summarize)
+        # This method more easily allows us to add add objects from children.
 
     def update(self, delta_time):
         # All we need to do is is slowly remove the oldest taps
@@ -51,13 +59,19 @@ class Store():
         self.items[new_item.label] = new_item
         return(new_item)
 
-    def add_contribution(self, item_label, username, amount):
-        self.items[item_label].contribute(username, amount)
+    def add_contribution(self, item_label, username, amount) -> bool:
+        fully_funded  = self.items[item_label].contribute(username, amount)
+        return(fully_funded)
 
     def save(self, save_dir=settings.STORE_SAVE_DIR):
         fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_store.pkl")
         with open(fname, "wb") as f:
             pickle.dump(self, f)
+
+    @property
+    def summarize(self):
+        # Don't include fully funded items!
+        return([item.summarize for item in self.items.values() if not item.fully_funded])
 
 class StoreItem():
     def __init__(self, store, item_type, item_dict):
@@ -75,13 +89,18 @@ class StoreItem():
         self.money_raised = 0.0
         self.contributors = [] # with dicts of username, amount, and timestamp
 
-    def contribute(self, username, amount):
+    def contribute(self, username, amount) -> bool:
         self.money_raised += amount
         self.contributors.append({
             "username": username,
             "amount": amount,
             "timestamp": datetime.datetime.now().timestamp()
         })
+        return(self.money_raised >= self.price)
+    
+    @property
+    def fully_funded(self):
+        return(self.money_raised >= self.price)
 
     @property
     def summarize(self):
@@ -89,7 +108,6 @@ class StoreItem():
             "label": self.label,
             "item_type": self.item_type,
             "item_name": self.item_name,
-            "description": self.description,
             "price": self.price,
             "image_file": self.image_file,
             "money_raised": self.money_raised,
@@ -289,71 +307,3 @@ class Fish(Thing):
         else:
             Warning(f"Unknown fish state {self.state}")
         return(self.updated_this_loop)
-        
-class Food(Thing):
-    def __init__(self, aquarium, x=None, y=None):
-
-        # Redefine properties from Thing
-        super().__init__(aquarium)
-        self.class_hierarchy.append("Food")
-        self.spritesheet_json = "assets/things.json"
-        self.default_texture = "pellet.png"
-        self.default_animation = None
-        self.width = 10
-        self.height = 10
-        self.properties_to_broadcast.extend([
-            "nutrition"
-        ])
-
-        # Set the food-specific properties
-        self.nutrition = 0.1 # 0 to 1
-        self.lifetime = 60 # Seconds
-
-        # Make the food fall straight down
-        self.x = x
-        self.y = y
-        self.destination_x = self.x
-        self.destination_y = aquarium.height - self.height
-        self.speed = 20 # Pixels per second
-
-    def update(self, delta_time):
-        self.updated_this_loop = False
-        self._move_toward_destination(delta_time)
-        self._calculate_lifetime()
-
-class Coin(Thing):
-    def __init__(self, aquarium, x=None, y=None):
-
-        # Redefine properties from Thing
-        super().__init__(aquarium)
-        self.class_hierarchy.append("Coin")
-        self.spritesheet_json = "assets/things.json"
-        self.default_texture = "coin.png"
-        self.default_animation = None
-        self.width = 20
-        self.height = 20
-        self.properties_to_broadcast.extend([
-            "value"
-        ])
-
-        # Set the coin-specific properties
-        self.value = 0.01
-        self.lifetime = 60 # Seconds
-
-        # Make the coin fall straight down
-        self.x = x
-        self.y = y
-        self.destination_x = x
-        self.destination_y = aquarium.height - self.height
-        self.speed = 100 # Pixels per second
-
-    def update(self, delta_time):
-        self.updated_this_loop = False
-        self._move_toward_destination(delta_time)
-        self._calculate_lifetime()
-
-    def click(self, user):
-        user.money = round(user.money + self.value, 2)
-        user.save()
-        self.remove()
-        
