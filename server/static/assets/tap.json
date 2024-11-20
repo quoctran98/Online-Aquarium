@@ -1,0 +1,95 @@
+{"frames": {
+
+"tap_01.png":
+{
+	"frame": {"x":381,"y":85,"w":10,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":10},
+	"sourceSize": {"w":10,"h":10}
+},
+"tap_02.png":
+{
+	"frame": {"x":381,"y":63,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+"tap_03.png":
+{
+	"frame": {"x":349,"y":63,"w":30,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
+	"sourceSize": {"w":30,"h":30}
+},
+"tap_04.png":
+{
+	"frame": {"x":411,"y":53,"w":40,"h":40},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":40},
+	"sourceSize": {"w":40,"h":40}
+},
+"tap_05.png":
+{
+	"frame": {"x":411,"y":1,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
+},
+"tap_06.png":
+{
+	"frame": {"x":349,"y":1,"w":60,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":60},
+	"sourceSize": {"w":60,"h":60}
+},
+"tap_07.png":
+{
+	"frame": {"x":277,"y":1,"w":70,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":70},
+	"sourceSize": {"w":70,"h":70}
+},
+"tap_08.png":
+{
+	"frame": {"x":195,"y":1,"w":80,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":80},
+	"sourceSize": {"w":80,"h":80}
+},
+"tap_09.png":
+{
+	"frame": {"x":103,"y":1,"w":90,"h":90},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":90,"h":90},
+	"sourceSize": {"w":90,"h":90}
+},
+"tap_10.png":
+{
+	"frame": {"x":1,"y":1,"w":100,"h":100},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":100},
+	"sourceSize": {"w":100,"h":100}
+}},
+"animations": {
+	"tap": ["tap_01.png","tap_02.png","tap_03.png","tap_04.png","tap_05.png","tap_06.png","tap_07.png","tap_08.png","tap_09.png","tap_10.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "tap.png",
+	"format": "RGBA8888",
+	"size": {"w":462,"h":102},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3d3e1c5085dbc0c2d58bd67517977a91:7854c511b5ee64dc24a58f281e9fe7a2:96a7b0cacb849d6dac37b911444b0452$"
+}
+}

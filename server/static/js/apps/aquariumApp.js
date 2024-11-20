@@ -18,7 +18,7 @@ $("#aquarium-container").get(0).appendChild(app.canvas);
 
 // Preload the goldfish image (we'll do this for all the fish later or use a spritesheet)
 await PIXI.Assets.load("assets/background.png");
-await PIXI.Assets.load("assets/glass.png");
+await PIXI.Assets.load("assets/tap.json");
 await PIXI.Assets.load("assets/things.json");
 await PIXI.Assets.load("assets/fish/clownfish.json");
 await PIXI.Assets.load("assets/fish/guppy.json");
@@ -27,14 +27,18 @@ await PIXI.Assets.load("assets/shelf/fish_flakes.png");
 await PIXI.Assets.load("assets/shelf/brush.png");
 await PIXI.Assets.load("assets/cursor.png");
 
-// Render the shelf container and shelf sprite
+// Make a big container for everything, so we can easily rescale and resize it :)
+let gameContainer = new PIXI.Container();
+
+// Make a shelf container for toolbar stuff :)
 let shelfContainer = new PIXI.Container();
 shelfContainer.x = 0;
 shelfContainer.y = 0;
 shelfContainer.width = 960;
 shelfContainer.height = 200;
-app.stage.addChild(shelfContainer);
+gameContainer.addChild(shelfContainer);
 
+// Render the shelf
 let shelfSprite = new PIXI.Sprite(PIXI.Assets.get("assets/shelf/shelf.png"));
 shelfSprite.scale.x = 0.5;
 shelfSprite.scale.y = 0.5;
@@ -53,27 +57,68 @@ fetch("/data/tools.json")
     }
 });
 
-// Draw the aquarium (load the background and make sure it's 960x540)
-let background = new PIXI.Sprite(PIXI.Assets.get("assets/background.png"));
-background.scale.x = 960 / background.texture.width;
-background.scale.y = 540 / background.texture.height;
-background.x = 0;
-background.y = 200;
-background.interactive = true; // Can't click through the background
-app.stage.addChild(background);
+// Draw the background (load the background and make sure it's 960x540)
+let aquariumBackground = new PIXI.Sprite(PIXI.Assets.get("assets/background.png"));
+aquariumBackground.scale.x = 960 / aquariumBackground.texture.width;
+aquariumBackground.scale.y = 540 / aquariumBackground.texture.height;
+aquariumBackground.x = 0;
+aquariumBackground.y = 200;
+aquariumBackground.interactive = true; // Can't click through the background
+gameContainer.addChild(aquariumBackground);
 
-// Make an aquarium container :)
+// Add the actual aquarium to the aquarium container
 let aquarium = new Aquarium({x: 0, y: 200, width: 960, height: 540});
-app.stage.addChild(aquarium);
+gameContainer.addChild(aquarium);
 
-// // Add the glass sprite on top of the aquarium
-// let glass = new PIXI.Sprite(PIXI.Assets.get("assets/glass.png"));
-// glass.scale.x = 960 / glass.texture.width;
-// glass.scale.y = 540 / glass.texture.height;
-// glass.x = 0;
-// glass.y = 200;
-// glass.interactive = true;
-// app.stage.addChild(glass);
+// Add the aquarium container to the stage
+app.stage.addChild(gameContainer);
+
+////////////////////////////////////////
+// Resize the Containers to fit the app
+////////////////////////////////////////
+
+// Assuming `app` is your PIXI Application and `container` is your PIXI Container
+const resize = () => {
+  const divWidth = app.view.parentElement.clientWidth; // Get the div's width
+  const divHeight = app.view.parentElement.clientHeight; // Get the div's height
+
+  const containerWidth = gameContainer.width; // Fixed container width
+  const containerHeight = gameContainer.height; // Fixed container height
+
+  // Calculate aspect ratios
+  const divAspect = divWidth / divHeight;
+  const containerAspect = containerWidth / containerHeight;
+
+  // Determine scaling factor
+  let scale;
+  if (divAspect > containerAspect) {
+      // Div is wider relative to container, scale by height
+      scale = divHeight / containerHeight;
+  } else {
+      // Div is taller relative to container, scale by width
+      scale = divWidth / containerWidth;
+  }
+
+  // Apply scale to container
+  gameContainer.scale.set(scale, scale);
+
+  // Center the container
+  gameContainer.x = (divWidth - containerWidth * scale) / 2;
+  gameContainer.y = 0;
+};
+
+// Attach the resize function to the window resize event
+window.addEventListener('resize', () => {
+  resize();
+  app.renderer.resize(app.view.parentElement.clientWidth, app.view.parentElement.clientHeight);
+});
+
+// Initial call to set up the layout
+resize();
+
+//////////////////////////////
+// Add socket event listeners
+//////////////////////////////
 
 // Register event listeners for the aquarium socket
 aquariumSocket.on("sync_everything", aquarium.syncEverything);
@@ -85,7 +130,7 @@ aquariumSocket.on("update_thing", aquarium.updateThing);
 
 // Handle the user clicking on the aquarium! (for some reason this doesn't work with the aquarium container)
 let lastClick = 0;
-background.on("click", (event) => {
+aquariumBackground.on("click", (event) => {
   console.log("Click!");
   // Prevent spam clicking (should also implement this on the server)
   if (Date.now() - lastClick < 500) { return; } // 500ms

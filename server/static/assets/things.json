@@ -2,65 +2,67 @@
 
 "bubble.png":
 {
-	"frame": {"x":0,"y":0,"w":159,"h":160},
+	"frame": {"x":1877,"y":1,"w":159,"h":160},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":159,"h":160},
-	"sourceSize": {"w":159,"h":160},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":159,"h":160}
+},
+"circle.png":
+{
+	"frame": {"x":1347,"y":457,"w":30,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
+	"sourceSize": {"w":30,"h":30}
 },
 "coin.png":
 {
-	"frame": {"x":159,"y":0,"w":85,"h":84},
+	"frame": {"x":1877,"y":163,"w":85,"h":84},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":84},
-	"sourceSize": {"w":85,"h":84},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":85,"h":84}
 },
 "pellet.png":
 {
-	"frame": {"x":244,"y":0,"w":72,"h":72},
+	"frame": {"x":1877,"y":249,"w":72,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":72,"h":72},
-	"sourceSize": {"w":72,"h":72},
-	"anchor": {"x":0.5,"y":0.5}
+	"sourceSize": {"w":72,"h":72}
 },
 "treasure_chest_closed.png":
 {
-	"frame": {"x":316,"y":0,"w":697,"h":512},
+	"frame": {"x":1347,"y":1,"w":528,"h":454},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
-	"sourceSize": {"w":697,"h":512},
-	"anchor": {"x":0.5,"y":0.5}
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":54,"w":528,"h":454},
+	"sourceSize": {"w":697,"h":512}
 },
 "treasure_chest_empty.png":
 {
-	"frame": {"x":0,"y":512,"w":697,"h":512},
+	"frame": {"x":1,"y":1,"w":671,"h":507},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
-	"sourceSize": {"w":697,"h":512},
-	"anchor": {"x":0.5,"y":0.5}
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":1,"w":671,"h":507},
+	"sourceSize": {"w":697,"h":512}
 },
 "treasure_chest_full.png":
 {
-	"frame": {"x":0,"y":1024,"w":697,"h":512},
+	"frame": {"x":674,"y":1,"w":671,"h":507},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":697,"h":512},
-	"sourceSize": {"w":697,"h":512},
-	"anchor": {"x":0.5,"y":0.5}
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":1,"w":671,"h":507},
+	"sourceSize": {"w":697,"h":512}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.1",
 	"image": "things.png",
 	"format": "RGBA8888",
-	"size": {"w":1013,"h":1536},
+	"size": {"w":2037,"h":509},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:14553ddeb69635f2ad6aee6569ebf8b6:b42f9cf164cbad1dbd972d39b45519fa:a7ffc03d719097afff7952cb633fb6e1$"
+	"smartupdate": "$TexturePacker:SmartUpdate:1f64eb0b61fdbd686eb48e8808e2c1de:06995fad56ca737cd3958daa520f0ccf:a7ffc03d719097afff7952cb633fb6e1$"
 }
 }

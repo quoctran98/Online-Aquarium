@@ -12,7 +12,12 @@ div {
   display: flex;
   width: 100vw;
   height: 100vh;
-  border: 1px solid red
+  border: 1px solid red;
+}
+
+#aquarium-container {
+  flex: 0 0 70%;
+  border: 1px solid blue;
 }
 
 #chat-messages-container {
@@ -52,11 +57,6 @@ div {
 
 .store-item img {
   max-width: 40%;
-}
-
-#aquarium-container {
-  flex: 0 0 70%;
-  border: 1px solid blue;
 }
 
 #sidebar {

@@ -1,8 +1,8 @@
 from flask_socketio import emit
 from server.helper import settings
-from server.models.game import Fish, Aquarium
+from server.models.aquarium import Fish, Aquarium
 from server.models.fish import Clownfish, Guppy
-from server.models.things import Coin, Food, TreasureChest
+from server.models.things import Coin, Food, TreasureChest, Tap
 from server.models.user import User
 from datetime import datetime, timezone
 import time, random
@@ -20,10 +20,6 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
     last_sync = datetime.now(timezone.utc)
     last_backup = datetime.now(timezone.utc)
 
-    # Give it a free fish :)
-    clownfish = Clownfish(aquarium)
-    aquarium.objects[clownfish.label] = clownfish
-
     while True:
 
         # Start a timer and calculate the time since the last loop
@@ -32,7 +28,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
 
         # Set a flag to indicate whether we should broadcast a sync (or update individual items)
         broadcast_sync = False
-        # broadcast_updates = [] -> moved to a propertie of the aquarium
+        # broadcast_updates = [] -> moved to a property of the aquarium
         # Reset aquarium.broadcast_updates
         aquarium.broadcast_updates = []
       
@@ -54,7 +50,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
                 case "tap": 
                     #  Users are ensured to exist before data is sent to the queue! No need to check here :)
                     user = User.get_by_username(data["username"])
-                    aquarium.tap(data["x"], data["y"], user)
+                    aquarium.add_object(Tap(aquarium, data["x"], data["y"], user.username))
 
                 case "pickup" | "click": # No functional difference between the two
                     # How do we deal with multiple users interacting with the same object?
@@ -68,8 +64,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
                     match data["tool"]:
                         case "fish_flakes":
                             flakes = Food(aquarium, data["x"], data["y"])
-                            aquarium.objects[flakes.label] = flakes
-                            aquarium.broadcast_updates.append(flakes.summarize)
+                            aquarium.add_object(flakes)
 
                 case "sync":
                     broadcast_sync = True
@@ -110,7 +105,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
         # Every few minutes (BACKUP_FREQUENCY), save the current state of the aquarium
         if (loop_start - last_backup).total_seconds() > BACKUP_FREQUENCY:
             last_backup = loop_start
-            aquarium.save(settings.AQUARIUM_SAVE_DIR)
+            aquarium.save()
             print(f"Backup saved at {last_backup}")
 
         # Calculate the time it took to run the loop and wait for the next tick

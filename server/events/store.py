@@ -41,4 +41,4 @@ def register_events(socketio, command_queue, store):
 
             # socketio.emit("update_item", store.items[data["label"]].summarize, namespace="/store") # THIS DOESN'T WORK?
             socketio.emit("summarize_store", store.summarize, namespace="/store") 
-            store.save(settings.STORE_SAVE_DIR)
+            store.save()

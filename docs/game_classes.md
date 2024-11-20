@@ -48,9 +48,11 @@ This is the base class for all objects in the Aquarium. This class is abstract a
 
 - `class_hierarchy` (list(str)): A list of strings that represent the class hierarchy of the object. For example, a `Guppy` object would have `['Thing', 'Fish', 'Guppy']`.
 
+- `aspect_ratio` (float): The aspect ratio of the object. Can be used to dynmically calculate height! Set to `None` if you want to override the height calculation (make sure to set `_height`).
+
 - `width` (float): The width of the object.
 
-- `height` (float): The height of the object.
+- `height` (float) (method): The height of the object. Method that returns the height of the object based on the aspect ratio and width. Set `_height` to a float to override this method.
 
 - `x` (float): The x-coordinate of the object.
 

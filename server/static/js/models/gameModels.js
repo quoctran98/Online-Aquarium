@@ -158,6 +158,9 @@ class Thing extends PIXI.AnimatedSprite {
     }
 
     interpolatePosition(deltaTime) {
+        if (this.speed === 0) {
+            return; // Don't interpolate if the Thing isn't moving! 0 speed leads to NaNs!
+        }
         const time_since_update = (Date.now() - this.local_update_time) / 1000; // in seconds
         const distance_covered = this.speed * time_since_update; // in pixels
         const total_distance = Math.sqrt((this.destination_x - this.server_x) ** 2 + (this.destination_y - this.server_y) ** 2);
@@ -276,6 +279,35 @@ class Bubble extends Thing {
     handleTicker(ticker) {
         this.interpolatePosition(ticker.deltaTime);
     }
+}
+
+class Tap extends Thing {
+    constructor(texture, tapInput) {
+        super(texture, tapInput);
+        this.time_created = Date.now();
+        this.animationSpeed = 0.1;
+
+        // Play the tap animation only once
+        this.loop = false;
+        this.onComplete = () => {
+            this.destroy();
+        };
+    }
+
+    // handleTicker(ticker) {
+    //     // Fade out :)
+    //     const time_since_creation = (Date.now() - this.time_created) / 1000; // in seconds
+    //     this.alpha = 1 - (time_since_creation / 5); // 5 seconds to fade out
+    // }
+
+    // serverUpdate(tapInput) {
+    //     // Do nothing on an update
+    //     // Taps don't move but we don't the server to reset the animation
+    //     if (thingInput.label !== this.label) {
+    //         console.log(`Thing.update() called with wrong thing label: ${thingInput.label} for ${this.label}`);
+    //         return;
+    //     }
+    // }
 }
 
 class TreasureChest extends Thing {

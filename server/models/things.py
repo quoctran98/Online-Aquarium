@@ -1,4 +1,4 @@
-from server.models.game import Thing
+from server.models.aquarium import Thing
 import datetime, random, math
 
 class Food(Thing):
@@ -10,8 +10,8 @@ class Food(Thing):
         self.spritesheet_json = "assets/things.json"
         self.default_texture = "pellet.png"
         self.default_animation = None
+        self.aspect_ratio = 1
         self.width = 10
-        self.height = 10
         self.properties_to_broadcast.extend([
             "nutrition"
         ])
@@ -41,8 +41,8 @@ class Coin(Thing):
         self.spritesheet_json = "assets/things.json"
         self.default_texture = "coin.png"
         self.default_animation = None
+        self.aspect_ratio = 1
         self.width = 20
-        self.height = 20
         self.properties_to_broadcast.extend([
             "value"
         ])
@@ -77,8 +77,8 @@ class TreasureChest(Thing):
         self.spritesheet_json = "assets/things.json"
         self.default_texture = "treasure_chest_closed.png"
         self.default_animation = None
-        self.width = 348.50/2
-        self.height = 256/2
+        self.aspect_ratio = 1.361328125
+        self.width = 174.25
         self.properties_to_broadcast.extend([
             "state", "value", "closed_texture", "empty_texture", "full_texture"
         ])
@@ -155,8 +155,8 @@ class Bubble(Thing):
         self.spritesheet_json = "assets/things.json"
         self.default_texture = "bubble.png"
         self.default_animation = None
+        self.aspect_ratio = 1
         self.width = random.randint(20, 40)
-        self.height = self.width
         # self.properties_to_broadcast.extend([])
         # No bubble-specific properties!
 
@@ -172,3 +172,36 @@ class Bubble(Thing):
         self._move_toward_destination(delta_time)
         if (self.y <= self.destination_y):
             self.remove() # Pop the bubble when it reaches the top (no animation for now)
+
+class Tap(Thing):
+    # A very abstract "Thing" but easy to implement as one :)
+    def __init__(self, aquarium, x, y, username):
+
+        # Redefine properties from Thing
+        super().__init__(aquarium)
+        self.class_hierarchy.append("Tap")
+        self.spritesheet_json = "assets/tap.json"
+        self.default_texture = None
+        self.default_animation = "tap"
+        self.aspect_ratio = 1
+        self.width = 40
+        self.lifetime = 5 # Seconds
+        self.properties_to_broadcast.extend([
+            "username"
+        ])
+
+        # Set the tap-specific properties
+        self.username = username 
+        # The username of the player that tapped the glass
+
+        # Set the tap's position and make it not move
+        self.x = x
+        self.y = y
+        self.destination_x = x
+        self.destination_y = y
+        self.speed = 0
+
+    def update(self, delta_time):
+        self.updated_this_loop = False
+        self._calculate_lifetime()
+        # All taps do is exist for a bit and then disappear

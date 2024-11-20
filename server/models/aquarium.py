@@ -1,4 +1,4 @@
-from server.helper import settings, aquarium_types, store_items
+from server.helper import settings, save_to_s3
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
@@ -9,23 +9,11 @@ class Aquarium():
 
         # Keep track of updated objects for broadcasting
         self.broadcast_updates = [] # Moved from the simluate.py loop :)
-
-        # Children objects can make use of taps
-        self.taps = [] # List of dicts with x, y, username, and timestamp
-        self.tap_lifetime = 1000 # milliseconds
         
         # We don't usually need to broadcast the Aquarium 
         self.properties_to_broadcast = [
             "width", "height"
         ]
-    
-    def tap(self, x, y, username):
-        self.taps.append({
-            "x": x,
-            "y": y,
-            "username": username,
-            "timestamp": datetime.datetime.now().timestamp() * 1000
-        })
 
     def add_object(self, object):
         self.objects[object.label] = object
@@ -33,9 +21,10 @@ class Aquarium():
         # This method more easily allows us to add add objects from children.
 
     def update(self, delta_time):
-        # All we need to do is is slowly remove the oldest taps
-        self.taps = [tap for tap in self.taps if (datetime.datetime.now().timestamp() * 1000 - tap["timestamp"]) < self.tap_lifetime]
+        # Nothing to do here yet...
+        pass
 
+    @property
     def summarize(self):
         return_dict = {
             "update_time": datetime.datetime.now().timestamp() * 1000,
@@ -45,98 +34,53 @@ class Aquarium():
             return_dict[prop] = getattr(self, prop)
         return(return_dict)
 
-    def save(self, save_dir=settings.AQUARIUM_SAVE_DIR):
-        fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl")
-        with open(fname, "wb") as f:
-            pickle.dump(self, f)
-
-class Store():
-    def __init__(self):
-        self.items = {} # {label: StoreItem}
-
-    def add_item(self, item_type, item_dict):
-        new_item = StoreItem(self, item_type, item_dict)
-        self.items[new_item.label] = new_item
-        return(new_item)
-
-    def add_contribution(self, item_label, username, amount) -> bool:
-        fully_funded  = self.items[item_label].contribute(username, amount)
-        return(fully_funded)
-
-    def save(self, save_dir=settings.STORE_SAVE_DIR):
-        fname = os.path.join(save_dir, f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_store.pkl")
-        with open(fname, "wb") as f:
-            pickle.dump(self, f)
-
-    @property
-    def summarize(self):
-        # Don't include fully funded items!
-        return([item.summarize for item in self.items.values() if not item.fully_funded])
-
-class StoreItem():
-    def __init__(self, store, item_type, item_dict):
-        self.store = store
-        self.label = str(uuid.uuid4())
-        self.item_type = item_type
-
-        # Unpack the item_type from the store_items dictionary
-        # item_name, description, price, image_file
-        print(item_dict)
-        for key, value in item_dict.items():
-            setattr(self, key, value)
-
-        # Keep track of how much money is has been raised for this item
-        self.money_raised = 0.0
-        self.contributors = [] # with dicts of username, amount, and timestamp
-
-    def contribute(self, username, amount) -> bool:
-        self.money_raised += amount
-        self.contributors.append({
-            "username": username,
-            "amount": amount,
-            "timestamp": datetime.datetime.now().timestamp()
-        })
-        return(self.money_raised >= self.price)
-    
-    @property
-    def fully_funded(self):
-        return(self.money_raised >= self.price)
-
-    @property
-    def summarize(self):
-        return_dict = {
-            "label": self.label,
-            "item_type": self.item_type,
-            "item_name": self.item_name,
-            "price": self.price,
-            "image_file": self.image_file,
-            "money_raised": self.money_raised,
-            # "contributors": self.contributors
-        }
-        return(return_dict)
+    def save(self, save_dir=settings.S3_AQUARIUM_SAVE_DIR):
+        filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl"
+        pickle_obj = pickle.dumps(self)
+        save_to_s3(pickle_obj, filename, save_dir)
+        # Maybe not the best way, but let's also save a "latest" version!!
+        save_to_s3(pickle_obj, "latest.pkl", save_dir)
 
 class Thing():
     def __init__(self, aquarium):
         self.aquarium = aquarium
         self.label = str(uuid.uuid4())
-        self.class_hierarchy = ["Thing"]
+
+        # Size properties
+        self.aspect_ratio = None # aspect_ratio = width / height
         self.width = 0
-        self.height = 0
+        self._height = 0
+
+        # Position and movement properties
         self.x = 0
         self.y = 0
         self.speed = 0
         self.destination_x = 0
         self.destination_y = 0
-        self.lifetime = None # Seconds, None for infinite
+
+        # Lifetime properties and housekeeping
         self.time_created = datetime.datetime.now().timestamp() * 1000
+        self.lifetime = None # Seconds, None for infinite
+
+        # Texture/animation properties
         self.spritesheet_json = None
         self.default_texture = None
         self.default_animation = None
+
+        # Houskeeping properties
+        self.class_hierarchy = ["Thing"]
         self.updated_this_loop = False
         self.properties_to_broadcast = [
-            "label", "class_hierarchy", "x", "y", "speed", "destination_x", "destination_y",
+            "label", "class_hierarchy", "x", "y", "speed", "destination_x", "destination_y", "aspect_ratio",
             "width", "height", "time_created", "spritesheet_json", "default_texture", "default_animation"
         ]
+
+    @property
+    def height(self):
+        if self.aspect_ratio is None:
+            return(self._height)
+        else:
+            return(self.width / self.aspect_ratio)
 
     def update(self, delta_time):
         # Placeholder for child classes to override
@@ -151,6 +95,13 @@ class Thing():
         # Will be called by in the command queue when a user clicks on the object
         # This will occur BEFORE the update loop (and the update loop will call update() again)
         pass
+
+    def _new_object_destination(self, object, speed=None):
+        # Set a new object as the destination
+        self.destination_x = object.x
+        self.destination_y = object.y
+        self.speed = speed if speed is not None else self.max_speed
+        self.updated_this_loop = True
 
     def _move_toward_destination(self, delta_time):
         # Could be optimized by only calculating the direction once (but that's another property to keep track of)
@@ -211,15 +162,15 @@ class Fish(Thing):
         self.spritesheet_json = "assets/things.json"
         self.default_texture = "fish.png"
         self.default_animation = None
+        self.aspect_ratio = 1
         self.width = 20
-        self.height = 20
         self.properties_to_broadcast.extend([
             "state", "hunger",
         ])
 
         # Set the fish-specific properties
         self.fish_name = "unnamed_fish"
-        self.state = "idle" # idle, feeding, fleeing,
+        self.state = "idle" # idle, feeding, fleeing, playing
         self.hunger = 0.0 # 0 to 1
         self.hunger_rate = 0.01 # Per second
         self.max_speed = 0 # Pixels per second
@@ -227,6 +178,7 @@ class Fish(Thing):
         # References for when the fish is in a certain state
         self.food = None # Food or Fish object
         self.predator = None # Fish object
+        self.plaything = None # Fish or Tap or other object
 
     def _calculate_hunger(self, delta_time):
         self.hunger += self.hunger_rate * delta_time.total_seconds()
@@ -235,18 +187,19 @@ class Fish(Thing):
     def _choose_state(self):
         # Placeholder for child classes to override with fish-specific behavior
         self.state = "idle"
+
+    def _playing(self, delta_time):
+        if (self.plaything is None) or (self.plaything not in self.aquarium.objects.values()):
+            self.state = "idle"
+            self.plaything = None
+        else:
+            self._new_object_destination(self.plaything, speed=self.max_speed)
+            self._move_toward_destination(delta_time)
     
     def __idle(self, delta_time) -> bool:
         # Default idle behavior is to move around randomly
         has_new_destination = False
-        if (len(self.aquarium.taps) > 0) and (random.random() < 0.01): 
-            # 1% chance per tick of going toward a random tap (doesn't account for switching taps)
-            tap = random.choice(self.aquarium.taps)
-            self.destination_x = tap["x"]
-            self.destination_y = tap["y"]
-            self.speed = random.uniform(self.max_speed/4, self.max_speed/2)
-            self.updated_this_loop = True
-        elif math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
+        if math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
             # If the fish is within 10 pixels of its destination, choose a new one
             self.destination_x = random.uniform(0 + self.width, self.aquarium.width - self.width)
             self.destination_y = random.uniform(0 + self.height, self.aquarium.height - self.height)
@@ -287,8 +240,8 @@ class Fish(Thing):
             angle_away = math.atan2(self.y - self.predator.y, self.x - self.predator.x)
             self.destination_x = self.x + 100 * math.cos(angle_away)
             self.destination_y = self.y + 100 * math.sin(angle_away)
-            self.destination_x = max(0, min(self.destination_x, self.aquarium.width))
-            self.destination_y = max(0, min(self.destination_y, self.aquarium.height))
+            self.destination_x = max(0 + self.width, min(self.destination_x, self.aquarium.width - self.width))
+            self.destination_y = max(0 + self.height, min(self.destination_y, self.aquarium.height - self.height)) 
             self.speed = self.max_speed
             self._move_toward_destination(delta_time)
 
@@ -304,6 +257,8 @@ class Fish(Thing):
             self.__feeding(delta_time)
         elif self.state == "fleeing":
             self.__fleeing(delta_time)
+        elif self.state == "playing":
+            self._playing(delta_time)
         else:
             Warning(f"Unknown fish state {self.state}")
         return(self.updated_this_loop)

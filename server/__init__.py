@@ -2,13 +2,12 @@ from flask import Flask, session
 from flask_socketio import SocketIO
 from flask_login import LoginManager, login_user
 from flask_session import Session
-from datetime import datetime, timezone
-import pytz, json, queue, pickle, os
+import json, queue
 
 from server.simulate import aquarium_simulation
-from server.helper import settings, store_items, format_number, dict_to_html
+from server.helper import settings, store_items, format_number, dict_to_html, load_latest_from_s3
 from server.models.user import User, GuestUser, UserManager
-from server.models.game import Aquarium, Store, StoreItem
+from server.models.fish import Clownfish
 
 def create_app():
 
@@ -60,16 +59,21 @@ def create_app():
     user_manager = UserManager() # Handles abstractly accessing users (and for now cursors)
     chat_manager = None # Placeholder for now
 
-    # Start the aquarium simulation
-    # saved_aquarium_fname = os.path.join(settings.AQUARIUM_SAVE_DIR, "20241106_200326_fishbowl.pkl")
-    # aquarium = pickle.load(open(saved_aquarium_fname, "rb"))
-    aquarium = Aquarium()
-    socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager, aquarium)
+    # Load the aquarium and store from S3
+    aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
+    store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR) 
 
-    # Set up the store
-    store = Store()
-    for item_type in store_items.keys():
-        store.add_item("item_type", store_items[item_type])
+    # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
+    # aquarium = Aquarium()
+    # aquarium.add_object(Clownfish(aquarium))
+    # aquarium.save()
+    # store = Store()
+    # for item_type in store_items.keys():
+    #     store.add_item("item_type", store_items[item_type])
+    # store.save()
+
+    # Start the aquarium simulation in the background (unsure what multiple threads will do...)
+    socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager, aquarium)
 
     # Register HTTP routes
     from .routes.main import main as main_blueprint
