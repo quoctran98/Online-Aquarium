@@ -121,7 +121,10 @@ resize();
 //////////////////////////////
 
 // Register event listeners for the aquarium socket
-aquariumSocket.on("sync_everything", aquarium.syncEverything);
+aquariumSocket.on("sync_everything", (data) => {
+  console.log(data);
+  aquarium.syncEverything(data);
+});
 aquariumSocket.on("update_thing", aquarium.updateThing);
 
 //////////////////////////////

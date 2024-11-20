@@ -94,6 +94,7 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
         # Or if a broadcast_sync flag is set
         if ((loop_start - last_sync).total_seconds() > SYNC_FREQUENCY) or broadcast_sync:
             last_sync = loop_start
+            print("Syncing everything")
             socketio.emit("sync_everything", [thing.summarize for thing in aquarium.objects.values()], namespace="/aquarium")
         
         # Broadcast individual updates for Things that require it
