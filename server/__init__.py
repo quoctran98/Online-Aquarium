@@ -9,6 +9,9 @@ from server.helper import settings, store_items, format_number, dict_to_html, lo
 from server.models.user import User, GuestUser, UserManager
 from server.models.fish import Clownfish
 
+import eventlet
+eventlet.monkey_patch()
+
 def create_app():
 
     # Set up Flask app
