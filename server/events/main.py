@@ -5,6 +5,7 @@ def register_events(socketio):
 
     @socketio.on("connect", namespace="/")
     def connect():
+        print(f"🔌 {request.sid} connected")
         pass
 
     @socketio.on("disconnect", namespace="/")
