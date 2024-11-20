@@ -96,6 +96,7 @@ def create_app():
     store_events.register_events(socketio, command_queue, store)
                                    
     # Make sure the app is running with the correct settings
-    # print(settings)
+    mongo_domain = settings.MONGODB_CONNECTION_STRING.split("@")[1].split("/")[0]
+    print(f"Started in {settings.ENVIRONMENT} mode connected to the {settings.S3_BUCKET_NAME} bucket and the {mongo_domain} database.")
 
     return(app)

@@ -34,7 +34,6 @@ class StoreItem():
 
         # Unpack the item_type from the store_items dictionary
         # item_name, description, price, image_file
-        print(item_dict)
         for key, value in item_dict.items():
             setattr(self, key, value)
 
