@@ -1,7 +1,7 @@
-from server.__init__ import create_app
-
 import eventlet
 eventlet.monkey_patch()
+
+from server.__init__ import create_app
 
 if __name__ == '__main__':
     create_app = create_app()

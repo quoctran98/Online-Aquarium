@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, session
 from flask_socketio import SocketIO
 from flask_login import LoginManager, login_user
@@ -8,9 +11,6 @@ from server.simulate import aquarium_simulation
 from server.helper import settings, store_items, format_number, dict_to_html, load_latest_from_s3
 from server.models.user import User, GuestUser, UserManager
 from server.models.fish import Clownfish
-
-import eventlet
-eventlet.monkey_patch()
 
 def create_app():
 
