@@ -42,7 +42,8 @@ class StoreItem():
         self.contributors = [] # with dicts of username, amount, and timestamp
 
     def contribute(self, username, amount) -> bool:
-        self.money_raised += amount
+        amount = round(amount, 2)
+        self.money_raised = round(self.money_raised + amount, 2)
         self.contributors.append({
             "username": username,
             "amount": amount,

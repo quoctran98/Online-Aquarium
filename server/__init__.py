@@ -68,6 +68,11 @@ def create_app():
     aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
     store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR) 
 
+    # One time hot fix for the store items (floating point precision)
+    for item in store.items.values():
+        item.money_raised -= 0.01
+        item.money_raised = round(item.money_raised, 2)
+
     # # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
     # aquarium = Aquarium()
     # aquarium.add_object(Clownfish(aquarium))
