@@ -54,7 +54,7 @@ class User(UserMixin):
                 "user_id": uuid.uuid4().hex})
             return(True)
         
-    def process_money(self, amount):
+    def subtract_money(self, amount):
         try:
             amount = float(amount)
         except ValueError:
@@ -117,11 +117,12 @@ class GuestUser(AnonymousUserMixin):
         mongo_guests_collection.insert_one(new_guest.summarize_private)
         return(new_guest)
     
-    def process_money(self, amount):
+    def subtract_money(self, amount):
         try:
             amount = float(amount)
         except ValueError:
             return(False)
+        amount = round(amount, 2)
         if amount > self.money:
             return(False)
         self.money = round(self.money - amount, 2)

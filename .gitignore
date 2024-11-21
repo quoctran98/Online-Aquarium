@@ -1,9 +1,10 @@
-# Aquarium Online-Specific Directories
+# Aquarium Online-Specific Directories and Files
 /server/saves/
 /server/logs/
 /server/sessions/
 /flask_session/
 **.ipynb
+**.afdesign
 
 # MacOS system files
 .DS_Store

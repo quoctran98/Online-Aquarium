@@ -70,25 +70,94 @@ class Tool extends PIXI.Sprite {
     }
 }
 
-// Cursors are other players' cursors (will also show them picking up items)
-class Cursor extends PIXI.Sprite {
-    constructor(texture, cursor_input) {
-        super(texture);
+// To render other players' cursors and have them do things
+// (I hate how much we hardcode stuff here...)
+class Cursor extends PIXI.AnimatedSprite {
+    constructor(cursor_input) {
+
+        // Load the sprite with a static texture initially
+        const texture = PIXI.Assets.get("cursor_point_0.png"); // In spritesheet!
+        super([texture]);
+
+        // Keep track of who the cursor belongs to
         this.label = cursor_input.username;
         this.username = cursor_input.username;
-        this.scale.x = 30 / this.texture.width;
-        this.scale.y = 30 / this.texture.height;
-        this.anchor.set(0.5);
+        
+        // Set anchor to the top left corner (to mimick actual cursor position)
+        this.anchor.set(0, 0);
+        // Set size to real cursor size -- rescaling our whole game will change it though :)
+        // For some reason 64x64 fits perfectly with my actual cursor size...
+        this.width = 64;
+        this.height = 64;
+
+        // // Create a label for the cursor
+        // this.label = new PIXI.Text(cursor_input.username, { fontFamily: "Arial", fontSize: 12, fill: 0x000000 });
+        // this.label.anchor.set(0.5);
+        // this.addChild(this.label);
+
+        // Set the cursor's initial position
+        this.updateCursor(cursor_input);
+    }
+
+    playAnimation(eventName) {
+        const nFrames = 4; // All animations have 4 frames for now
+        let animationName;
+        switch (eventName) {
+            case "tap":
+                animationName = "cursor_point";
+                break;
+            case "pickup":
+                animationName = "cursor_grab";
+                break;
+            case "click":
+                animationName = "cursor_grab";
+                break;
+            case "use":
+                animationName = "cursor_waggle";
+                break;
+            case "select":
+                animationName = "cursor_grab";
+                break;
+            default:
+                animationName = null;
+        }
+        if (animationName) {
+            let textures = [];
+            for (let i = 0; i < nFrames; i++) {
+                textures.push(PIXI.Assets.get(`${animationName}_${i}.png`));
+            }
+            this.textures = textures;
+            this.animationSpeed = 0.1;
+            // Play once (we'll revert back to the static texture another way -- it's hacky...)
+            this.loop = false;
+            this.play();
+        } else {
+            // Revert to the static texture
+            this.textures = [PIXI.Assets.get("cursor_point_0.png")];
+            this.loop = false;
+            this.play();
+        }
+    }
+
+    updateCursor(cursor_data, eventName) {
+        if (eventName == "cursor") {
+            // Workaround for the cursor jumping around when an event is triggered?
+            this.x = cursor_data.x;
+            this.y = cursor_data.y;
+        }
+        // // Move the label with the cursor
+        // this.label.x = this.x + 32;
+        // this.label.y = this.y + 32;
+        // Play an animation if the cursor is doing something
+        this.playAnimation(eventName);
     }
 }
 
-// CursorContainer is a container for all other players' cursors (this is very similar to the Aquarium class)
+// To hold and manage all the cursors
 class CursorContainer extends PIXI.Container {
     constructor() {
         super();
         
-        this.interactive = true;
-
         // Bind all methods that we (might) need to call externally
         this.addCursor = this.addCursor.bind(this);
         this.updateCursor = this.updateCursor.bind(this);
@@ -97,18 +166,17 @@ class CursorContainer extends PIXI.Container {
     }
 
     addCursor(cursor_data) {
-        let cursor = new Cursor(PIXI.Assets.get("assets/cursor.png"), cursor_data);
+        let cursor = new Cursor(cursor_data);
         this.addChild(cursor);
         return(cursor);
       }
 
-    updateCursor(cursor_data) {
+    updateCursor(cursor_data, eventName) {
         let cursor = this.children.find(c => c.label === cursor_data.username);
         if (!cursor) { // If the cursor isn't in the list, add it!
             cursor = this.addCursor(cursor_data); 
         }
-        cursor.x = cursor_data.x;
-        cursor.y = cursor_data.y;
+        cursor.updateCursor(cursor_data, eventName);
     }
 
     removeCursor(username) {

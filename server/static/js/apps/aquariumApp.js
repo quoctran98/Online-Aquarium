@@ -2,6 +2,7 @@ import { socket, aquariumSocket, interactionsSocket } from "../sockets.js";
 import { Aquarium } from "../models/gameModels.js";
 import { thisUser, userManager } from "../models/userModels.js";
 import { Tool, CursorContainer } from "../models/interactionModels.js";
+import { animateCursor } from "../utils.js";
 
 const app = new PIXI.Application();
 await app.init({ 
@@ -17,15 +18,16 @@ app.canvas.style.zIndex = "0"; // Place on bottom!
 $("#aquarium-container").get(0).appendChild(app.canvas);
 
 // Preload the goldfish image (we'll do this for all the fish later or use a spritesheet)
-await PIXI.Assets.load("assets/background.png");
+await PIXI.Assets.load("assets/cursors.json");
 await PIXI.Assets.load("assets/tap.json");
 await PIXI.Assets.load("assets/things.json");
 await PIXI.Assets.load("assets/fish/clownfish.json");
 await PIXI.Assets.load("assets/fish/guppy.json");
+
+await PIXI.Assets.load("assets/background.png");
 await PIXI.Assets.load("assets/shelf/shelf.png");
 await PIXI.Assets.load("assets/shelf/fish_flakes.png");
 await PIXI.Assets.load("assets/shelf/brush.png");
-await PIXI.Assets.load("assets/cursor.png");
 
 // Make a big container for everything, so we can easily rescale and resize it :)
 let gameContainer = new PIXI.Container();
@@ -185,13 +187,12 @@ interactionsSocket.on("update_user", (newUserInfo) => {
 
 // Render all other clients' cursors (in a separate container)
 let cursorContainer = new CursorContainer();
-app.stage.addChild(cursorContainer);
+gameContainer.addChild(cursorContainer);
 
 // Broadcast the client's cursor position to all other clients
 app.stage.on("mousemove", (event) => {
   let cursorPosition = cursorContainer.toLocal(event.data.global);
   interactionsSocket.emit("cursor", { 
-    event: "mousemove",
     username: thisUser.username,
     x: cursorPosition.x, 
     y: cursorPosition.y, 
@@ -200,12 +201,13 @@ app.stage.on("mousemove", (event) => {
 });
 
 // Recieve other clients' cursor positions
-interactionsSocket.on("cursor", (data) => {
-  if ((data.event === "mousemove") && (data.username !== thisUser.username)) {
-    userManager.updateCursor(data);
-    cursorContainer.updateCursor(data);
-  }
-});
+const cursorEveents = ["cursor", "tap", "pickup", "click", "use", "select"];
+for (let eventName of cursorEveents) {
+  interactionsSocket.on(eventName, (data) => {
+    if (data.username === thisUser.username) { return; }
+    cursorContainer.updateCursor(data, eventName);
+  });
+}
 
 //////////////////
 // Debugging stuff

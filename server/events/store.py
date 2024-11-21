@@ -1,6 +1,6 @@
 from flask import request
 from flask_login import current_user
-from server.helper import settings, authenticated_only
+from server.helper import settings, authenticated_only, confirm_user
 import datetime
 
 def register_events(socketio, command_queue, store):
@@ -18,10 +18,8 @@ def register_events(socketio, command_queue, store):
         socketio.emit("summarize_store", store.summarize, namespace="/store")
 
     @socketio.on("contribute", namespace="/store")
+    @confirm_user
     def contribute(data):
-        username = current_user.username
-        if current_user.username != data["username"]:
-            return
         store_item = store.items[data["label"]]
         if store_item.fully_funded:
             return
@@ -31,7 +29,7 @@ def register_events(socketio, command_queue, store):
         if data["amount"] < 0:
             return # Don't allow negative contributions
         contribution_amount = round(data["amount"], 2)
-        contribution_allowed = current_user.process_money(contribution_amount)
+        contribution_allowed = current_user.subtract_money(contribution_amount)
         if contribution_allowed:
             fully_funded = store.add_contribution(data["label"], data["username"], contribution_amount)
             if fully_funded: # If the item is funded, add it to the aquarium through the command queue

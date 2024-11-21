@@ -29,21 +29,16 @@
     2.1. I set it up to autodeploy from the main branch of the quoctran98/Online-Aquarium repository.
     2.2 Add the run command: `gunicorn --worker-class eventlet appserver:gunicorn_app`
     2.3 Add enviroment variables described in `helper.py`. These should include:
-        - `ENVIRONMENT` : str
+        - `ENVIRONMENT` : str (use 'local' or 'development' to prevent writing to S3)
         - `FLASK_SECRET_KEY` : str
         - `SESSION_FILE_DIR` : str
-
         - `MONGODB_CONNECTION_STRING` : str
         - `USERS_DATABASE` : str
-
         - `S3_AQUARIUM_SAVE_DIR` : str
         - `S3_STORE_SAVE_DIR` : str
         - `S3_BUCKET_NAME` : str
         - `S3_ACCESS_KEY` : str
         - `S3_SECRET_KEY` : str
-
-        - `APP_WIDTH` : int
-        - `APP_HEIGHT` : int
 
 TODO: `gunicorn --worker-class eventlet appserver:gunicorn_app` is the only one that works. I'm still getting quite a few errors on deploy:
 "[2024-11-21 00:02:11] 5 RLock(s) were not greened, to fix this error make sure you run eventlet.monkey_patch() before importing any other modules."

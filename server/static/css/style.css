@@ -3,9 +3,9 @@ html, body {
   margin: 0;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
-/* 
-div {
-  cursor: url(/static/assets/coin.png), auto;
+
+/* div {
+  cursor: url(/static/assets/cursor_grab.gif), auto;
 } */
 
 #full-screen-container {

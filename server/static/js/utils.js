@@ -55,6 +55,23 @@ function parse_p_tags(div_id) {
     return(parsed);
 }
 
+// Animate the cursor
+function animateCursor(frames, frameDuration=200, container=document.body) {
+    let frameIndex = 0;
+
+    const interval = setInterval(() => {
+      // Update cursor to current frame
+      container.style.cursor = `url(${frames[frameIndex]}), auto`;
+      frameIndex++;
+
+      // Stop animation when all frames are played
+      if (frameIndex >= frames.length) {
+        clearInterval(interval);
+        container.style.cursor = `url(${defaultCursor}), auto`; // Reset to default
+      }
+    }, frameDuration);
+}
+
 // Replace the default cursor with a custom image (and resize it so it fits)
 function changeCursor(imageURL, width = 32, height = 32, x = 0, y = 0, fallback = "default") {
     const img = new Image();
@@ -95,4 +112,4 @@ function resetCursor() {
     }
 }
 
-export { formatBigNumber, setManyAttributes, blurBackground, unblurBackground, parse_p_tags, changeCursor, resetCursor };
+export { formatBigNumber, setManyAttributes, blurBackground, unblurBackground, parse_p_tags, animateCursor, changeCursor, resetCursor };

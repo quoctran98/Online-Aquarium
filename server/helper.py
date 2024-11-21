@@ -24,9 +24,6 @@ class Settings(BaseSettings):
     S3_ACCESS_KEY:str
     S3_SECRET_KEY:str
 
-    APP_WIDTH:int
-    APP_HEIGHT:int
-
     class Config:
         env_file = ".env"
 settings = Settings()
@@ -57,6 +54,62 @@ s3_client = s3_session.client("s3",
                               aws_access_key_id=settings.S3_ACCESS_KEY, 
                               aws_secret_access_key=settings.S3_SECRET_KEY)
 
+#####################
+# Decorators below! #
+#####################
+
+# To use a @confirm_user decorator on a SocketIO event
+def confirm_user(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        # Confirm that the username in the data matches the current user's username
+        if args[0]["username"] == current_user.username:
+            return(f(*args, **kwargs))
+        else:
+            print(f"User {current_user.username} tried to perform an action as {args[0]['username']} in {f.__name__}")
+            disconnect()
+    return(wrapped)
+
+# To use a @authenticated_only decorator on a SocketIO event
+def authenticated_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not current_user.is_authenticated:
+            disconnect()
+        else:
+            return(f(*args, **kwargs))
+    return(wrapped)
+
+# To save a PICKLE file to the DigitalOcean Spaces bucket
+def save_to_s3(pickle, filename, directory, bucket=settings.S3_BUCKET_NAME):
+    # Don't save to S3 if we're in development or local environment
+    if settings.ENVIRONMENT in ["development", "local"]:
+        with open(f"./server/{directory}{filename}", "wb") as f:
+            f.write(pickle)
+    else:
+        s3_client.put_object(Bucket=bucket, Key=f"{directory}{filename}", Body=pickle)
+
+#######################
+# S3 functions below! #
+#######################
+    
+# To load a PICKLE file from the DigitalOcean Spaces bucket
+def load_from_s3(filename, directory, bucket=settings.S3_BUCKET_NAME):
+    response = s3_client.get_object(Bucket=bucket, Key=f"{directory}{filename}")
+    return(pickle.load(BytesIO(response["Body"].read())))
+
+# To load the most recent PICKLE file from the DigitalOcean Spaces bucket
+def load_latest_from_s3(directory, bucket=settings.S3_BUCKET_NAME):
+    # objects = s3_client.list_objects_v2(Bucket=bucket, Prefix=directory)["Contents"]
+    # latest_key = max(objects, key=lambda obj: obj["LastModified"])["Key"]
+    # ^ THIS DOESN'T WORK FOR SOME REASON -- READ TODO.MD
+    # For now, we'll build the endpoing manually (since we're also saving a latest.pkl file every time)
+    latest_key = f"{directory}latest.pkl"
+    # Download and deserialize the pickle file
+    response = s3_client.get_object(Bucket=bucket, Key=latest_key)
+    return(pickle.load(BytesIO(response["Body"].read())))
+
+
 ###########################
 # Helper functions below! #
 ###########################
@@ -77,33 +130,3 @@ def dict_to_html(data):
 # Sanitize messages of HTML tags
 def sanitize_message(message):
     return(message.replace("<", "&lt;").replace(">", "&gt;"))
-
-# To use a @authenticated_only decorator on a SocketIO event
-def authenticated_only(f):
-    @functools.wraps(f)
-    def wrapped(*args, **kwargs):
-        if not current_user.is_authenticated:
-            disconnect()
-        else:
-            return(f(*args, **kwargs))
-    return(wrapped)
-
-# To save a PICKLE file to the DigitalOcean Spaces bucket
-def save_to_s3(pickle, filename, directory, bucket=settings.S3_BUCKET_NAME):
-    s3_client.put_object(Bucket=bucket, Key=f"{directory}{filename}", Body=pickle)
-    
-# To load a PICKLE file from the DigitalOcean Spaces bucket
-def load_from_s3(filename, directory, bucket=settings.S3_BUCKET_NAME):
-    response = s3_client.get_object(Bucket=bucket, Key=f"{directory}{filename}")
-    return(pickle.load(BytesIO(response["Body"].read())))
-
-# To load the most recent PICKLE file from the DigitalOcean Spaces bucket
-def load_latest_from_s3(directory, bucket=settings.S3_BUCKET_NAME):
-    # objects = s3_client.list_objects_v2(Bucket=bucket, Prefix=directory)["Contents"]
-    # latest_key = max(objects, key=lambda obj: obj["LastModified"])["Key"]
-    # ^ THIS DOESN'T WORK FOR SOME REASON -- READ TODO.MD
-    # For now, we'll build the endpoing manually (since we're also saving a latest.pkl file every time)
-    latest_key = f"{directory}latest.pkl"
-    # Download and deserialize the pickle file
-    response = s3_client.get_object(Bucket=bucket, Key=latest_key)
-    return(pickle.load(BytesIO(response["Body"].read())))

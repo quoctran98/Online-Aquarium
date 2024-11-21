@@ -12,17 +12,19 @@ Clients will connect on page load.
 
 ### `interactions` Namespace
 
-**For clients to interact with the aquarium**. This namespace does not require any authentication and should be used for things that all users (including guests) can do (moving the cursor, feeding the fish, etc.). Messages sent from the client to the server are first validated then added to the command queue read by the main aquarium simulation loop. Results of these commands are not explicitly broadcased to all clients (except in some cases), but the state of the aquarium is updated and broadcasted to all clients connected to the `/aquarium` namespace.
+**For clients to interact with the aquarium**. This namespace does not require any authentication and should be used for things that all users (including guests) can do (moving the cursor, feeding the fish, etc.). Messages sent from the client to the server are first validated then added to the command queue read by the main aquarium simulation loop. ~~Results of these commands are not explicitly broadcased to all clients (except in some cases)~~, but the state of the aquarium is updated and broadcasted to all clients connected to the `/aquarium` namespace.
+
+The commands themselves are rebroadcasted to all clients connected to the `/interactions` namespace so they can render the cursor of other clients.
 
 Clients will connect on page load.
 
-- `tap` - The client will send a message to the server when they click on the aquarium **without using a tool**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `tap`) for the main aquarium simulation loop to process.
+- `tap` - The client will send a message to the server when they click on the aquarium **without using a tool**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `tap`) for the main aquarium simulation loop to process. *This event is verified then rebroadcasted to all clients connected to this namespace so they can render the cursor.*
     - `username` - The username of the client sending the message.
     - `x` - The x-coordinate of the tap.
     - `y` - The y-coordinate of the tap.
     - `timestamp` - The time the tap was made (in milliseconds since epoch).
 
-- `pickup` - The client will send a message to the server when they click on an item the aquarium **to pick up a coin (or other thing)**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `pickup`) for the main aquarium simulation loop to process.
+- `pickup` - The client will send a message to the server when they click on an item the aquarium **to pick up a coin (or other thing)**. The message is a JSON object with the following fields. The whole JSON object is put into the command queue (with the command `pickup`) for the main aquarium simulation loop to process. *This event is verified then rebroadcasted to all clients connected to this namespace so they can render the cursor.*
     - `thing_label` - The label of the thing being picked up.
     - `username` - The username of the client sending the message.
     - `x` - The x-coordinate of the coin pickup.
@@ -38,17 +40,16 @@ Clients will connect on page load.
     - `y` - The y-coordinate of the tool use.
     - `timestamp` - The time the coin was picked up (in milliseconds since epoch).
 
-- `select` - The client will send a message to the server when they **select a tool from the shelf**. This is mainly used so other clients can render a cursor. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace.*
+- `select` - The client will send a message to the server when they **select a tool from the shelf**. This is mainly used so other clients can render a cursor. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace to render the cursor.*
     - `tool` - The tool_type (string) the client is selecting. (null or None if no tool).
     - `username` - The username of the client sending the message.
     - `timestamp` - The time the tool was selected (in milliseconds since epoch).
 
-- `cursor` - Clients send their cursor position to the server. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace.*
-    - `event` - The event that triggered the cursor update ("mousemove", "mousedown", or "disconnect").
-    - `username` - The username of the client sending the message.
+- `cursor` - The client will send a message to the server when they **move their cursor**. The message is a JSON object with the following fields. *This event is verified then rebroadcasted to all clients connected to this namespace to render the cursor.*
     - `x` - The x-coordinate of the cursor.
     - `y` - The y-coordinate of the cursor.
-    - `timestamp` - The time the cursor was updated (in milliseconds since epoch).
+    - `username` - The username of the client sending the message.
+    - `timestamp` - The time the cursor was moved (in milliseconds since epoch).
 
 - `update_user` - Broadcasts the current state of a single user in the aquarium as a JSON object from the `summarize_public` method of the `User` class.
 
