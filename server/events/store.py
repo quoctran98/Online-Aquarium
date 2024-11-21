@@ -25,13 +25,15 @@ def register_events(socketio, command_queue, store):
         store_item = store.items[data["label"]]
         if store_item.fully_funded:
             return
-        if store_item.money_raised + data["amount"] > store_item.price:
-            return # Don't allow overfunding
+        # if store_item.money_raised + data["amount"] > store_item.price:
+        #     return # Don't allow overfunding
+        # Allow it for now as a bandaid!
         if data["amount"] < 0:
             return # Don't allow negative contributions
-        contribution_allowed = current_user.process_money(data["amount"])
+        contribution_amount = round(data["amount"], 2)
+        contribution_allowed = current_user.process_money(contribution_amount)
         if contribution_allowed:
-            fully_funded = store.add_contribution(data["label"], data["username"], data["amount"])
+            fully_funded = store.add_contribution(data["label"], data["username"], contribution_amount)
             if fully_funded: # If the item is funded, add it to the aquarium through the command queue
                 command_queue.put(("add", {
                     "object_name": store.items[data["label"]].object_name, 
