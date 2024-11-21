@@ -82,8 +82,8 @@ def authenticated_only(f):
 
 # To save a PICKLE file to the DigitalOcean Spaces bucket
 def save_to_s3(pickle, filename, directory, bucket=settings.S3_BUCKET_NAME):
-    # Don't save to S3 if we're in development or local environment
-    if settings.ENVIRONMENT in ["development", "local"]:
+    # Don't save to S3 if we're in a local environment
+    if settings.ENVIRONMENT == "local":
         with open(f"./server/{directory}{filename}", "wb") as f:
             f.write(pickle)
     else:
