@@ -11,6 +11,8 @@ from server.simulate import aquarium_simulation
 from server.helper import settings, store_items, format_number, dict_to_html, load_latest_from_s3
 from server.models.user import User, GuestUser, UserManager
 from server.models.fish import Clownfish
+from server.models.aquarium import Aquarium
+from server.models.store import Store
 
 def create_app():
 
@@ -62,11 +64,11 @@ def create_app():
     user_manager = UserManager() # Handles abstractly accessing users (and for now cursors)
     chat_manager = None # Placeholder for now
 
-    # Load the aquarium and store from S3
+    # # Load the aquarium and store from S3
     aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
     store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR) 
 
-    # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
+    # # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
     # aquarium = Aquarium()
     # aquarium.add_object(Clownfish(aquarium))
     # aquarium.save()

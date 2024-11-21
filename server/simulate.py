@@ -10,7 +10,7 @@ import time, random
 # Move this to a config file later
 SIMULATION_TICK = 0.05 # seconds per tick
 SYNC_FREQUENCY = 1 # seconds per sync
-BACKUP_FREQUENCY = 300 # seconds per backup
+BACKUP_FREQUENCY = 900 # seconds per backup (15 minutes)
 
 # This is the main game/simulation loop
 # Either pass an existing aquarium or create a new one
@@ -94,7 +94,6 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
         # Or if a broadcast_sync flag is set
         if ((loop_start - last_sync).total_seconds() > SYNC_FREQUENCY) or broadcast_sync:
             last_sync = loop_start
-            print("Syncing everything")
             socketio.emit("sync_everything", [thing.summarize for thing in aquarium.objects.values()], namespace="/aquarium")
         
         # Broadcast individual updates for Things that require it
