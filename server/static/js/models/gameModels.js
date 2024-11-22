@@ -81,7 +81,6 @@ class Aquarium extends PIXI.Container {
     updateThing(thingData) {
         // Remove things if .remove is true
         if (thingData.remove) {
-            print(`Removing ${thingData.label}`);
             this.removeThing(thingData.label);
             return;
         }
