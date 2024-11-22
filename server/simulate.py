@@ -2,7 +2,7 @@ from flask_socketio import emit
 from server.helper import settings
 from server.models.aquarium import Fish, Aquarium
 from server.models.fish import Clownfish, Guppy
-from server.models.things import Coin, Food, TreasureChest, Tap
+from server.models.things import *
 from server.models.user import User
 from datetime import datetime, timezone
 import time, random
@@ -37,8 +37,8 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
             command, data = command_queue.get()
             match command:
                 
-                case "add":
-                    # Add a new item to the aquarium (when something is purchased)
+                case "create":
+                    # Create and add a new item to the aquarium (when something is purchased)
                     object_name = data["object_name"]
                     object_kwargs = data["object_kwargs"]
                     object_properties = data["object_properties"]
@@ -62,9 +62,12 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
 
                 case "use":
                     match data["tool"]:
-                        case "fish_flakes":
-                            flakes = Food(aquarium, data["x"], data["y"])
+                        case "flake_bottle":
+                            flakes = Flake(aquarium, data["x"], data["y"])
                             aquarium.add_object(flakes)
+                        case "pellet_bottle":
+                            pellets = Pellet(aquarium, data["x"], data["y"])
+                            aquarium.add_object(pellets)
 
                 case "sync":
                     broadcast_sync = True

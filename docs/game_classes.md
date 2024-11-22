@@ -24,11 +24,16 @@ This is the main class that stores all items within the Aquarium. In the fronten
 
 - `summarize` (method) (*backend only*): Returns a dictionary of properties in `properties_to_broadcast`. Will also include `update_time` (ms since epoch that this method was called) and `objects` (a list of the labels of objects in `objects`).
 
-- `addThing` (method) (*backend only*): Adds a 
-
 ### Methods
 
 - `save` (save_dir: str) (*backend only*): Pickles the object (including all children in `objects`) to the directory specified by `save_dir`.
+
+- `create_object` (class_name: str, **kwargs) (*backend only*): Creates an object of the specified class with the specified keyword arguments and adds it to the aquarium. Use this when we need to create a new object where the class isn't available in the current scope (e.g. in a function or method). This will work through the `command_queue` in `simulate.py`.
+
+- `add_object` (object: Thing) (*backend only*): Adds an object to the Aquarium.
+
+- `remove_object` (label: str) (*backend only*): Removes an object from the Aquarium. (Or use the `remove` method of the object itself; both will do the same thing.)
+
 
 The *frontend* also has methods: `addThing`, `removeThing`, `updateThing`, and `syncEverything`. These methods are used to add, remove, update, and sync `Thing` objects in the Aquarium, when data from socketio is received. They use the data sent from the `summarize` method of `Thing` objects.
 
@@ -103,6 +108,10 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 - `fish_name` (str): The name of the fish.
 
 - `state` (str): The state of the fish. This can be `idle`, `feeding`, `fleeing`, or `chasing`.
+
+- `health` (float): The health level of the fish. This is a float between 0 and 1. 0 is dead, and 1 is healthy.
+
+- `happiness` (float): The happiness level of the fish. This is a float between 0 and 1. 0 is sad, and 1 is happy.
 
 - `hunger` (float): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = +hunger_rate * speed`
 

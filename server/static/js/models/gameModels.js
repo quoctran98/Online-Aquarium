@@ -145,6 +145,11 @@ class Thing extends PIXI.AnimatedSprite {
             console.log(`Thing.update() called with wrong thing label: ${thingInput.label} for ${this.label}`);
             return;
         }
+        // If the "remove" flag is set and True, remove the Thing
+        if (thingInput.remove) {
+            this.destroy();
+            return;
+        }
         // Unpack everything from the thingInput JSON object as properties
         for (let key in thingInput) {
             this[key] = thingInput[key];

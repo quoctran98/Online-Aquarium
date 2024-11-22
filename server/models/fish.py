@@ -15,6 +15,8 @@ class Clownfish(Fish):
         self.fish_name = "nemo"
         # No new properties to broadcast
 
+        self.starve = False
+
         # Set properties from kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -55,6 +57,8 @@ class Guppy(Fish):
         self.fish_name = "fish"
         # No new properties to broadcast
 
+        self.starve = False
+
         # Set properties from kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -79,3 +83,11 @@ class Guppy(Fish):
         # Otherwise, it will be idle
         else:
             self.state = "idle"
+
+class ReallyHungryTestGuppy(Guppy):
+    def __init__(self, aquarium, **kwargs):
+        super().__init__(aquarium)
+        self.class_hierarchy.append("ReallyHungryTestGuppy")
+        self.hunger = 0.8
+        self.hunger_rate = 0.01
+        self.starve = True

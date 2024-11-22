@@ -1,7 +1,7 @@
 {
     "treasure_chest_0": {
         "item_name": "Treasure Chest",
-        "price": 2.99,
+        "price": 0.99,
         "image_file": "/assets/store/treasure_chest.png",
         "object_name":  "TreasureChest",
         "object_kwargs": {"x": 700, "y": 450},

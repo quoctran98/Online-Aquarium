@@ -33,7 +33,7 @@ def register_events(socketio, command_queue, store):
         if contribution_allowed:
             fully_funded = store.add_contribution(data["label"], data["username"], contribution_amount)
             if fully_funded: # If the item is funded, add it to the aquarium through the command queue
-                command_queue.put(("add", {
+                command_queue.put(("create", {
                     "object_name": store.items[data["label"]].object_name, 
                     "object_kwargs": store.items[data["label"]].object_kwargs,
                     "object_properties": store.items[data["label"]].object_properties

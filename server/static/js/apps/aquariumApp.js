@@ -26,7 +26,8 @@ await PIXI.Assets.load("assets/fish/guppy.json");
 
 await PIXI.Assets.load("assets/background.png");
 await PIXI.Assets.load("assets/shelf/shelf.png");
-await PIXI.Assets.load("assets/shelf/fish_flakes.png");
+await PIXI.Assets.load("assets/shelf/flake_bottle.png");
+await PIXI.Assets.load("assets/shelf/pellet_bottle.png");
 await PIXI.Assets.load("assets/shelf/brush.png");
 
 // Make a big container for everything, so we can easily rescale and resize it :)

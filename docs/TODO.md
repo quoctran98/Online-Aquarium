@@ -14,3 +14,7 @@
 - **[ ]** **Clean up save to S3 methods** - I'm unable to retrieve all objects from a directory in the DO Spaces S3 bucket, but I'm still able to save and load given a specific endpoint. My workaround is that in  `aquarium.save()` I'm calling `save_to_s3()` where the filename is our datetime convention but I'm also saving extra file called `latest.pkl` which is the same. Ideally this gets overwritten every time each time I save, and `load_latest_from_s3()` will just load the `latest.pkl` file rather than searching through the directory for the latest file. It works for now, but it's not ideal. We're also doing this with `store.save()`
 
 - **[ ]** **Fix frontend cursor animations** - The cursor animations work fine, but the way we handle the textures and animations use a lot of hardcoded names, so that's annoying... There are also a few workarounds for resetting the texture, etc. Check out the `Cursor` class in `interactionModels.js` for more info.
+
+- **[ ]** **Fix deployment with Gunicorn and eventlet** - Check `deployment.md` for more info. It's annoying.
+
+- **[ ]** **Actually calculate health and hunger** - I have to do some math to set reasonable values...

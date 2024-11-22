@@ -2,7 +2,7 @@ from server.models.aquarium import Thing
 import datetime, random, math
 
 class Food(Thing):
-    def __init__(self, aquarium, x=None, y=None):
+    def __init__(self, aquarium, x, y):
 
         # Redefine properties from Thing
         super().__init__(aquarium)
@@ -25,12 +25,36 @@ class Food(Thing):
         self.y = y
         self.destination_x = self.x
         self.destination_y = aquarium.height - self.height
-        self.speed = 20 # Pixels per second
+        self.speed = 10 # Depends on the food type
 
     def update(self, delta_time):
         self.updated_this_loop = False
         self._move_toward_destination(delta_time)
         self._calculate_lifetime()
+
+class Flake(Food):
+    def __init__(self, aquarium, x, y):
+        # Redefine properties from Food
+        super().__init__(aquarium, x=x, y=y)
+        self.class_hierarchy.append("Flake")
+        self.default_texture = "flake.png"
+        self.aspect_ratio = 2.6833333333
+        self.width = 10
+        # Set the flake-specific properties
+        self.lifetime = 20 # Seconds
+        self.speed = 10
+
+class Pellet(Food):
+    def __init__(self, aquarium, x, y):
+        # Redefine properties from Food
+        super().__init__(aquarium, x=x, y=y)
+        self.class_hierarchy.append("Pellet")
+        self.default_texture = "pellet.png"
+        self.aspect_ratio = 1
+        self.width = 10
+        # Set the pellet-specific properties
+        self.lifetime = 60 # Seconds
+        self.speed = 20
 
 class Coin(Thing):
     def __init__(self, aquarium, x=None, y=None):
@@ -172,6 +196,27 @@ class Bubble(Thing):
         self._move_toward_destination(delta_time)
         if (self.y <= self.destination_y):
             self.remove() # Pop the bubble when it reaches the top (no animation for now)
+
+class Skeleton(Thing):
+    def __init__(self, aquarium, fish):
+
+        # Redefine properties from Thing
+        super().__init__(aquarium)
+        self.class_hierarchy.append("Skeleton")
+        self.spritesheet_json = "assets/things.json"
+        self.default_texture = "skeleton.png"
+        self.default_animation = None
+        
+        # Make the skeleton look like its fish
+        self.aspect_ratio = 2.4903225806
+        self.width = fish.width
+        self.x = fish.x
+        self.y = fish.y
+
+        # Make the skeleton fall straight down
+        self.destination_x = self.x
+        self.destination_y = aquarium.height - self.height
+        self.speed = 20
 
 class Tap(Thing):
     # A very abstract "Thing" but easy to implement as one :)

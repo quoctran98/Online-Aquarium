@@ -2,10 +2,11 @@ from server.helper import settings, save_to_s3
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
-    def __init__(self, width=960, height=540):
+    def __init__(self, width=960, height=540, command_queue=None):
         self.width = width
         self.height = height
         self.objects = {}
+        self.command_queue = command_queue
 
         # Keep track of updated objects for broadcasting
         self.broadcast_updates = [] # Moved from the simluate.py loop :)
@@ -15,10 +16,26 @@ class Aquarium():
             "width", "height"
         ]
 
+    def create_object(self, class_name, kwargs={}, properties={}):
+        # Use this when creating new objects where the class isn't imported yet
+        # Do this through the command queue and maintain the simulate.py as the main namespace?
+        self.command_queue.put(("create", {
+            "object_name": class_name, 
+            "object_kwargs": kwargs, 
+            "object_properties" : properties
+        }))
+
     def add_object(self, object):
         self.objects[object.label] = object
         self.broadcast_updates.append(object.summarize)
         # This method more easily allows us to add add objects from children.
+
+    def remove_object(self, object):
+        self.objects.pop(object.label)
+        # We should think about how to broadcast this change...
+        object_summarize = object.summarize
+        object_summarize["remove"] = True
+        self.broadcast_updates.append(object_summarize)
 
     def update(self, delta_time):
         # Nothing to do here yet...
@@ -36,10 +53,15 @@ class Aquarium():
 
     def save(self, save_dir=settings.S3_AQUARIUM_SAVE_DIR):
         filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl"
+        # WE HAVE TO DETACH THE COMMAND QUEUE BEFORE PICKLING!!!
+        command_queue = self.command_queue
+        self.command_queue = None
         pickle_obj = pickle.dumps(self)
         save_to_s3(pickle_obj, filename, save_dir)
         # Maybe not the best way, but let's also save a "latest" version!!
         save_to_s3(pickle_obj, "latest.pkl", save_dir)
+        # REATTACH THE COMMAND QUEUE
+        self.command_queue = command_queue
 
 class Thing():
     def __init__(self, aquarium):
@@ -88,7 +110,7 @@ class Thing():
         self._move_toward_destination(delta_time)
 
     def remove(self):
-        self.aquarium.objects.pop(self.label)
+        self.aquarium.remove_object(self)
 
     def click(self):
         # Placeholder for child classes to override
@@ -165,20 +187,41 @@ class Fish(Thing):
         self.aspect_ratio = 1
         self.width = 20
         self.properties_to_broadcast.extend([
-            "state", "hunger",
+            "state", "health", "hunger",
         ])
 
         # Set the fish-specific properties
         self.fish_name = "unnamed_fish"
         self.state = "idle" # idle, feeding, fleeing, playing
+        self.health = 1.0
+        self.starve = False # placeholder for now!
+        self.happiness = 0.5 # 0 to 1
         self.hunger = 0.0 # 0 to 1
-        self.hunger_rate = 0.01 # Per second
+        self.hunger_rate = 0.01 # Per second per speed
         self.max_speed = 0 # Pixels per second
+
+        # Keep a running tally of how much a fish likes a user
+        self.relationships = {} # {user_id: relationship_score (0 to 1)}
 
         # References for when the fish is in a certain state
         self.food = None # Food or Fish object
         self.predator = None # Fish object
         self.plaything = None # Fish or Tap or other object
+
+    def _die(self):
+        self.aquarium.create_object("Skeleton", kwargs={"fish": self}, properties={})
+        self.remove()
+
+    def _calculate_health(self, delta_time):
+        if (self.hunger >= 1) and (self.starve):
+            self.health -= 1 * delta_time.total_seconds()
+        if (self.health <= 0):
+            self._die()
+        self.health = max(0, min(1, self.health))
+
+    def _calculate_happiness(self, delta_time):
+        # Placeholder for child classes to override with fish-specific behavior
+        pass
 
     def _calculate_hunger(self, delta_time):
         self.hunger += self.hunger_rate * delta_time.total_seconds()
@@ -248,6 +291,8 @@ class Fish(Thing):
     def update(self, delta_time) -> bool:
         # Housekeeping stuff)
         self.updated_this_loop = False
+        self._calculate_health(delta_time)
+        self._calculate_happiness(delta_time)
         self._calculate_hunger(delta_time)
         self._choose_state()
         # State-specific behavior

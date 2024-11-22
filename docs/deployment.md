@@ -17,6 +17,20 @@
     flask run
     ```
 
+## Local deployment with `gunicorn`
+
+1. Do steps 1-3 from the previous section. (what's different is that we need to have `gunicorn` and `eventlet` installed but they are already in the `requirements.txt` file)
+2. Set the `ENVIRONMENT` environment variable to `local` to prevent writing to S3:
+
+    ```bash
+    export ENVIRONMENT=local
+    ```
+3. Run the application:
+
+    ```bash
+    gunicorn --worker-class eventlet appserver:gunicorn_app
+    ```
+
 ## DigitialOcean App Platform deployment with `gunicorn`
 
 1. Make a `requirements.txt` file of the environment:

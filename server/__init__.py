@@ -10,8 +10,8 @@ import json, queue
 from server.simulate import aquarium_simulation
 from server.helper import settings, store_items, format_number, dict_to_html, load_latest_from_s3
 from server.models.user import User, GuestUser, UserManager
-from server.models.fish import Clownfish
 from server.models.aquarium import Aquarium
+from server.models.fish import Clownfish, ReallyHungryTestGuppy
 from server.models.store import Store
 
 def create_app():
@@ -41,15 +41,12 @@ def create_app():
     @login_manager.request_loader
     def load_guest_user(request):
         guest_id = session.get("guest_id")
-        print("😀")
-        print(guest_id)
         # Either retrieve a guest user or create a new one
         if guest_id:
             guest_user = GuestUser.get_by_user_id(guest_id)
         if not guest_id or not guest_user: # In case the guest_user was deleted
             guest_user = GuestUser.new_guest()
             session["guest_id"] = guest_user.user_id # Save guest_id for next time
-        print(guest_user.user_id)
         login_user(guest_user, remember=False) # Log in the guest user (to use as current_user)
                
     # Add funtions from helper.py to the Jinja environment
@@ -64,18 +61,34 @@ def create_app():
     user_manager = UserManager() # Handles abstractly accessing users (and for now cursors)
     chat_manager = None # Placeholder for now
 
-    # # Load the aquarium and store from S3
-    aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
-    store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR) 
 
-    # # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
-    # aquarium = Aquarium()
-    # aquarium.add_object(Clownfish(aquarium))
-    # aquarium.save()
-    # store = Store()
-    # for item_type in store_items.keys():
-    #     store.add_item("item_type", store_items[item_type])
-    # store.save()
+    if settings.ENVIRONMENT == "local":
+        # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
+        aquarium = Aquarium(command_queue=command_queue)
+        aquarium.add_object(Clownfish(aquarium))
+        aquarium.add_object(ReallyHungryTestGuppy(aquarium))
+        aquarium.save()
+        store = Store()
+        for item_type in store_items.keys():
+            store.add_item("item_type", store_items[item_type])
+        store.save()
+    else:
+        # Load the aquarium and store from S3
+        try:
+            aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
+            store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR)
+        except:
+            print("Failed to load the aquarium and store from S3.") 
+
+            # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
+            aquarium = Aquarium()
+            aquarium.add_object(Clownfish(aquarium))
+            aquarium.add_object(ReallyHungryTestGuppy(aquarium))
+            aquarium.save()
+            store = Store()
+            for item_type in store_items.keys():
+                store.add_item("item_type", store_items[item_type])
+            store.save()
 
     # Start the aquarium simulation in the background (unsure what multiple threads will do...)
     socketio.start_background_task(aquarium_simulation, socketio, command_queue, user_manager, aquarium)
