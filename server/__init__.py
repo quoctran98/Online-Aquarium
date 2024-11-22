@@ -81,7 +81,7 @@ def create_app():
             print("Failed to load the aquarium and store from S3.") 
 
             # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
-            aquarium = Aquarium()
+            aquarium = Aquarium(command_queue=command_queue)
             aquarium.add_object(Clownfish(aquarium))
             aquarium.add_object(ReallyHungryTestGuppy(aquarium))
             aquarium.save()

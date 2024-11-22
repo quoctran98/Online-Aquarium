@@ -2,7 +2,7 @@ from server.helper import settings, save_to_s3
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
-    def __init__(self, width=960, height=540, command_queue=None):
+    def __init__(self, width=960, height=540, command_queue):
         self.width = width
         self.height = height
         self.objects = {}
