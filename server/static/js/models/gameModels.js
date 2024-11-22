@@ -79,6 +79,12 @@ class Aquarium extends PIXI.Container {
     }
 
     updateThing(thingData) {
+        // Remove things if .remove is true
+        if (thingData.remove) {
+            print(`Removing ${thingData.label}`);
+            this.removeThing(thingData.label);
+            return;
+        }
         let thing = this.children.find(t => t.label === thingData.label);
         if (thing) {
             thing.serverUpdate(thingData);
@@ -143,11 +149,6 @@ class Thing extends PIXI.AnimatedSprite {
         // Make sure that this thingInput JSON object is for this Thing
         if (thingInput.label !== this.label) {
             console.log(`Thing.update() called with wrong thing label: ${thingInput.label} for ${this.label}`);
-            return;
-        }
-        // If the "remove" flag is set and True, remove the Thing
-        if (thingInput.remove) {
-            this.destroy();
             return;
         }
         // Unpack everything from the thingInput JSON object as properties
