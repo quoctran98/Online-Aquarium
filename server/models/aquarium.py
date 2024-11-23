@@ -132,6 +132,11 @@ class Thing():
         new_y = self.speed * math.sin(direction) * delta_time.total_seconds() + self.y
         new_x = max(0, min(new_x, self.aquarium.width))
         new_y = max(0, min(new_y, self.aquarium.height))
+        # Make sure we haven't overshot the destination 
+        if (self.destination_x - self.x) * (self.destination_x - new_x) < 0:
+            new_x = self.destination_x
+        if (self.destination_y - self.y) * (self.destination_y - new_y) < 0:
+            new_y = self.destination_y
         self.x = new_x
         self.y = new_y
 
@@ -187,7 +192,7 @@ class Fish(Thing):
         self.aspect_ratio = 1
         self.width = 20
         self.properties_to_broadcast.extend([
-            "state", "health", "hunger",
+            "fish_name", "state", "health", "happiness", "hunger" 
         ])
 
         # Set the fish-specific properties
@@ -239,7 +244,7 @@ class Fish(Thing):
             self._new_object_destination(self.plaything, speed=self.max_speed)
             self._move_toward_destination(delta_time)
     
-    def __idle(self, delta_time) -> bool:
+    def _idle(self, delta_time):
         # Default idle behavior is to move around randomly
         has_new_destination = False
         if math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
@@ -251,7 +256,7 @@ class Fish(Thing):
         # Move the fish towards its destination
         self._move_toward_destination(delta_time)
 
-    def __feeding(self, delta_time):
+    def _feeding(self, delta_time):
         # Always set updated_this_loop to True for smoother frontend updates
         self.updated_this_loop = True
         # If the food is gone, return to idle state
@@ -266,12 +271,10 @@ class Fish(Thing):
             self.food = None
         # Otherwise, move towards the food
         else:
-            self.destination_x = self.food.x
-            self.destination_y = self.food.y
-            self.speed = self.max_speed
+            self._new_object_destination(self.food, speed=self.max_speed)
             self._move_toward_destination(delta_time)
 
-    def __fleeing(self, delta_time):
+    def _fleeing(self, delta_time):
         # Always set updated_this_loop to True for smoother frontend updates
         self.updated_this_loop = True
         # If the predator is gone, return to idle state
@@ -297,13 +300,16 @@ class Fish(Thing):
         self._choose_state()
         # State-specific behavior
         if self.state == "idle":
-            self.__idle(delta_time)
+            self._idle(delta_time)
         elif self.state == "feeding":
-            self.__feeding(delta_time)
+            self._feeding(delta_time)
         elif self.state == "fleeing":
-            self.__fleeing(delta_time)
+            self._fleeing(delta_time)
         elif self.state == "playing":
             self._playing(delta_time)
         else:
-            Warning(f"Unknown fish state {self.state}")
+            try:
+                exec(f"self._{self.state}(delta_time)")
+            except:
+                Warning(f"Unknown fish state {self.state}")
         return(self.updated_this_loop)

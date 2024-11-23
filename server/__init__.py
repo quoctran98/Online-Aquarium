@@ -11,8 +11,8 @@ from server.simulate import aquarium_simulation
 from server.helper import settings, store_items, format_number, dict_to_html, load_latest_from_s3
 from server.models.user import User, GuestUser, UserManager
 from server.models.aquarium import Aquarium
-from server.models.fish import Clownfish, ReallyHungryTestGuppy
 from server.models.store import Store
+from server.models.fish import *
 
 def create_app():
 
@@ -65,8 +65,7 @@ def create_app():
     if settings.ENVIRONMENT == "local":
         # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
         aquarium = Aquarium(command_queue=command_queue)
-        aquarium.add_object(Clownfish(aquarium))
-        aquarium.add_object(ReallyHungryTestGuppy(aquarium))
+        aquarium.add_object(Angelfish(aquarium))
         aquarium.save()
         store = Store()
         for item_type in store_items.keys():
@@ -83,7 +82,6 @@ def create_app():
             # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
             aquarium = Aquarium(command_queue=command_queue)
             aquarium.add_object(Clownfish(aquarium))
-            aquarium.add_object(ReallyHungryTestGuppy(aquarium))
             aquarium.save()
             store = Store()
             for item_type in store_items.keys():

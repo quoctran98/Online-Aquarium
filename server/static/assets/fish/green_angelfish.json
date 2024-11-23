@@ -1,0 +1,87 @@
+{"frames": {
+
+"idle_000.png":
+{
+	"frame": {"x":1,"y":1,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_001.png":
+{
+	"frame": {"x":1,"y":271,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_002.png":
+{
+	"frame": {"x":369,"y":271,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_003.png":
+{
+	"frame": {"x":747,"y":1,"w":322,"h":268},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_004.png":
+{
+	"frame": {"x":721,"y":325,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_005.png":
+{
+	"frame": {"x":706,"y":595,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_006.png":
+{
+	"frame": {"x":366,"y":541,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_007.png":
+{
+	"frame": {"x":384,"y":1,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"idle_008.png":
+{
+	"frame": {"x":1,"y":541,"w":363,"h":270},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":24,"w":363,"h":270},
+	"sourceSize": {"w":383,"h":305}
+}},
+"animations": {
+	"idle": ["idle_000.png","idle_001.png","idle_002.png","idle_003.png","idle_004.png","idle_005.png","idle_006.png","idle_007.png","idle_008.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "green_angelfish.png",
+	"format": "RGBA8888",
+	"size": {"w":1022,"h":864},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:02c9a6bb878a5ffef745e2d66a8ec115:45ced8f75742c22146ce310f50fe2eb8:3fd5dee0c7545602789e2f21866bfaaa$"
+}
+}

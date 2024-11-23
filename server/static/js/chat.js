@@ -1,7 +1,5 @@
 import { socket, chatSocket } from "./sockets.js";
-import { parse_p_tags } from "./utils.js";
-
-const userInfo = parse_p_tags("user-info");
+import { thisUser } from "./models/userModels.js";
 
 class Message {
     constructor({ username, message, timestamp }) {
@@ -25,7 +23,7 @@ $("#chat-form").submit(function(e) {
     e.preventDefault();
     const message = $("#chat-form input").val();
     chatSocket.emit("new_message", {
-        username: userInfo.username,
+        username: thisUser.username,
         message,
         timestamp: Date.now()
     });

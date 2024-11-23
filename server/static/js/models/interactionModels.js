@@ -90,10 +90,13 @@ class Cursor extends PIXI.AnimatedSprite {
         this.width = 64;
         this.height = 64;
 
-        // // Create a label for the cursor
-        // this.label = new PIXI.Text(cursor_input.username, { fontFamily: "Arial", fontSize: 12, fill: 0x000000 });
-        // this.label.anchor.set(0.5);
-        // this.addChild(this.label);
+        // Have a username tag follow the cursor
+        this.usernameTag = new PIXI.Text(cursor_input.username, { 
+            fontFamily: "Comic Sans MS", fontSize: 96, fill: 0x000000 });
+        this.usernameTag.anchor.set(1, 1);
+        this.addChild(this.usernameTag);
+        this.usernameTag.position.set(cursor_input.x-100, cursor_input.y-120);
+
 
         // Set the cursor's initial position
         this.updateCursor(cursor_input);

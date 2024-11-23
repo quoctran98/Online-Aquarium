@@ -52,6 +52,7 @@ html, body {
 }
 
 #chat-messages-container {
+  height: 70%;
   max-height: 70%;
   overflow-y: scroll;
 }
@@ -88,6 +89,13 @@ html, body {
 
 .store-item img {
   max-width: 40%;
+}
+
+.fish-info {
+  position: relative;
+  padding: 1rem 2rem;
+  background-image: url(/static/img/store-background.png);
+  background-size: 100% 100%;
 }
 
 #sidebar {

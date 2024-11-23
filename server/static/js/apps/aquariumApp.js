@@ -21,14 +21,21 @@ $("#aquarium-container").get(0).appendChild(app.canvas);
 await PIXI.Assets.load("assets/cursors.json");
 await PIXI.Assets.load("assets/tap.json");
 await PIXI.Assets.load("assets/things.json");
-await PIXI.Assets.load("assets/fish/clownfish.json");
-await PIXI.Assets.load("assets/fish/guppy.json");
 
 await PIXI.Assets.load("assets/background.png");
 await PIXI.Assets.load("assets/shelf/shelf.png");
 await PIXI.Assets.load("assets/shelf/flake_bottle.png");
 await PIXI.Assets.load("assets/shelf/pellet_bottle.png");
 await PIXI.Assets.load("assets/shelf/brush.png");
+
+// // Import all json files from the assets/shelf/fish folder
+// const fishFiles = await import.meta.globEager("/assets/shelf/fish/*.json");
+// for (let key in fishFiles) {
+//   await PIXI.Assets.load(fishFiles[key].default);
+// }
+await PIXI.Assets.load("assets/fish/green_angelfish.json");
+// await PIXI.Assets.load("assets/fish/guppy.json");
+await PIXI.Assets.load("assets/fish/clownfish.json");
 
 // Make a big container for everything, so we can easily rescale and resize it :)
 let gameContainer = new PIXI.Container();

@@ -7,6 +7,7 @@
 <script src="{{ url_for('static', filename='js/models/interactionModels.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/chat.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/store.js')}}" type="module"></script>
+<script src="{{ url_for('static', filename='js/fishInfo.js')}}" type="module"></script>
 <script src="{{ url_for('static', filename='js/apps/aquariumApp.js')}}" type="module"></script>
 
 <div id="full-screen-container" class="gets-blurred"> 
@@ -55,7 +56,7 @@
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab(event, 'chat-tab')">Chat</button>
                 <button class="tab-button" onclick="showTab(event, 'store-tab')">Store</button>
-                <button class="tab-button" onclick="showTab(event, 'tab3')">Tab 3</button>
+                <button class="tab-button" onclick="showTab(event, 'fish-info-tab')">Fish Info</button>
             </div>
         
             <div class="tab-content active" id="chat-tab">
@@ -70,8 +71,8 @@
             <div class="tab-content" id="store-tab">
                 <div id="store-container"></div>
             </div>
-            <div class="tab-content" id="tab3">
-                <p>This is content for Tab 3.</p>
+            <div class="tab-content" id="fish-info-tab">
+                <div id="fish-info-container"></div>
             </div>
         </div>
         <script type="text/javascript">
