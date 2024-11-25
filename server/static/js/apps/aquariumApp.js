@@ -33,7 +33,7 @@ await PIXI.Assets.load("assets/shelf/brush.png");
 // for (let key in fishFiles) {
 //   await PIXI.Assets.load(fishFiles[key].default);
 // }
-await PIXI.Assets.load("assets/fish/green_angelfish.json");
+await PIXI.Assets.load("assets/fish/angelfish.json");
 await PIXI.Assets.load("assets/fish/guppy.json");
 await PIXI.Assets.load("assets/fish/clownfish.json");
 
@@ -138,10 +138,18 @@ aquariumSocket.on("update_thing", aquarium.updateThing);
 // Add clicking event handlers
 //////////////////////////////
 
+// Deselct the tool when the user right clicks
+$(document).on("contextmenu", (event) => {
+  // Prevent right click menu if the mouse is over the aquarium
+  if (event.target === app.canvas) {
+    event.preventDefault();
+  }
+  thisUser.deselectTool();
+});
+
 // Handle the user clicking on the aquarium! (for some reason this doesn't work with the aquarium container)
 let lastClick = 0;
 aquariumBackground.on("click", (event) => {
-  console.log("Click!");
   // Prevent spam clicking (should also implement this on the server)
   if (Date.now() - lastClick < 500) { return; } // 500ms
   lastClick = Date.now();

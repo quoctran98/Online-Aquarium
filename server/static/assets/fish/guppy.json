@@ -1,143 +1,788 @@
 {"frames": {
 
-"idle_000.png":
+"guppy_blue_idle_000.png":
 {
-	"frame": {"x":0,"y":0,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1902,"y":1,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_001.png":
+"guppy_blue_idle_001.png":
 {
-	"frame": {"x":216,"y":0,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1185,"y":1024,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_002.png":
+"guppy_blue_idle_002.png":
 {
-	"frame": {"x":0,"y":149,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":595,"y":417,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_003.png":
+"guppy_blue_idle_003.png":
 {
-	"frame": {"x":216,"y":149,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":149,"y":1,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_004.png":
+"guppy_blue_idle_004.png":
 {
-	"frame": {"x":0,"y":298,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1,"y":1,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_005.png":
+"guppy_blue_idle_005.png":
 {
-	"frame": {"x":216,"y":298,"w":216,"h":149},
+	"frame": {"x":190,"y":1291,"w":211,"h":147},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_006.png":
+"guppy_blue_idle_006.png":
 {
-	"frame": {"x":0,"y":447,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1039,"y":1,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_007.png":
+"guppy_blue_idle_007.png":
 {
-	"frame": {"x":216,"y":447,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1471,"y":1012,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_008.png":
+"guppy_blue_idle_008.png":
 {
-	"frame": {"x":0,"y":596,"w":216,"h":149},
+	"frame": {"x":1,"y":1309,"w":187,"h":135},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_009.png":
+"guppy_blue_idle_009.png":
 {
-	"frame": {"x":216,"y":596,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1546,"y":1209,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_010.png":
+"guppy_blue_idle_010.png":
 {
-	"frame": {"x":0,"y":745,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":819,"y":1247,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_011.png":
+"guppy_blue_idle_011.png":
 {
-	"frame": {"x":216,"y":745,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":744,"y":209,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_012.png":
+"guppy_blue_idle_012.png":
 {
-	"frame": {"x":0,"y":894,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":298,"y":1066,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_013.png":
+"guppy_blue_idle_013.png":
 {
-	"frame": {"x":216,"y":894,"w":216,"h":149},
+	"frame": {"x":403,"y":1279,"w":206,"h":147},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_014.png":
+"guppy_blue_idle_014.png":
 {
-	"frame": {"x":0,"y":1043,"w":216,"h":149},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"frame": {"x":1186,"y":1,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
 	"sourceSize": {"w":216,"h":149}
 },
-"idle_015.png":
+"guppy_blue_idle_015.png":
 {
-	"frame": {"x":216,"y":1043,"w":216,"h":149},
+	"frame": {"x":1332,"y":813,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_000.png":
+{
+	"frame": {"x":1766,"y":1,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_001.png":
+{
+	"frame": {"x":1330,"y":612,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_002.png":
+{
+	"frame": {"x":595,"y":625,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_003.png":
+{
+	"frame": {"x":149,"y":216,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_004.png":
+{
+	"frame": {"x":1,"y":219,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_005.png":
+{
+	"frame": {"x":298,"y":1,"w":211,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_006.png":
+{
+	"frame": {"x":889,"y":623,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_007.png":
+{
+	"frame": {"x":1475,"y":805,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_008.png":
+{
+	"frame": {"x":1763,"y":389,"w":187,"h":135},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_009.png":
+{
+	"frame": {"x":1614,"y":1002,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_010.png":
+{
+	"frame": {"x":1184,"y":411,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_011.png":
+{
+	"frame": {"x":891,"y":1,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_012.png":
+{
+	"frame": {"x":446,"y":1066,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_013.png":
+{
+	"frame": {"x":447,"y":853,"w":206,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_014.png":
+{
+	"frame": {"x":891,"y":1033,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_green_idle_015.png":
+{
+	"frame": {"x":1473,"y":606,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_000.png":
+{
+	"frame": {"x":1902,"y":195,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_001.png":
+{
+	"frame": {"x":1331,"y":405,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_002.png":
+{
+	"frame": {"x":596,"y":833,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_003.png":
+{
+	"frame": {"x":149,"y":431,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_004.png":
+{
+	"frame": {"x":1,"y":437,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_005.png":
+{
+	"frame": {"x":298,"y":214,"w":211,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_006.png":
+{
+	"frame": {"x":891,"y":828,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_007.png":
+{
+	"frame": {"x":1616,"y":602,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_008.png":
+{
+	"frame": {"x":1900,"y":793,"w":187,"h":135},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_009.png":
+{
+	"frame": {"x":1618,"y":799,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_010.png":
+{
+	"frame": {"x":1187,"y":204,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_011.png":
+{
+	"frame": {"x":743,"y":833,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_012.png":
+{
+	"frame": {"x":447,"y":1,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_013.png":
+{
+	"frame": {"x":594,"y":1061,"w":206,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_014.png":
+{
+	"frame": {"x":966,"y":1236,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_orange_idle_015.png":
+{
+	"frame": {"x":1474,"y":403,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_000.png":
+{
+	"frame": {"x":1766,"y":195,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_001.png":
+{
+	"frame": {"x":1334,"y":202,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_002.png":
+{
+	"frame": {"x":742,"y":417,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_003.png":
+{
+	"frame": {"x":149,"y":646,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_004.png":
+{
+	"frame": {"x":1,"y":655,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_005.png":
+{
+	"frame": {"x":298,"y":427,"w":211,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_006.png":
+{
+	"frame": {"x":1036,"y":623,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_007.png":
+{
+	"frame": {"x":1617,"y":401,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_008.png":
+{
+	"frame": {"x":1900,"y":982,"w":187,"h":135},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_009.png":
+{
+	"frame": {"x":1759,"y":598,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_010.png":
+{
+	"frame": {"x":1333,"y":1,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_011.png":
+{
+	"frame": {"x":743,"y":1040,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_012.png":
+{
+	"frame": {"x":447,"y":214,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_013.png":
+{
+	"frame": {"x":611,"y":1269,"w":206,"h":147},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":149},
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_014.png":
+{
+	"frame": {"x":1038,"y":828,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_pink_idle_015.png":
+{
+	"frame": {"x":1477,"y":202,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_000.png":
+{
+	"frame": {"x":1902,"y":389,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_001.png":
+{
+	"frame": {"x":1260,"y":1225,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_002.png":
+{
+	"frame": {"x":742,"y":625,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_003.png":
+{
+	"frame": {"x":149,"y":861,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_004.png":
+{
+	"frame": {"x":1,"y":873,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_005.png":
+{
+	"frame": {"x":298,"y":640,"w":211,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_006.png":
+{
+	"frame": {"x":1037,"y":415,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_007.png":
+{
+	"frame": {"x":1620,"y":200,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_008.png":
+{
+	"frame": {"x":1900,"y":1171,"w":187,"h":135},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_009.png":
+{
+	"frame": {"x":1689,"y":1197,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_010.png":
+{
+	"frame": {"x":1113,"y":1234,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_011.png":
+{
+	"frame": {"x":889,"y":416,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_012.png":
+{
+	"frame": {"x":447,"y":427,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_013.png":
+{
+	"frame": {"x":595,"y":1,"w":206,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_014.png":
+{
+	"frame": {"x":1038,"y":1031,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_red_idle_015.png":
+{
+	"frame": {"x":1480,"y":1,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_000.png":
+{
+	"frame": {"x":1902,"y":583,"w":192,"h":134},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":192,"h":134},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_001.png":
+{
+	"frame": {"x":1328,"y":1024,"w":199,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_002.png":
+{
+	"frame": {"x":744,"y":1,"w":206,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_003.png":
+{
+	"frame": {"x":149,"y":1076,"w":213,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":213,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_004.png":
+{
+	"frame": {"x":1,"y":1091,"w":216,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_005.png":
+{
+	"frame": {"x":298,"y":853,"w":211,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_006.png":
+{
+	"frame": {"x":1040,"y":206,"w":203,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":203,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_007.png":
+{
+	"frame": {"x":1623,"y":1,"w":195,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":195,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_008.png":
+{
+	"frame": {"x":1761,"y":793,"w":187,"h":135},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":135},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_009.png":
+{
+	"frame": {"x":1757,"y":994,"w":193,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":141},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_010.png":
+{
+	"frame": {"x":1185,"y":823,"w":199,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_011.png":
+{
+	"frame": {"x":892,"y":208,"w":205,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":205,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_012.png":
+{
+	"frame": {"x":447,"y":640,"w":211,"h":146},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":211,"h":146},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_013.png":
+{
+	"frame": {"x":595,"y":209,"w":206,"h":147},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":206,"h":147},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_014.png":
+{
+	"frame": {"x":1183,"y":620,"w":201,"h":145},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":145},
+	"sourceSize": {"w":216,"h":149}
+},
+"guppy_yellow_idle_015.png":
+{
+	"frame": {"x":1403,"y":1225,"w":197,"h":141},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":197,"h":141},
 	"sourceSize": {"w":216,"h":149}
 }},
 "animations": {
-	"idle": ["idle_000.png","idle_001.png","idle_002.png","idle_003.png","idle_004.png","idle_005.png","idle_006.png","idle_007.png","idle_008.png","idle_009.png","idle_010.png","idle_011.png","idle_012.png","idle_013.png","idle_014.png","idle_015.png"]
+	"guppy_blue_idle": ["guppy_blue_idle_000.png","guppy_blue_idle_001.png","guppy_blue_idle_002.png","guppy_blue_idle_003.png","guppy_blue_idle_004.png","guppy_blue_idle_005.png","guppy_blue_idle_006.png","guppy_blue_idle_007.png","guppy_blue_idle_008.png","guppy_blue_idle_009.png","guppy_blue_idle_010.png","guppy_blue_idle_011.png","guppy_blue_idle_012.png","guppy_blue_idle_013.png","guppy_blue_idle_014.png","guppy_blue_idle_015.png"],
+	"guppy_green_idle": ["guppy_green_idle_000.png","guppy_green_idle_001.png","guppy_green_idle_002.png","guppy_green_idle_003.png","guppy_green_idle_004.png","guppy_green_idle_005.png","guppy_green_idle_006.png","guppy_green_idle_007.png","guppy_green_idle_008.png","guppy_green_idle_009.png","guppy_green_idle_010.png","guppy_green_idle_011.png","guppy_green_idle_012.png","guppy_green_idle_013.png","guppy_green_idle_014.png","guppy_green_idle_015.png"],
+	"guppy_orange_idle": ["guppy_orange_idle_000.png","guppy_orange_idle_001.png","guppy_orange_idle_002.png","guppy_orange_idle_003.png","guppy_orange_idle_004.png","guppy_orange_idle_005.png","guppy_orange_idle_006.png","guppy_orange_idle_007.png","guppy_orange_idle_008.png","guppy_orange_idle_009.png","guppy_orange_idle_010.png","guppy_orange_idle_011.png","guppy_orange_idle_012.png","guppy_orange_idle_013.png","guppy_orange_idle_014.png","guppy_orange_idle_015.png"],
+	"guppy_pink_idle": ["guppy_pink_idle_000.png","guppy_pink_idle_001.png","guppy_pink_idle_002.png","guppy_pink_idle_003.png","guppy_pink_idle_004.png","guppy_pink_idle_005.png","guppy_pink_idle_006.png","guppy_pink_idle_007.png","guppy_pink_idle_008.png","guppy_pink_idle_009.png","guppy_pink_idle_010.png","guppy_pink_idle_011.png","guppy_pink_idle_012.png","guppy_pink_idle_013.png","guppy_pink_idle_014.png","guppy_pink_idle_015.png"],
+	"guppy_red_idle": ["guppy_red_idle_000.png","guppy_red_idle_001.png","guppy_red_idle_002.png","guppy_red_idle_003.png","guppy_red_idle_004.png","guppy_red_idle_005.png","guppy_red_idle_006.png","guppy_red_idle_007.png","guppy_red_idle_008.png","guppy_red_idle_009.png","guppy_red_idle_010.png","guppy_red_idle_011.png","guppy_red_idle_012.png","guppy_red_idle_013.png","guppy_red_idle_014.png","guppy_red_idle_015.png"],
+	"guppy_yellow_idle": ["guppy_yellow_idle_000.png","guppy_yellow_idle_001.png","guppy_yellow_idle_002.png","guppy_yellow_idle_003.png","guppy_yellow_idle_004.png","guppy_yellow_idle_005.png","guppy_yellow_idle_006.png","guppy_yellow_idle_007.png","guppy_yellow_idle_008.png","guppy_yellow_idle_009.png","guppy_yellow_idle_010.png","guppy_yellow_idle_011.png","guppy_yellow_idle_012.png","guppy_yellow_idle_013.png","guppy_yellow_idle_014.png","guppy_yellow_idle_015.png"]
 },
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.1",
 	"image": "guppy.png",
 	"format": "RGBA8888",
-	"size": {"w":432,"h":1192},
+	"size": {"w":2037,"h":1447},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a50007a4cb268459d573ba4a87ab7696:b6bd57657258d37aac244c62c5cb5f78:e6d94b7e15b36d81d16a64f210edeb5f$"
+	"smartupdate": "$TexturePacker:SmartUpdate:a897bf39411057f302f712fad3a6c9d6:c2588bb403a696368af16be98c060b7d:e6d94b7e15b36d81d16a64f210edeb5f$"
 }
 }

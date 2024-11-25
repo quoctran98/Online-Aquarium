@@ -2,8 +2,8 @@ import os
 import re
 
 DIRECTORY = "./server/static/assets/temp"
-PATTERN = re.compile(r'__orange_angelfish_swim_(\d{3})')
-NEW_PREFIX = "idle_"
+PATTERN = re.compile(r'__yellow_angelfish_swim_(\d{3})')
+NEW_PREFIX = "yellow_idle_"
 
 def rename_files(directory):
 

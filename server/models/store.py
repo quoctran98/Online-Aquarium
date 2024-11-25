@@ -23,8 +23,8 @@ class Store():
 
     @property
     def summarize(self):
-        # Don't include fully funded items!
-        return([item.summarize for item in self.items.values() if not item.fully_funded])
+        # Don't include out of stock items!
+        return([item.summarize for item in self.items.values() if item.stock > 0])
 
 class StoreItem():
     def __init__(self, store, item_type, item_dict):
@@ -33,23 +33,33 @@ class StoreItem():
         self.item_type = item_type
 
         # Unpack the item_type from the store_items dictionary
-        # item_name, description, price, image_file
+        # item_name, description, price, stock, image_file
         for key, value in item_dict.items():
             setattr(self, key, value)
 
         # Keep track of how much money is has been raised for this item
         self.money_raised = 0.0
         self.contributors = [] # with dicts of username, amount, and timestamp
+        self.times_bought = 0
 
     def contribute(self, username, amount) -> bool:
-        amount = round(amount, 2)
+        amount = round(amount, 2) # Just in case but handled by in events/store.py (also prevents overfunding)
         self.money_raised = round(self.money_raised + amount, 2)
         self.contributors.append({
             "username": username,
             "amount": amount,
             "timestamp": datetime.datetime.now().timestamp()
         })
-        return(self.money_raised >= self.price)
+        
+        if self.fully_funded:
+            self.stock -= 1
+            self.times_bought += 1
+            # Ideally we eventually do something with the contributors too :)
+            # If we still have stock, reset the money_raised and contributors
+            if (self.stock > 0):
+                self.money_raised = 0.0
+                self.contributors = []
+            return(True) # To tell Store() to add the item to the aquarium
     
     @property
     def fully_funded(self):
@@ -62,6 +72,7 @@ class StoreItem():
             "item_type": self.item_type,
             "item_name": self.item_name,
             "price": self.price,
+            "stock": self.stock,
             "image_file": self.image_file,
             "money_raised": self.money_raised,
             # "contributors": self.contributors

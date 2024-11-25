@@ -1,0 +1,339 @@
+{"frames": {
+
+"angelfish_green_idle_000.png":
+{
+	"frame": {"x":1,"y":1,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_001.png":
+{
+	"frame": {"x":384,"y":1,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_002.png":
+{
+	"frame": {"x":752,"y":1,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_003.png":
+{
+	"frame": {"x":1104,"y":1,"w":322,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_004.png":
+{
+	"frame": {"x":1428,"y":1,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_005.png":
+{
+	"frame": {"x":1724,"y":1,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_006.png":
+{
+	"frame": {"x":1,"y":271,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_green_idle_007.png":
+{
+	"frame": {"x":341,"y":271,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_000.png":
+{
+	"frame": {"x":704,"y":271,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_001.png":
+{
+	"frame": {"x":1087,"y":271,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_002.png":
+{
+	"frame": {"x":1455,"y":271,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_003.png":
+{
+	"frame": {"x":1,"y":541,"w":322,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_004.png":
+{
+	"frame": {"x":325,"y":541,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_005.png":
+{
+	"frame": {"x":621,"y":541,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_006.png":
+{
+	"frame": {"x":938,"y":541,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_purple_idle_007.png":
+{
+	"frame": {"x":1278,"y":541,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_000.png":
+{
+	"frame": {"x":1641,"y":541,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_001.png":
+{
+	"frame": {"x":1,"y":811,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_002.png":
+{
+	"frame": {"x":369,"y":811,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_003.png":
+{
+	"frame": {"x":721,"y":811,"w":322,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_004.png":
+{
+	"frame": {"x":1045,"y":811,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_005.png":
+{
+	"frame": {"x":1341,"y":811,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_006.png":
+{
+	"frame": {"x":1658,"y":811,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_red_idle_007.png":
+{
+	"frame": {"x":1,"y":1081,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_000.png":
+{
+	"frame": {"x":364,"y":1081,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_001.png":
+{
+	"frame": {"x":747,"y":1081,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_002.png":
+{
+	"frame": {"x":1115,"y":1081,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_003.png":
+{
+	"frame": {"x":1467,"y":1081,"w":322,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_004.png":
+{
+	"frame": {"x":1,"y":1351,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_005.png":
+{
+	"frame": {"x":297,"y":1351,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_006.png":
+{
+	"frame": {"x":614,"y":1351,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_turquoise_idle_007.png":
+{
+	"frame": {"x":954,"y":1351,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_000.png":
+{
+	"frame": {"x":1317,"y":1351,"w":381,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":29,"w":381,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_001.png":
+{
+	"frame": {"x":1,"y":1621,"w":366,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":28,"w":366,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_002.png":
+{
+	"frame": {"x":369,"y":1621,"w":350,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":350,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_003.png":
+{
+	"frame": {"x":1700,"y":1351,"w":322,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":322,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_004.png":
+{
+	"frame": {"x":721,"y":1621,"w":294,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":26,"w":294,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_005.png":
+{
+	"frame": {"x":1017,"y":1621,"w":315,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":27,"w":315,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_006.png":
+{
+	"frame": {"x":1334,"y":1621,"w":338,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":28,"w":338,"h":268},
+	"sourceSize": {"w":383,"h":305}
+},
+"angelfish_yellow_idle_007.png":
+{
+	"frame": {"x":1674,"y":1621,"w":361,"h":268},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":29,"w":361,"h":268},
+	"sourceSize": {"w":383,"h":305}
+}},
+"animations": {
+	"angelfish_green_idle": ["angelfish_green_idle_000.png","angelfish_green_idle_001.png","angelfish_green_idle_002.png","angelfish_green_idle_003.png","angelfish_green_idle_004.png","angelfish_green_idle_005.png","angelfish_green_idle_006.png","angelfish_green_idle_007.png"],
+	"angelfish_purple_idle": ["angelfish_purple_idle_000.png","angelfish_purple_idle_001.png","angelfish_purple_idle_002.png","angelfish_purple_idle_003.png","angelfish_purple_idle_004.png","angelfish_purple_idle_005.png","angelfish_purple_idle_006.png","angelfish_purple_idle_007.png"],
+	"angelfish_red_idle": ["angelfish_red_idle_000.png","angelfish_red_idle_001.png","angelfish_red_idle_002.png","angelfish_red_idle_003.png","angelfish_red_idle_004.png","angelfish_red_idle_005.png","angelfish_red_idle_006.png","angelfish_red_idle_007.png"],
+	"angelfish_turquoise_idle": ["angelfish_turquoise_idle_000.png","angelfish_turquoise_idle_001.png","angelfish_turquoise_idle_002.png","angelfish_turquoise_idle_003.png","angelfish_turquoise_idle_004.png","angelfish_turquoise_idle_005.png","angelfish_turquoise_idle_006.png","angelfish_turquoise_idle_007.png"],
+	"angelfish_yellow_idle": ["angelfish_yellow_idle_000.png","angelfish_yellow_idle_001.png","angelfish_yellow_idle_002.png","angelfish_yellow_idle_003.png","angelfish_yellow_idle_004.png","angelfish_yellow_idle_005.png","angelfish_yellow_idle_006.png","angelfish_yellow_idle_007.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "angelfish.png",
+	"format": "RGBA8888",
+	"size": {"w":2040,"h":1890},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:806de97f64848ff667fb49b1a00f87ee:7b0665be9b38453a9d2a61a8c1bc5b02:b529d8990b50d4c2407a921b4f32583b$"
+}
+}

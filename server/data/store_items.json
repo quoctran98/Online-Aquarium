@@ -1,36 +1,30 @@
 {
     "treasure_chest_0": {
         "item_name": "Treasure Chest",
-        "price": 0.99,
+        "price": 0.01,
+        "stock": 1,
         "image_file": "/assets/store/treasure_chest.png",
         "object_name":  "TreasureChest",
         "object_kwargs": {"x": 700, "y": 450},
         "object_properties": {}
     },
 
-    "guppy_0": {
+    "guppy": {
         "item_name": "Guppy",
-        "price": 0.49,
+        "price": 0.99,
+        "stock": 20,
         "image_file": "/assets/store/guppy.png",
         "object_name":  "Guppy",
         "object_kwargs": {},
         "object_properties": {}
     },
 
-    "guppy_1": {
-        "item_name": "Guppy",
-        "price": 0.49,
-        "image_file": "/assets/store/guppy.png",
-        "object_name":  "Guppy",
-        "object_kwargs": {},
-        "object_properties": {}
-    },
-
-    "guppy_2": {
-        "item_name": "Guppy",
-        "price": 0.49,
-        "image_file": "/assets/store/guppy.png",
-        "object_name":  "Guppy",
+    "angelfish": {
+        "item_name": "Angelfish",
+        "price": 1.99,
+        "stock": 20,
+        "image_file": "/assets/store/angelfish.png",
+        "object_name":  "Angelfish",
         "object_kwargs": {},
         "object_properties": {}
     }

@@ -79,6 +79,8 @@ This is the base class for all objects in the Aquarium. This class is abstract a
 
 - `default_animation` (str): The name of the default animation in the spritesheet (e.g. `idle`) if this object has animations. This is used in the frontend to create the `PIXI.AnimatedSprite` object with multiple frames.
 
+- `animation_prefix` (str): The prefix of the animation names in the spritesheet (e.g. `blue_`). This is used in the frontend to create the `PIXI.AnimatedSprite` object with multiple frames.
+
 - `updated_this_loop` (bool) (*backend only*): A flag that indicates whether the object has been "updated" in the current loop. This is used to determine whether the object should be broadcasted to the frontend.
 
 - `properties_to_broadcast` (list) (*backend only*): A list of names of properties that should be sent to the frontend when the Aquarium state is synced. Make sure nothing non-serializable or sensitive is included here. Child classes should extend this list with their own properties.
@@ -109,11 +111,11 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 
 - `state` (str): The state of the fish. This can be `idle`, `feeding`, `fleeing`, or `chasing`.
 
-- `health` (float): The health level of the fish. This is a float between 0 and 1. 0 is dead, and 1 is healthy.
+- `health` (float): The health level of the fish. This is a float between 0 and 1. 0 is dead, and 1 is healthy. This is modeled by the following ODE: `dhealth/dt = +((0.5 - hunger) * starvation_rate) + ((0.5 - happiness) * happiness_health_rate)`.
 
 - `happiness` (float): The happiness level of the fish. This is a float between 0 and 1. 0 is sad, and 1 is happy.
 
-- `hunger` (float): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = +hunger_rate * speed`
+- `hunger` (float): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = +hunger_rate * speed * width`.
 
 - `hunger_rate` (float) (*backend only*): The rate at which the fish's hunger increases. This is a float between 0 and 1.
 

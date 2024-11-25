@@ -1,4 +1,5 @@
 # Aquarium Online-Specific Directories and Files
+/server/static/assets/temp/
 /server/saves/
 /server/logs/
 /server/sessions/

@@ -1,4 +1,5 @@
 from server.models.aquarium import Fish
+import random
 
 class Clownfish(Fish):
     def __init__(self, aquarium, **kwargs):
@@ -14,8 +15,6 @@ class Clownfish(Fish):
         self.max_speed = 100
         self.fish_name = "nemo"
         # No new properties to broadcast
-
-        self.starve = False
 
         # Set properties from kwargs
         for key, value in kwargs.items():
@@ -44,6 +43,11 @@ class Clownfish(Fish):
 
 class Guppy(Fish):
     def __init__(self, aquarium, **kwargs):
+
+        # Choose a random color for the guppy (if not specified)
+        color = kwargs.get("color", None)
+        if color is None:
+            color = random.choice(["blue", "green", "orange", "pink", "red", "yellow"])
             
         # Redefine properties from Fish
         super().__init__(aquarium)
@@ -51,13 +55,12 @@ class Guppy(Fish):
         self.spritesheet_json = "assets/fish/guppy.json"
         self.default_texture = None
         self.default_animation = "idle"
+        self.animation_prefix = f"guppy_{color}_"
         self.spect_ratio = 1.4496644295
         self.width = 72
         self.max_speed = 80
         self.fish_name = "fish"
         # No new properties to broadcast
-
-        self.starve = False
 
         # Set properties from kwargs
         for key, value in kwargs.items():
@@ -86,20 +89,24 @@ class Guppy(Fish):
 
 class Angelfish(Fish):
     def __init__(self, aquarium, **kwargs):
+
+        # Choose a random color for the guppy (if not specified)
+        color = kwargs.get("color", None)
+        if color is None:
+            color = random.choice(["green", "purple", "red", "turquoise", "yellow"])
             
         # Redefine properties from Fish
         super().__init__(aquarium)
         self.class_hierarchy.append("Angelfish")
-        self.spritesheet_json = "assets/fish/green_angelfish.json"
+        self.spritesheet_json = "assets/fish/angelfish.json"
         self.default_texture = None
         self.default_animation = "idle"
+        self.animation_prefix = f"angelfish_{color}_"
         self.aspect_ratio = 1.2557377049
         self.width = 120
         self.max_speed = 100
         self.fish_name = "julian"
         # No new properties to broadcast
-
-        self.starve = False
 
         # Set properties from kwargs
         for key, value in kwargs.items():

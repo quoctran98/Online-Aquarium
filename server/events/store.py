@@ -21,14 +21,13 @@ def register_events(socketio, command_queue, store):
     @confirm_user
     def contribute(data):
         store_item = store.items[data["label"]]
+        contribution_amount = round(data["amount"], 2)
         if store_item.fully_funded:
             return
-        # if store_item.money_raised + data["amount"] > store_item.price:
-        #     return # Don't allow overfunding
-        # Allow it for now as a bandaid!
+        if store_item.money_raised + contribution_amount > store_item.price:
+            return # Don't allow overfunding
         if data["amount"] < 0:
             return # Don't allow negative contributions
-        contribution_amount = round(data["amount"], 2)
         contribution_allowed = current_user.subtract_money(contribution_amount)
         if contribution_allowed:
             fully_funded = store.add_contribution(data["label"], data["username"], contribution_amount)
@@ -38,7 +37,7 @@ def register_events(socketio, command_queue, store):
                     "object_kwargs": store.items[data["label"]].object_kwargs,
                     "object_properties": store.items[data["label"]].object_properties
                 }))
-
+            # models/store.py will handle resetting the item if it's fully funded and still in stock
+            store.save()
             # socketio.emit("update_item", store.items[data["label"]].summarize, namespace="/store") # THIS DOESN'T WORK?
             socketio.emit("summarize_store", store.summarize, namespace="/store") 
-            store.save()

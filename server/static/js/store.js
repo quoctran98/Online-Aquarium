@@ -4,11 +4,12 @@ import { thisUser } from './models/userModels.js';
 let firstStoreLoad = false;
 
 class StoreItem {
-    constructor({ label, item_name, description, price, image_file, money_raised }) {
+    constructor({ label, item_name, description, price, stock, image_file, money_raised }) {
         this.label = label;
         this.item_name = item_name;
         this.description = description;
         this.price = price;
+        this.stock = stock
         this.image_file = image_file;
         this.money_raised = money_raised;
     }
@@ -18,7 +19,7 @@ class StoreItem {
             <div class="store-item" id="${this.label}">
                 <h3>${this.item_name}</h3>
                 <img src="${this.image_file}">
-                <p>${this.money_raised} of ${this.price} raised!</p>
+                <p>${this.money_raised} of ${this.price} raised! (${this.stock} left)</p>
                 <input type="number" id="contribute-amount_${this.label}" value="0.01" step="0.01" min="0.01" max="${maxContribution}">
                 <button class="contribute-button" id="contribute_${this.label}">Contribute</button>
             </div>

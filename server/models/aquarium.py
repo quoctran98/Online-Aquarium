@@ -88,13 +88,14 @@ class Thing():
         self.spritesheet_json = None
         self.default_texture = None
         self.default_animation = None
+        self.animation_prefix = "" # For spritesheets with multiple animations
 
         # Houskeeping properties
         self.class_hierarchy = ["Thing"]
         self.updated_this_loop = False
         self.properties_to_broadcast = [
             "label", "class_hierarchy", "x", "y", "speed", "destination_x", "destination_y", "aspect_ratio",
-            "width", "height", "time_created", "spritesheet_json", "default_texture", "default_animation"
+            "width", "height", "time_created", "spritesheet_json", "default_texture", "default_animation", "animation_prefix"
         ]
 
     @property
@@ -190,7 +191,7 @@ class Fish(Thing):
         self.default_texture = "fish.png"
         self.default_animation = None
         self.aspect_ratio = 1
-        self.width = 20
+        self.width = 100 # Pixels (also a proxy for size!)
         self.properties_to_broadcast.extend([
             "fish_name", "state", "health", "happiness", "hunger" 
         ])
@@ -198,12 +199,18 @@ class Fish(Thing):
         # Set the fish-specific properties
         self.fish_name = "unnamed_fish"
         self.state = "idle" # idle, feeding, fleeing, playing
+
+        # Health properties (check `game_classes.md` for more info)
         self.health = 1.0
-        self.starve = False # placeholder for now!
+        self.happiness_health_rate = 1/14400 
         self.happiness = 0.5 # 0 to 1
-        self.hunger = 0.0 # 0 to 1
-        self.hunger_rate = 0.01 # Per second per speed
-        self.max_speed = 0 # Pixels per second
+
+        # Hunger properties
+        self.hunger = 0 # 0 to 1, 1 is very hungry
+        self.hunger_rate = 1/1440000 # Hunger per second per speed per width (4 hours at speed=100 and width=100)
+        self.starve_rate = 1/7200 # Health per second per (0.5-hunger) (2 hours at hunger=1)
+
+        self.max_speed = 100 # Pixels per second
 
         # Keep a running tally of how much a fish likes a user
         self.relationships = {} # {user_id: relationship_score (0 to 1)}
@@ -218,8 +225,7 @@ class Fish(Thing):
         self.remove()
 
     def _calculate_health(self, delta_time):
-        if (self.hunger >= 1) and (self.starve):
-            self.health -= 1 * delta_time.total_seconds()
+        self.health += ((0.5 - self.hunger) * self.starve_rate - (0.5 - self.happiness) * self.happiness_health_rate) * delta_time.total_seconds()
         if (self.health <= 0):
             self._die()
         self.health = max(0, min(1, self.health))
@@ -229,7 +235,7 @@ class Fish(Thing):
         pass
 
     def _calculate_hunger(self, delta_time):
-        self.hunger += self.hunger_rate * delta_time.total_seconds()
+        self.hunger += self.hunger_rate * self.speed * delta_time.total_seconds()
         self.hunger = max(0, min(self.hunger, 1))
 
     def _choose_state(self):

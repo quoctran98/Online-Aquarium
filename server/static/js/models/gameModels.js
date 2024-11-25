@@ -105,9 +105,10 @@ class Thing extends PIXI.AnimatedSprite {
             console.log("Thing created without texture or animation");
             return;
         } else if (hasAnimation) {
-            // Create a sprite with the given animation
+            // Create a sprite with the default animation
+            const animationPrefix = thingInput.animation_prefix;
             const animations = PIXI.Assets.get(thingInput.spritesheet_json).data.animations;
-            const animation = animations[thingInput.default_animation];
+            const animation = animations[animationPrefix + thingInput.default_animation];
             super(animation.map(frame => PIXI.Texture.from(frame)));
             // Save the list of animations for later, then play the default animation
             this.animations_list = animations;
@@ -203,7 +204,7 @@ class Fish extends Thing {
         }
 
         // Choose the fish's animation based on it's state (same string)
-        const animation = this.animations_list[this.state];
+        const animation = this.animations_list[this.animation_prefix + this.state];
         if ((this.animation !== animation) && (animation !== undefined)) {
             this.textures = animation.map(frame => PIXI.Texture.from(frame));
             this.animation = animation;
