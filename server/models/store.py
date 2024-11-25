@@ -17,7 +17,8 @@ class Store():
     def save(self, save_dir=settings.S3_STORE_SAVE_DIR):
         filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl"
         pickle_obj = pickle.dumps(self)
-        save_to_s3(pickle_obj, filename, save_dir)
+        # save_to_s3(pickle_obj, filename, save_dir) # DON'T SAVE A NON-LATEST VERSION -- WASTE OF SPACE 
+        # # (this should eventualy be tied to the normal aquarium save in the simulation loop)
         # Maybe not the best way, but let's also save a "latest" version!!
         save_to_s3(pickle_obj, "latest.pkl", save_dir)
 
