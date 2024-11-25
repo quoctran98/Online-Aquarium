@@ -76,6 +76,8 @@ def create_app():
         # Load the aquarium and store from S3
         try:
             aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
+            # Attach the command queue to the aquarium!!
+            aquarium.command_queue = command_queue
             store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR)
         except:
             print("Failed to load the aquarium and store from S3.") 
