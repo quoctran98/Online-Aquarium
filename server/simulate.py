@@ -85,13 +85,6 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
             changed = thing.updated_this_loop
             if changed:
                 aquarium.broadcast_updates.append(thing.summarize)
-
-        # Randomly spawn a coin every few seconds
-        if (random.random() < 0.001):
-            # choose a fish to spawn from
-            fish = random.choice([fish for fish in aquarium.objects.values() if isinstance(fish, Fish)])
-            coin = Coin(aquarium, fish.x, fish.y)
-            aquarium.add_object(coin)
             
         # Every few seconds (SYNC_FREQUENCY), sync the current state of the aquarium to with all clients
         # Or if a broadcast_sync flag is set

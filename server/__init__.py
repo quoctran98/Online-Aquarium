@@ -82,7 +82,8 @@ def create_app():
 
             # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
             aquarium = Aquarium(command_queue=command_queue)
-            aquarium.add_object(Clownfish(aquarium))
+            aquarium.add_object(Guppy(aquarium))
+            aquarium.add_object(Angelfish(aquarium))
             aquarium.save()
             store = Store()
             for item_type in store_items.keys():

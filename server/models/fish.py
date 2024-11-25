@@ -1,4 +1,5 @@
 from server.models.aquarium import Fish
+from server.helper import get_random_name
 import random
 
 class Clownfish(Fish):
@@ -13,7 +14,8 @@ class Clownfish(Fish):
         self.aspect_ratio = 1.3837209302
         self.width = 120
         self.max_speed = 100
-        self.fish_name = "nemo"
+        self.fish_name = f"{get_random_name(first_letter='C')} the Clownfish"
+        self.coin_rate = 1/10
         # No new properties to broadcast
 
         # Set properties from kwargs
@@ -59,7 +61,8 @@ class Guppy(Fish):
         self.spect_ratio = 1.4496644295
         self.width = 72
         self.max_speed = 80
-        self.fish_name = "fish"
+        self.fish_name = f"{get_random_name(first_letter='G')} the Guppy"
+        self.coin_rate = 1/40
         # No new properties to broadcast
 
         # Set properties from kwargs
@@ -105,7 +108,9 @@ class Angelfish(Fish):
         self.aspect_ratio = 1.2557377049
         self.width = 120
         self.max_speed = 100
-        self.fish_name = "julian"
+        self.fish_name = f"{get_random_name(first_letter='A')} the Angelfish"
+        self.coin_rate = 1/20 # Angelfish produce coins at a rate of 1 coin per 20 seconds (on average)
+
         # No new properties to broadcast
 
         # Set properties from kwargs

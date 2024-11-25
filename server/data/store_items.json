@@ -11,7 +11,7 @@
 
     "guppy": {
         "item_name": "Guppy",
-        "price": 0.99,
+        "price": 0.49,
         "stock": 20,
         "image_file": "/assets/store/guppy.png",
         "object_name":  "Guppy",
@@ -21,10 +21,20 @@
 
     "angelfish": {
         "item_name": "Angelfish",
-        "price": 1.99,
-        "stock": 20,
+        "price": 1.49,
+        "stock": 10,
         "image_file": "/assets/store/angelfish.png",
         "object_name":  "Angelfish",
+        "object_kwargs": {},
+        "object_properties": {}
+    },
+
+    "clownfish": {
+        "item_name": "Clownfish",
+        "price": 2.49,
+        "stock": 5,
+        "image_file": "/assets/store/clownfish.png",
+        "object_name":  "Clownfish",
         "object_kwargs": {},
         "object_properties": {}
     }

@@ -5,7 +5,7 @@ from botocore.client import Config
 from flask_login import current_user
 from flask_socketio import disconnect, emit
 from flask import request
-import json, functools, pickle
+import json, functools, pickle, random
 from io import BytesIO
 
 # Load settings from .env file
@@ -38,6 +38,12 @@ with open("server/data/store_items.json") as f:
 tool_types = {}
 with open("server/data/tools.json") as f:
     tool_types = json.load(f)
+
+# Load first-names.txt
+# From: https://github.com/dominictarr/random-name/tree/master
+first_names = []
+with open("server/data/first-names.txt") as f:
+    first_names = f.read().splitlines()
 
 # Connect to MongoDB (and export the connection client and users collection)
 mongo_client = MongoClient(settings.MONGODB_CONNECTION_STRING)
@@ -130,3 +136,10 @@ def dict_to_html(data):
 # Sanitize messages of HTML tags
 def sanitize_message(message):
     return(message.replace("<", "&lt;").replace(">", "&gt;"))
+
+# Get a random name for a fish based on first letter
+def get_random_name(first_letter=None, names_list=first_names):
+    if first_letter is None:
+        first_letter = random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    # Get a random name from the list of first names that starts with the first letter
+    return(random.choice([name for name in names_list if name.startswith(first_letter)]))

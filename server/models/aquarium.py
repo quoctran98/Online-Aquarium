@@ -211,6 +211,7 @@ class Fish(Thing):
         self.starve_rate = 1/7200 # Health per second per (0.5-hunger) (2 hours at hunger=1)
 
         self.max_speed = 100 # Pixels per second
+        self.coin_rate = 1/20 # On average, 1 coin per 20 seconds
 
         # Keep a running tally of how much a fish likes a user
         self.relationships = {} # {user_id: relationship_score (0 to 1)}
@@ -237,6 +238,11 @@ class Fish(Thing):
     def _calculate_hunger(self, delta_time):
         self.hunger += self.hunger_rate * self.speed * delta_time.total_seconds()
         self.hunger = max(0, min(self.hunger, 1))
+
+    def _calculate_coin_drop(self, delta_time):
+        # TODO eventually make this more sophisticated (e.g. based on happiness, etc.)
+        if random.random() < (self.coin_rate * delta_time.total_seconds()):
+            self.aquarium.create_object("Coin", kwargs={"x": self.x, "y": self.y}, properties={})
 
     def _choose_state(self):
         # Placeholder for child classes to override with fish-specific behavior
@@ -303,6 +309,7 @@ class Fish(Thing):
         self._calculate_health(delta_time)
         self._calculate_happiness(delta_time)
         self._calculate_hunger(delta_time)
+        self._calculate_coin_drop(delta_time)
         self._choose_state()
         # State-specific behavior
         if self.state == "idle":

@@ -73,7 +73,8 @@ class Coin(Thing):
 
         # Set the coin-specific properties
         self.value = 0.01
-        self.lifetime = 60 # Seconds
+        self.lifetime = 30 # Seconds
+        self.floor_lifetime = 5 # Seconds (how long the coin is on the floor)
 
         # Make the coin fall straight down
         self.x = x
@@ -86,6 +87,10 @@ class Coin(Thing):
         self.updated_this_loop = False
         self._move_toward_destination(delta_time)
         self._calculate_lifetime()
+
+        if (self.y >= self.destination_y):
+            # If the coin has hit the floor change the lifetime
+            self.lifetime = self.floor_lifetime # Kind of an elegant way to do this :)
 
     def click(self, user):
         user.money = round(user.money + self.value, 2)
