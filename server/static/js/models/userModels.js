@@ -35,6 +35,8 @@ class ThisUser extends User {
         for (let key in newUserInfo) {
             this[key] = newUserInfo[key];
         }
+        // Round the money to two decimal places
+        this.money = Math.round(this.money * 100) / 100;
         // Update all elements that display the user's money (.user-money)
         $(".user-money").text(this.money);
     }
