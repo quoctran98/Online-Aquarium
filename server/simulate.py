@@ -1,7 +1,7 @@
 from flask_socketio import emit
 from server.helper import settings
 from server.models.aquarium import Fish, Aquarium
-from server.models.fish import Clownfish, Guppy
+from server.models.fish import Clownfish, Guppy, Angelfish
 from server.models.things import *
 from server.models.user import User
 from datetime import datetime, timezone

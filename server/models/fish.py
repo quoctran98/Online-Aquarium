@@ -11,6 +11,7 @@ class Clownfish(Fish):
         self.spritesheet_json = "assets/fish/clownfish.json"
         self.default_texture = None
         self.default_animation = "idle"
+        self.animation_prefix = "clownfish_"
         self.aspect_ratio = 1.3837209302
         self.width = 120
         self.max_speed = 100
