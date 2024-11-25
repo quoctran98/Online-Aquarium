@@ -28,7 +28,7 @@ class Clownfish(Fish):
         closest_tap, tap_distance = self._find_closest(class_hierarchy=["Thing", "Tap"])
         predator_width = closest_predator.width if closest_predator is not None else 0
         # Clownfish will priortize feeding
-        if self.hunger > 0.5 and closest_food is not None:
+        if closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
         # Flee from larger predators
@@ -79,7 +79,7 @@ class Guppy(Fish):
             self.state = "fleeing"
             self.predator = closest_predator
         # If the fish is hungry and there is food nearby, it will prioritize feeding
-        elif self.hunger > 0.2 and closest_food is not None:
+        elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
         # If there are taps, then the fish will play
@@ -127,7 +127,7 @@ class Angelfish(Fish):
             self.state = "fleeing"
             self.predator = closest_predator
         # If the fish is hungry and there is food nearby, it will prioritize feeding
-        elif self.hunger > 0.2 and closest_food is not None:
+        elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
         # If there are taps, then the fish will play
