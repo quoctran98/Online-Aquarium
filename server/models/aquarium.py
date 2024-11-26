@@ -54,15 +54,18 @@ class Aquarium():
 
     def save(self, save_dir=settings.S3_AQUARIUM_SAVE_DIR):
         filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_aquarium.pkl"
-        # WE HAVE TO DETACH THE COMMAND QUEUE BEFORE PICKLING!!!
+        # WE HAVE TO DETACH THE COMMAND QUEUE AND USERMANAGER BEFORE PICKLING!!!
         command_queue = self.command_queue
+        user_manager = self.user_manager
         self.command_queue = None
+        self.user_manager = None
         pickle_obj = pickle.dumps(self)
         save_to_s3(pickle_obj, filename, save_dir)
         # Maybe not the best way, but let's also save a "latest" version!!
         save_to_s3(pickle_obj, "latest.pkl", save_dir)
-        # REATTACH THE COMMAND QUEUE
+        # REATTACH THE COMMAND QUEUE AND USERMANAGER
         self.command_queue = command_queue
+        self.user_manager = user_manager
 
 class Thing():
     def __init__(self, aquarium):
@@ -221,7 +224,7 @@ class Fish(Thing):
 
         # Hunger properties (check `docs/fish.md` for more info)
         self.hunger = 0 # 0 to 1, 1 is very hungry
-        self.hunger_rate = 1/1440000 # Hunger per second per speed per width (4 hours at speed=100 and width=100)
+        self.hunger_rate = 1/2880000 # Hunger per second per speed per width (8 hours at speed=100 and width=100)
         self.starve_rate = 1/7200 # Health per second per (0.5-hunger) (2 hours at hunger=1)
 
         # Happiness properties (check `docs/fish.md` for more info)
