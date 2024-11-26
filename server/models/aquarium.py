@@ -2,11 +2,12 @@ from server.helper import settings, save_to_s3
 import random, math, uuid, datetime, os, pickle
 
 class Aquarium():
-    def __init__(self, command_queue, width=960, height=540):
+    def __init__(self, command_queue, user_manager, width=960, height=540):
         self.width = width
         self.height = height
         self.objects = {}
         self.command_queue = command_queue
+        self.user_manager = user_manager
 
         # Keep track of updated objects for broadcasting
         self.broadcast_updates = [] # Moved from the simluate.py loop :)
@@ -119,11 +120,20 @@ class Thing():
         # This will occur BEFORE the update loop (and the update loop will call update() again)
         pass
 
-    def _new_object_destination(self, object, speed=None):
-        # Set a new object as the destination
-        self.destination_x = object.x
-        self.destination_y = object.y
+    def _new_object_destination(self, object, speed=None, distance_away=0):
+        if (distance_away == 0):
+            # Set a new object as the destination
+            self.destination_x = object.x
+            self.destination_y = object.y
+        # Use the distance_away paramter to go AWAY from the object :)
+        else:
+            angle_away = math.atan2(self.y - self.predator.y, self.x - self.predator.x)
+            self.destination_x = self.x + distance_away * math.cos(angle_away)
+            self.destination_y = self.y + distance_away * math.sin(angle_away)
+        # Set the speed to the max_speed if it's not set (and clip the the destinations to the aquarium)
         self.speed = speed if speed is not None else self.max_speed
+        self.destination_x = max(0 + self.width, min(self.destination_x, self.aquarium.width - self.width))
+        self.destination_y = max(0 + self.height, min(self.destination_y, self.aquarium.height - self.height))
         self.updated_this_loop = True
 
     def _move_toward_destination(self, delta_time):
@@ -154,6 +164,11 @@ class Thing():
             return(True)
         else:
             return(False)
+        
+    def _get_random_xy(self):
+        x = random.uniform(0 + self.width, self.aquarium.width - self.width)
+        y = random.uniform(0 + self.height, self.aquarium.height - self.height)
+        return(x, y)
         
     def _find_closest(self, class_hierarchy=["Thing"]) -> tuple:
         # Find the closest object of a certain class
@@ -193,33 +208,55 @@ class Fish(Thing):
         self.aspect_ratio = 1
         self.width = 100 # Pixels (also a proxy for size!)
         self.properties_to_broadcast.extend([
-            "fish_name", "state", "health", "happiness", "hunger" 
+            "fish_name", "state", "health", "happiness", "hunger", "relationships"
         ])
 
         # Set the fish-specific properties
         self.fish_name = "unnamed_fish"
         self.state = "idle" # idle, feeding, fleeing, playing
 
-        # Health properties (check `game_classes.md` for more info)
+        # Health properties (check `docs/fish.md` for more info)
         self.health = 1.0
         self.happiness_health_rate = 1/14400 
-        self.happiness = 0.5 # 0 to 1
 
-        # Hunger properties
+        # Hunger properties (check `docs/fish.md` for more info)
         self.hunger = 0 # 0 to 1, 1 is very hungry
         self.hunger_rate = 1/1440000 # Hunger per second per speed per width (4 hours at speed=100 and width=100)
         self.starve_rate = 1/7200 # Health per second per (0.5-hunger) (2 hours at hunger=1)
+
+        # Happiness properties (check `docs/fish.md` for more info)
+        self.hunger_happiness_bonus = 0.1 # Happiness per inverse unit of hunger
+        self.health_happiness_bonus = 0.1 # Happiness per unit of health
+        # self.happiness is defined as a @property later
 
         self.max_speed = 100 # Pixels per second
         self.coin_rate = 1/20 # On average, 1 coin per 20 seconds
 
         # Keep a running tally of how much a fish likes a user
-        self.relationships = {} # {user_id: relationship_score (0 to 1)}
+        self.relationships = {} # {username: relationship_score (0 to 1)}
 
         # References for when the fish is in a certain state
         self.food = None # Food or Fish object
         self.predator = None # Fish object
         self.plaything = None # Fish or Tap or other object
+    
+    @property
+    def happiness(self): # Check `docs/fish.md` for more info on the calculation
+        total_happiness = 0
+        for username in self.aquarium.user_manager.online_users.keys():
+            total_happiness += self.relationships.get(username, 0)
+        total_happiness += self.hunger_happiness_bonus * (1 - self.hunger)
+        total_happiness += self.health_happiness_bonus * self.health
+        return(total_happiness)
+
+    def _eat(self, food):
+        # Confirm that the fish is actually colliding with the food
+        if self._is_colliding(food):
+            # Make the fish like the user who fed it
+            if food.username is not None:
+                self.relationships[food.username] = self.relationships.get(food.username, 0) + food.nutrition
+            self.hunger = max(0, min(1, self.hunger - food.nutrition))
+            food.remove()
 
     def _die(self):
         self.aquarium.create_object("Skeleton", kwargs={"fish": self}, properties={})
@@ -257,12 +294,9 @@ class Fish(Thing):
             self._move_toward_destination(delta_time)
     
     def _idle(self, delta_time):
-        # Default idle behavior is to move around randomly
-        has_new_destination = False
+        # If the fish is within 10 pixels of its destination, choose a new one
         if math.sqrt((self.destination_x - self.x)**2 + (self.destination_y - self.y)**2) < 10:
-            # If the fish is within 10 pixels of its destination, choose a new one
-            self.destination_x = random.uniform(0 + self.width, self.aquarium.width - self.width)
-            self.destination_y = random.uniform(0 + self.height, self.aquarium.height - self.height)
+            self.destination_x, self.destination_y = self._get_random_xy()
             self.speed = random.uniform(self.max_speed/4, self.max_speed/2)
             self.updated_this_loop = True
         # Move the fish towards its destination
@@ -275,10 +309,8 @@ class Fish(Thing):
         if (self.food is None) or (self.food not in self.aquarium.objects.values()):
             self.state = "idle"
             self.food = None
-            self.updated_this_loop = True
         if self._is_colliding(self.food): 
-            self.food.remove()
-            self.hunger = max(0, min(1, self.hunger - self.food.nutrition))
+            self._eat(self.food)
             self.state = "idle"
             self.food = None
         # Otherwise, move towards the food
@@ -295,23 +327,19 @@ class Fish(Thing):
             self.predator = None
         # Otherwise, move away from the predator
         else:
-            angle_away = math.atan2(self.y - self.predator.y, self.x - self.predator.x)
-            self.destination_x = self.x + 100 * math.cos(angle_away)
-            self.destination_y = self.y + 100 * math.sin(angle_away)
-            self.destination_x = max(0 + self.width, min(self.destination_x, self.aquarium.width - self.width))
-            self.destination_y = max(0 + self.height, min(self.destination_y, self.aquarium.height - self.height)) 
-            self.speed = self.max_speed
+            # Set the destination to be 100 pixels away from the predator (in the opposite direction)
+            self._new_object_destination(self.predator, speed=self.max_speed, distance_away=100)
             self._move_toward_destination(delta_time)
 
     def update(self, delta_time) -> bool:
-        # Housekeeping stuff)
+        # Housekeeping stuff
         self.updated_this_loop = False
         self._calculate_health(delta_time)
         self._calculate_happiness(delta_time)
         self._calculate_hunger(delta_time)
         self._calculate_coin_drop(delta_time)
         self._choose_state()
-        # State-specific behavior
+        # State-specific behavior (this will also move the fish!)
         if self.state == "idle":
             self._idle(delta_time)
         elif self.state == "feeding":
@@ -325,4 +353,5 @@ class Fish(Thing):
                 exec(f"self._{self.state}(delta_time)")
             except:
                 Warning(f"Unknown fish state {self.state}")
+                self._idle(delta_time)
         return(self.updated_this_loop)

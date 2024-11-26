@@ -99,6 +99,8 @@ This is the base class for all objects in the Aquarium. This class is abstract a
 
 - `_is_colliding` (other: Thing) (*backend only*): Returns `True` if the object is colliding with another object. Otherwise, returns `False`.
 
+- `_get_random_xy` (*backend only*): Returns a random x and y-coordinate within the Aquarium taking into account the width and height of the object (returns a tuple).
+
 - `_find_closest` (type: class_hierarchy(str)) (*backend only*): Returns the closest object of the specified type. Returns a tuple of the object and the distance to it.
 
 # `Fish` class
@@ -111,13 +113,13 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 
 - `state` (str): The state of the fish. This can be `idle`, `feeding`, `fleeing`, or `chasing`.
 
-- `health` (float): The health level of the fish. This is a float between 0 and 1. 0 is dead, and 1 is healthy. This is modeled by the following ODE: `dhealth/dt = +((0.5 - hunger) * starvation_rate) + ((0.5 - happiness) * happiness_health_rate)`.
+- `health` (float): Described in `docs/fish.md`.
 
-- `happiness` (float): The happiness level of the fish. This is a float between 0 and 1. 0 is sad, and 1 is happy.
+- `happiness` (float): Described in `docs/fish.md`.
 
-- `hunger` (float): The hunger level of the fish. This is a float between 0 and 1. 0 is not hungry at all, and 1 is starving. This is modeled by the following ODE: `dhunger/dt = +hunger_rate * speed * width`.
+- `hunger` (float): Described in `docs/fish.md`.
 
-- `hunger_rate` (float) (*backend only*): The rate at which the fish's hunger increases. This is a float between 0 and 1.
+- `hunger_rate` (float) (*backend only*): Described in `docs/fish.md`.
 
 - `max_speed` (float) (*backend only*): The maximum speed of the fish in pixels per second.
 

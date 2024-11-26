@@ -61,10 +61,14 @@ def create_app():
     user_manager = UserManager() # Handles abstractly accessing users (and for now cursors)
     chat_manager = None # Placeholder for now
 
+    # Attach these to global variables for easy access
+    app.command_queue = command_queue
+    app.user_manager = user_manager
+    app.chat_manager = chat_manager
 
     if settings.ENVIRONMENT == "local":
         # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
-        aquarium = Aquarium(command_queue=command_queue)
+        aquarium = Aquarium(command_queue=command_queue, user_manager=user_manager)
         aquarium.add_object(Guppy(aquarium))
         aquarium.add_object(Angelfish(aquarium))
         aquarium.save()
@@ -76,14 +80,15 @@ def create_app():
         # Load the aquarium and store from S3
         try:
             aquarium = load_latest_from_s3(settings.S3_AQUARIUM_SAVE_DIR)
-            # Attach the command queue to the aquarium!!
+            # Attach the command queue and user manaeger to the aquarium!!
             aquarium.command_queue = command_queue
+            aquarium.user_manager = user_manager
             store = load_latest_from_s3(settings.S3_STORE_SAVE_DIR)
         except:
             print("Failed to load the aquarium and store from S3.") 
 
             # USE THIS BLOCK TO CREATE A NEW AQUARIUM AND STORE FROMS SCRATCH (IF S3 IS EMPTY)!
-            aquarium = Aquarium(command_queue=command_queue)
+            aquarium = Aquarium(command_queue=command_queue, user_manager=user_manager)
             aquarium.add_object(Guppy(aquarium))
             aquarium.add_object(Angelfish(aquarium))
             aquarium.save()

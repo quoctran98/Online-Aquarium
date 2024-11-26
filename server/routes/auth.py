@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, login_required, logout_user
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask_login import login_user, login_required, logout_user, current_user
 
 from server.helper import settings, username_is_valid
 from server.models.user import User
@@ -24,6 +24,8 @@ def login_post():
 
     # Log the user in then send them back
     login_user(user, remember=remember)
+    # Also add them to the online users list
+    current_app.user_manager.user_connected(user)
     flash("Logged in successfully", "alert-success")
     return(redirect(url_for("main.index")))
 
@@ -60,5 +62,7 @@ def signup_post():
 @auth.route("/logout")
 @login_required
 def logout():
+    # Also remove them from the online users list (before logging out!)
+    current_app.user_manager.user_disconnected(current_user)
     logout_user()
     return(redirect(url_for("main.index")))

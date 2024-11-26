@@ -2,7 +2,7 @@ from server.models.aquarium import Thing
 import datetime, random, math
 
 class Food(Thing):
-    def __init__(self, aquarium, x, y):
+    def __init__(self, aquarium, x, y, username=None):
 
         # Redefine properties from Thing
         super().__init__(aquarium)
@@ -17,11 +17,12 @@ class Food(Thing):
         ])
 
         # Set the food-specific properties
+        self.username = username
         self.nutrition = 0.1 # 0 to 1
         self.lifetime = 60 # Seconds
 
         # Make the food fall straight down
-        self.x = x
+        self.x = x  
         self.y = y
         self.destination_x = self.x
         self.destination_y = aquarium.height - self.height
@@ -33,9 +34,9 @@ class Food(Thing):
         self._calculate_lifetime()
 
 class Flake(Food):
-    def __init__(self, aquarium, x, y):
+    def __init__(self, aquarium, x, y, username=None):
         # Redefine properties from Food
-        super().__init__(aquarium, x=x, y=y)
+        super().__init__(aquarium, x=x, y=y, username=username)
         self.class_hierarchy.append("Flake")
         self.default_texture = "flake.png"
         self.aspect_ratio = 2.6833333333
@@ -45,9 +46,9 @@ class Flake(Food):
         self.speed = 10
 
 class Pellet(Food):
-    def __init__(self, aquarium, x, y):
+    def __init__(self, aquarium, x, y, username=None):
         # Redefine properties from Food
-        super().__init__(aquarium, x=x, y=y)
+        super().__init__(aquarium, x=x, y=y, username=username)
         self.class_hierarchy.append("Pellet")
         self.default_texture = "pellet.png"
         self.aspect_ratio = 1

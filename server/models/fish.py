@@ -36,10 +36,14 @@ class Clownfish(Fish):
         elif (predator_distance < 200) and (predator_width > 1.5*self.width):
             self.state = "fleeing"
             self.predator = closest_predator
-        # If there are taps, then the fish will play
-        elif closest_tap is not None:
-            self.state = "playing"
-            self.plaything = closest_tap
+        # If there are taps, then the fish will play if it likes the user (otherwise it will flee)
+        elif (closest_tap is not None):
+            if (self.relationships.get(closest_tap.username, 0) > 0.5):
+                self.state = "playing"
+                self.plaything = closest_tap
+            else:
+                self.state = "fleeing"
+                self.predator = closest_tap
         # Otherwise, it will be idle
         else:
             self.state = "idle"
@@ -60,7 +64,7 @@ class Guppy(Fish):
         self.default_animation = "idle"
         self.animation_prefix = f"guppy_{color}_"
         self.spect_ratio = 1.4496644295
-        self.width = 72
+        self.width = 40
         self.max_speed = 80
         self.fish_name = f"{get_random_name(first_letter='G')} the Guppy"
         self.coin_rate = 1/40
@@ -76,17 +80,21 @@ class Guppy(Fish):
         closest_tap, tap_distance = self._find_closest(class_hierarchy=["Thing", "Tap"])
         predator_width = closest_predator.width if closest_predator is not None else 0
         # If the fish is being chased, it will prioritize fleeing
-        if (predator_distance < 300) and (predator_width > self.width):
+        if (predator_distance < 50) and (predator_width > self.width):
             self.state = "fleeing"
             self.predator = closest_predator
         # If the fish is hungry and there is food nearby, it will prioritize feeding
         elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
-        # If there are taps, then the fish will play
-        elif closest_tap is not None:
-            self.state = "playing"
-            self.plaything = closest_tap
+        # If there are taps, then the fish will play if it likes the user (otherwise it will flee)
+        elif (closest_tap is not None):
+            if (self.relationships.get(closest_tap.username, 0) > 0.5):
+                self.state = "playing"
+                self.plaything = closest_tap
+            else:
+                self.state = "fleeing"
+                self.predator = closest_tap
         # Otherwise, it will be idle
         else:
             self.state = "idle"
@@ -131,10 +139,14 @@ class Angelfish(Fish):
         elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
-        # If there are taps, then the fish will play
-        elif closest_tap is not None:
-            self.state = "playing"
-            self.plaything = closest_tap
+        # If there are taps, then the fish will play if it likes the user (otherwise it will flee)
+        elif (closest_tap is not None):
+            if (self.relationships.get(closest_tap.username, 0) > 0.2):
+                self.state = "playing"
+                self.plaything = closest_tap
+            else:
+                self.state = "fleeing"
+                self.predator = closest_tap
         # Otherwise, it will be idle
         else:
             self.state = "idle"

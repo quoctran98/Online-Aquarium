@@ -63,10 +63,10 @@ def aquarium_simulation(socketio, command_queue, user_manager, aquarium):
                 case "use":
                     match data["tool"]:
                         case "flake_bottle":
-                            flakes = Flake(aquarium, data["x"], data["y"])
+                            flakes = Flake(aquarium, data["x"], data["y"], username=data["username"])
                             aquarium.add_object(flakes)
                         case "pellet_bottle":
-                            pellets = Pellet(aquarium, data["x"], data["y"])
+                            pellets = Pellet(aquarium, data["x"], data["y"], username=data["username"])
                             aquarium.add_object(pellets)
 
                 case "sync":
