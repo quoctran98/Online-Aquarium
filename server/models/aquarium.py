@@ -270,10 +270,11 @@ class Fish(Thing):
         # Confirm that the fish is actually colliding with the food
         if self._is_colliding(food):
             # Make the fish like the user who fed it
-            nutrition = getattr(food, "nutrition", food.width/100) # Default to the width of the food!
+            nutrition = getattr(food, "nutrition", food.width/10) # Default to the width of the food!
             if getattr(food, "username", None) is not None:
                 self.relationships[food.username] = self.relationships.get(food.username, 0) + nutrition
             self.hunger = max(0, min(1, self.hunger - nutrition))
+            self.width += nutrition # TODO: Make this more sophisticated!
             try:
                 food._die() # Only Fish will have a _die method
             except:
