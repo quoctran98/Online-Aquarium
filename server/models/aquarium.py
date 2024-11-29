@@ -249,8 +249,9 @@ class Fish(Thing):
         self.max_speed = 100 # Pixels per second
         self.coin_rate = 1/20 # On average, 1 coin per 20 seconds
 
-        # Keep a running tally of how much a fish likes a user
+        # Keep a running tally of how much a fish likes a user (0 to 1)
         self.relationships = {} # {username: relationship_score (0 to 1)}
+        self.relationship_decay_rate = 1/(86400) # Relationship per second per relationship (1 day but it's asympototic!)
 
         # References for when the fish is in a certain state
         self.food = None # Food or Fish object
@@ -305,6 +306,13 @@ class Fish(Thing):
         if (self.health <= 0):
             self._die()
         self.health = max(0, min(1, self.health))
+
+    def _decay_relationships(self, delta_time):
+        # Decay all relationships
+        for username in self.relationships.keys():
+            current_relationship = self.relationships[username]
+            d_relationship = self.relationship_decay_rate * current_relationship * delta_time.total_seconds() * -1
+            self.relationships[username] = max(0, min(1, current_relationship + d_relationship))
 
     def _calculate_happiness(self, delta_time):
         # Placeholder for child classes to override with fish-specific behavior

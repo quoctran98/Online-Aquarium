@@ -31,3 +31,8 @@ d`hunger`/dt = +`hunger_rate` * `speed` * `width`
 - `hunger_happiness_bonus` * (1 - `hunger`)
 
 - `health_happiness_bonus` * `health`
+
+### Relationships
+
+- `relationship_decay_rate` is the rate at which relationships decay according to the following ODE:
+`d`relationship`/dt = -`relationship_decay_rate` * `relationship` for each relationship
