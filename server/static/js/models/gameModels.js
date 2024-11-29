@@ -133,7 +133,7 @@ class Thing extends PIXI.AnimatedSprite {
         this.handleTicker = this.handleTicker.bind(this);
         this.serverUpdate = this.serverUpdate.bind(this);
 
-        // Set the anchor to the center of the sprite
+        // Set the anchor to the top left corner
         // Scaling is handled by setting height and width (properties of PIXI.Sprite)
         this.anchor.set(0.5);
 

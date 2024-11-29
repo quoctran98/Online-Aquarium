@@ -17,18 +17,23 @@ class Clownfish(Fish):
         self.max_speed = 100
         self.fish_name = f"{get_random_name(first_letter='C')} the Clownfish"
         self.coin_rate = 1/10
-        # No new properties to broadcast
+
+        self.food_preferences = [ 
+            ("['Thing', 'Food', 'Pellet']", 0.1),
+            ("['Thing', 'Food', 'Flake']", 0.5),
+            ("['Thing', 'Fish']", 0.9),
+        ]
 
         # Set properties from kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def _choose_state(self):
-        closest_food, food_distance = self._find_closest(class_hierarchy=["Thing", "Food"])
+        closest_food, food_distance = self._find_food()
         closest_predator, predator_distance = self._find_closest(class_hierarchy=["Thing", "Fish"])
         closest_tap, tap_distance = self._find_closest(class_hierarchy=["Thing", "Tap"])
         predator_width = closest_predator.width if closest_predator is not None else 0
-        # Clownfish will priortize feeding
+        # Clownfish will prioritize feeding if there is food nearby
         if closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
@@ -68,14 +73,19 @@ class Guppy(Fish):
         self.max_speed = 80
         self.fish_name = f"{get_random_name(first_letter='G')} the Guppy"
         self.coin_rate = 1/40
-        # No new properties to broadcast
+
+        self.food_preferences = [ 
+            ("['Thing', 'Food', 'Flake']", 0.1),
+            ("['Thing', 'Food', 'Pellet']", 0.5),
+            ("['Thing', 'Fish']", 1.0),
+        ]
 
         # Set properties from kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def _choose_state(self):
-        closest_food, food_distance = self._find_closest(class_hierarchy=["Thing", "Food"])
+        closest_food, food_distance = self._find_food()
         closest_predator, predator_distance = self._find_closest(class_hierarchy=["Thing", "Fish"])
         closest_tap, tap_distance = self._find_closest(class_hierarchy=["Thing", "Tap"])
         predator_width = closest_predator.width if closest_predator is not None else 0
@@ -83,7 +93,7 @@ class Guppy(Fish):
         if (predator_distance < 50) and (predator_width > self.width):
             self.state = "fleeing"
             self.predator = closest_predator
-        # If the fish is hungry and there is food nearby, it will prioritize feeding
+        # If there is food nearby, it will prioritize feeding (thresholds set in self.food_preferences)
         elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food
@@ -120,14 +130,18 @@ class Angelfish(Fish):
         self.fish_name = f"{get_random_name(first_letter='A')} the Angelfish"
         self.coin_rate = 1/20 # Angelfish produce coins at a rate of 1 coin per 20 seconds (on average)
 
-        # No new properties to broadcast
+        self.food_preferences = [ 
+            ("['Thing', 'Food', 'Pellet']", 0.1),
+            ("['Thing', 'Food', 'Flake']", 0.5),
+            ("['Thing', 'Fish']", 0.9),
+        ]
 
         # Set properties from kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def _choose_state(self):
-        closest_food, food_distance = self._find_closest(class_hierarchy=["Thing", "Food"])
+        closest_food, food_distance = self._find_food()
         closest_predator, predator_distance = self._find_closest(class_hierarchy=["Thing", "Fish"])
         closest_tap, tap_distance = self._find_closest(class_hierarchy=["Thing", "Tap"])
         predator_width = closest_predator.width if closest_predator is not None else 0
@@ -135,7 +149,7 @@ class Angelfish(Fish):
         if (predator_distance < 300) and (predator_width > self.width):
             self.state = "fleeing"
             self.predator = closest_predator
-        # If the fish is hungry and there is food nearby, it will prioritize feeding
+        # If there is food nearby, it will prioritize feeding (thresholds set in self.food_preferences)
         elif closest_food is not None:
             self.state = "feeding"
             self.food = closest_food

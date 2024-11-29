@@ -20,6 +20,8 @@ d`health`/dt = +((0.5 - `hunger`) * `starvation_rate`) + ((0.5 - `happiness`) * 
 
 d`hunger`/dt = +`hunger_rate` * `speed` * `width`
 
+
+
 ### Happiness
 
 `happiness` is the sum of the following factors:

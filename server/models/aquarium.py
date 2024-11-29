@@ -123,6 +123,16 @@ class Thing():
         # This will occur BEFORE the update loop (and the update loop will call update() again)
         pass
 
+    def _limit_x_coordinate(self, x):
+        # Limit the x coordinate to the aquarium width taking into account the width of the object
+        return(max(0, min(x, self.aquarium.width - self.width)))
+        # REMEMBER the position of the object is its top-left corner!
+
+    def _limit_y_coordinate(self, y):
+        # Limit the y coordinate to the aquarium height taking into account the height of the object
+        return(max(0, min(y, self.aquarium.height - self.height)))
+        # REMEMBER the position of the object is its top-left corner!
+
     def _new_object_destination(self, object, speed=None, distance_away=0):
         if (distance_away == 0):
             # Set a new object as the destination
@@ -135,8 +145,8 @@ class Thing():
             self.destination_y = self.y + distance_away * math.sin(angle_away)
         # Set the speed to the max_speed if it's not set (and clip the the destinations to the aquarium)
         self.speed = speed if speed is not None else self.max_speed
-        self.destination_x = max(0 + self.width, min(self.destination_x, self.aquarium.width - self.width))
-        self.destination_y = max(0 + self.height, min(self.destination_y, self.aquarium.height - self.height))
+        self.destination_x = self._limit_x_coordinate(self.destination_x)
+        self.destination_y = self._limit_y_coordinate(self.destination_y)
         self.updated_this_loop = True
 
     def _move_toward_destination(self, delta_time):
@@ -144,15 +154,15 @@ class Thing():
         direction = math.atan2(self.destination_y - self.y, self.destination_x - self.x)
         new_x = self.speed * math.cos(direction) * delta_time.total_seconds() + self.x
         new_y = self.speed * math.sin(direction) * delta_time.total_seconds() + self.y
-        new_x = max(0, min(new_x, self.aquarium.width))
-        new_y = max(0, min(new_y, self.aquarium.height))
+        new_x = self._limit_x_coordinate(new_x)
+        new_y = self._limit_y_coordinate(new_y)
         # Make sure we haven't overshot the destination 
         if (self.destination_x - self.x) * (self.destination_x - new_x) < 0:
             new_x = self.destination_x
         if (self.destination_y - self.y) * (self.destination_y - new_y) < 0:
             new_y = self.destination_y
-        self.x = new_x
-        self.y = new_y
+        self.x = self._limit_x_coordinate(new_x)
+        self.y = self._limit_y_coordinate(new_y)
 
     def _calculate_lifetime(self):
         if self.lifetime is None:
@@ -226,6 +236,10 @@ class Fish(Thing):
         self.hunger = 0 # 0 to 1, 1 is very hungry
         self.hunger_rate = 1/2880000 # Hunger per second per speed per width (8 hours at speed=100 and width=100)
         self.starve_rate = 1/7200 # Health per second per (0.5-hunger) (2 hours at hunger=1)
+        self.food_preferences = [ # Overwrite this in child classes!
+            ("['Thing', 'Food']", 0.9),
+            ("['Thing', 'Fish']", 0.1),
+        ]
 
         # Happiness properties (check `docs/fish.md` for more info)
         self.hunger_happiness_bonus = 0.1 # Happiness per inverse unit of hunger
@@ -256,14 +270,34 @@ class Fish(Thing):
         # Confirm that the fish is actually colliding with the food
         if self._is_colliding(food):
             # Make the fish like the user who fed it
-            if food.username is not None:
-                self.relationships[food.username] = self.relationships.get(food.username, 0) + food.nutrition
-            self.hunger = max(0, min(1, self.hunger - food.nutrition))
-            food.remove()
+            nutrition = getattr(food, "nutrition", food.width/100) # Default to the width of the food!
+            if getattr(food, "username", None) is not None:
+                self.relationships[food.username] = self.relationships.get(food.username, 0) + nutrition
+            self.hunger = max(0, min(1, self.hunger - nutrition))
+            try:
+                food._die() # Only Fish will have a _die method
+            except:
+                food.remove() # All things should have a remove method
 
     def _die(self):
         self.aquarium.create_object("Skeleton", kwargs={"fish": self}, properties={})
         self.remove()
+
+    def _find_food(self) -> tuple:
+        # Find the object that the fish will eat (go through the food preferences)
+        closest_food = None
+        closest_distance = float("inf")
+        for food_hierarchy, food_preference in self.food_preferences:
+            food_hierarchy = eval(food_hierarchy)
+            if (self.hunger <= food_preference):
+                continue # Skip this food preference if the fish isn't hungry enough
+            food, distance = self._find_closest(class_hierarchy=food_hierarchy)
+            if (food is not None): # Stop on the first food found above the hunger threshold
+                if ("Fish" in food_hierarchy):
+                    if (food.width >= self.width):
+                        continue # If the food is a fish, make sure the eater is bigger)
+                return(food, distance)
+        return(closest_food, closest_distance)
 
     def _calculate_health(self, delta_time):
         self.health += ((0.5 - self.hunger) * self.starve_rate - (0.5 - self.happiness) * self.happiness_health_rate) * delta_time.total_seconds()

@@ -113,13 +113,13 @@ This class represents a fish in the Aquarium. In both the backend and frontend, 
 
 - `state` (str): The state of the fish. This can be `idle`, `feeding`, `fleeing`, or `chasing`.
 
-- `health` (float): Described in `docs/fish.md`.
+- `health` (float): Described in `docs/fish.md` alongside other health-related properties.
 
-- `happiness` (float): Described in `docs/fish.md`.
+- `happiness` (float): Described in `docs/fish.md` alongside other happiness-related properties.
 
-- `hunger` (float): Described in `docs/fish.md`.
+- `hunger` (float): Described in `docs/fish.md` alongside other hunger-related properties.
 
-- `hunger_rate` (float) (*backend only*): Described in `docs/fish.md`.
+- `food_preferences` (list(tuple(str, float))): A list of tuples that represent the food preferences of the fish. The first element of the tuple is the class hierarchy of the food object (e.g. `['Food', 'Pellet']`) and the second element is the preference of the fish for that food. The preference is a float in the range [0, 1]. This is the hunger threshold at which the fish will start to chase the food (higher means it's more desperate for any food). The list order matters; the fish will choose the first food that it finds in the Aquarium that it likes, but will eat any food if it is starving.
 
 - `max_speed` (float) (*backend only*): The maximum speed of the fish in pixels per second.
 

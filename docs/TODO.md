@@ -21,4 +21,6 @@
 
 - **[ ]** **Implement fish happiness** - This is a big one. The fish should do different things based on its happiness. Use this for health and coin drops too! It should prefer some users more, and react to things like being fed and glass taps differently. I have to really think about how to implement this.
 
+- **[ ]** **Make different foods have different nutritional values for each fish** - I should roll this into the `Fish.food_preferences` attribute and somehow incorporate that into the `_eat()` method. I'll have to write code to match a Thing's class hierarchy to a string :)
+
 - **[ ]** **Credit the creators of stuff** - I found `first-names.txt` from [this repo](https://github.com/dominictarr/random-name/tree/master). Most of my game assets are from [Olga's Lab](https://olgas-lab.itch.io/2d-huge-underwater-themed-bundle) and the cursors are from [DreamXP](https://dreamxpstudio.itch.io/handy-handz-cursor-pack), though I paid for both of those :)
