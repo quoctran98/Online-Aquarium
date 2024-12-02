@@ -1,5 +1,6 @@
 from server.helper import settings, save_to_s3
 import uuid, datetime, pickle
+import numpy as np
 
 class Store():
     def __init__(self):
@@ -38,6 +39,9 @@ class StoreItem():
         for key, value in item_dict.items():
             setattr(self, key, value)
 
+        if (self.stock == -1):
+            self.stock = np.inf
+
         # Keep track of how much money is has been raised for this item
         self.money_raised = 0.0
         self.contributors = [] # with dicts of username, amount, and timestamp
@@ -73,7 +77,7 @@ class StoreItem():
             "item_type": self.item_type,
             "item_name": self.item_name,
             "price": self.price,
-            "stock": self.stock,
+            "stock": self.stock if self.stock != np.inf else "∞",
             "image_file": self.image_file,
             "money_raised": self.money_raised,
             # "contributors": self.contributors
